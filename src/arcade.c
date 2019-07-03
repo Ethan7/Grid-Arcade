@@ -1,8 +1,9 @@
 /* By Ethan Hughs */
 /* Written 12/1/2018 */
 
-//#define SDL_MAIN_HANDLED
+#define SDL_MAIN_HANDLED
 #include<SDL2/SDL.h>
+#include<SDL2/SDL_image.h>
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -38,26 +39,19 @@ void clear(int **grid, int width, int height){
 	}
 }
 
-int arcade(int **grid, SDL_Event event, int game, int width, int height, int cellsize){
-	grid[0][0] = WHITE;
-	grid[1][0] = RED;
-	grid[2][0] = GREEN;
-	grid[0][1] = BLUE;
-	grid[0][2] = MAGENTA;
-	grid[1][1] = CYAN;
-
+int arcade(SDL_Event event, int game, int width, int height){
 	if(event.type == SDL_MOUSEBUTTONUP){
-		if(event.button.x / cellsize == 0 && event.button.y / cellsize == 0){
+		if(event.button.y / (height/9) == 2){
 			return SNAKE;
-		} else if(event.button.x / cellsize == 1 && event.button.y / cellsize == 0){
+		} else if(event.button.y / (height/9) == 3){
 			return PATH;
-		} else if(event.button.x / cellsize == 2 && event.button.y / cellsize == 0){
+		} else if(event.button.y / (height/9) == 4){
 			return MAZES;
-		} else if(event.button.x / cellsize == 0 && event.button.y / cellsize == 1){
+		} else if(event.button.y / (height/9) == 5){
 			return PONG;
-		} else if(event.button.x / cellsize == 0 && event.button.y / cellsize == 2){
+		} else if(event.button.y / (height/9) == 6){
 			return TETRIS;
-		} else if(event.button.x / cellsize == 1 && event.button.y / cellsize == 1){
+		} else if(event.button.y / (height/9) == 7){
 			return SPACE;
 		}
 	}
@@ -109,6 +103,8 @@ int main(int argc, char **argv){
 	}
 
 	int cellsize = 1 << size;
+	int fullwidth = width << size;
+	int fullheight = height << size;
 
 	//SDL2 Stuff
 
@@ -122,9 +118,15 @@ int main(int argc, char **argv){
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 	} else {
 		window = SDL_CreateWindow( "Grid Arcade", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		 (width << size), (height << size), SDL_WINDOW_SHOWN );
+		 fullwidth, fullheight, SDL_WINDOW_SHOWN );
 		if(window == NULL){
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+		} else {
+			//Initialize PNG loading 
+			int imgFlags = IMG_INIT_PNG;
+			if( !( IMG_Init( imgFlags ) & imgFlags ) ) {
+				printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+			}
 		}
 	}
 
@@ -171,6 +173,38 @@ int main(int argc, char **argv){
 	//CYAN Surface
 	SDL_Surface *cyan = SDL_CreateRGBSurface(0, cellsize, cellsize, 32, 0, 0, 0, 0);
 	SDL_FillRect(cyan, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0xFF, 0xFF));
+
+	//Title Image
+	SDL_Surface *title_img = IMG_Load("./img/title.png");
+	title_img = SDL_ConvertSurface( title_img, screenSurface->format, 0);
+
+	//Mazes Image
+	SDL_Surface *mazes_img = IMG_Load("./img/mazes.png");
+	mazes_img = SDL_ConvertSurface( mazes_img, screenSurface->format, 0);
+
+	//Path Image
+	SDL_Surface *path_img = IMG_Load("./img/path.png");
+	path_img = SDL_ConvertSurface( path_img, screenSurface->format, 0);
+
+	//Pong Image
+	SDL_Surface *pong_img = IMG_Load("./img/pong.png");
+	pong_img = SDL_ConvertSurface( pong_img, screenSurface->format, 0);
+
+	//Snake Image
+	SDL_Surface *snake_img = IMG_Load("./img/snake.png");
+	snake_img = SDL_ConvertSurface( snake_img, screenSurface->format, 0);
+
+	//Tetris Image
+	SDL_Surface *tetris_img = IMG_Load("./img/tetris.png");
+	tetris_img = SDL_ConvertSurface( tetris_img, screenSurface->format, 0);
+
+	//Space Image
+	SDL_Surface *space_img = IMG_Load("./img/soon.png");
+	space_img = SDL_ConvertSurface( space_img, screenSurface->format, 0);
+
+	//Arrow Image
+	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
+	arrow_img = SDL_ConvertSurface( arrow_img, screenSurface->format, 0);
 
 	//End SDL2 Stuff
 
@@ -264,7 +298,7 @@ int main(int argc, char **argv){
 		//Game Step
 		switch(game){
 		case ARCADE:
-			if((game = arcade(grid, leftbutton, game, width, height, cellsize)) != ARCADE){
+			if((game = arcade(leftbutton, game, fullwidth, fullheight)) != ARCADE){
 				clear(grid, width, height);
 				t = 0;
 			}
@@ -341,10 +375,48 @@ int main(int argc, char **argv){
 			}
 		}
 
+		if(game == ARCADE){
+			SDL_Rect img_rect;
+			img_rect.x = fullwidth*0.2;
+			img_rect.h = fullheight/9;
+			img_rect.y = fullheight/9;
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(title_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 2*(fullheight/9);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(snake_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 3*(fullheight/9);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(path_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 4*(fullheight/9);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(mazes_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 5*(fullheight/9);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(pong_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 6*(fullheight/9);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(tetris_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 7*(fullheight/9);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(space_img, NULL, screenSurface, &img_rect);
+			SDL_Rect arrow_rect;
+			arrow_rect.x = fullwidth*0.1;
+			arrow_rect.y = 2*(fullheight/9);
+			arrow_rect.h = fullheight/9;
+			arrow_rect.w = fullwidth*0.1;
+			if(event.button.y / (fullheight/9) > 1 && event.button.y / (fullheight/9) < 8){
+				arrow_rect.y = (event.button.y / (fullheight/9)) * (fullheight/9);
+			}
+			SDL_BlitScaled(arrow_img, NULL, screenSurface, &arrow_rect);
+		}
+
 		SDL_UpdateWindowSurface( window );
 
 		//Delay Step
-		SDL_Delay( speed );
+		if(game != ARCADE){
+			SDL_Delay( speed );
+		}
 	}
 
 	//Free Dynamic memory
