@@ -12,6 +12,9 @@
 
 int invadersx = 0, invadersy = 0;
 int space(int **grid, SDL_Event event, int game, int t, int width, int height){
+	if(t == 1){
+		
+	}
 	/*for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
 			grid[i][j] = 

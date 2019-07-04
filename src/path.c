@@ -144,15 +144,15 @@ int path(int **grid, SDL_Event event, int game, int t, int width, int height){
 		endNodeX = width-1;
 		endNodeY = height-1;
 
-		for(int i = 0; i < width; i++){
-			for(int n = 0; n < height; n++){
-				grid[i][n] = EMPTY;
-				if(!(i == startNodeX && n == startNodeY) && 
-				!(i == endNodeX && n == endNodeY) && rand() % chance == 0){
-					grid[i][n] = WALL;
-				}
-			}
-		}
+		//for(int i = 0; i < width; i++){
+		//	for(int n = 0; n < height; n++){
+				//grid[i][n] = EMPTY;
+				//if(!(i == startNodeX && n == startNodeY) && 
+				//!(i == endNodeX && n == endNodeY) && rand() % chance == 0){
+				//	grid[i][n] = WALL;
+				//}
+		//	}
+		//}
 
 		openNodesLen = 1;
 		int index = startNodeX*height+startNodeY;

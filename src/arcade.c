@@ -1,7 +1,7 @@
 /* By Ethan Hughs */
 /* Written 12/1/2018 */
 
-#define SDL_MAIN_HANDLED
+//#define SDL_MAIN_HANDLED
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_image.h>
 #include<stdio.h>
@@ -21,6 +21,8 @@
 #define FLAPPY 10
 #define CONNECT4 11
 #define CHECKERS 12
+#define SETUP 13
+#define SORTING 14
 
 //Color defines
 #define WHITE 0
@@ -31,6 +33,8 @@
 #define MAGENTA 5
 #define CYAN 6
 
+#define ROWS 9
+
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
@@ -39,20 +43,22 @@ void clear(int **grid, int width, int height){
 	}
 }
 
-int arcade(SDL_Event event, int game, int width, int height){
+int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 	if(event.type == SDL_MOUSEBUTTONUP){
-		if(event.button.y / (height/9) == 2){
+		if(event.button.y / (height/ROWS) == 2){
 			return SNAKE;
-		} else if(event.button.y / (height/9) == 3){
-			return PATH;
-		} else if(event.button.y / (height/9) == 4){
+		} else if(event.button.y / (height/ROWS) == 3){
+			*setupgame = PATH;
+			return SETUP;
+		} else if(event.button.y / (height/ROWS) == 4){
 			return MAZES;
-		} else if(event.button.y / (height/9) == 5){
+		} else if(event.button.y / (height/ROWS) == 5){
 			return PONG;
-		} else if(event.button.y / (height/9) == 6){
+		} else if(event.button.y / (height/ROWS) == 6){
 			return TETRIS;
-		} else if(event.button.y / (height/9) == 7){
-			return SPACE;
+		} else if(event.button.y / (height/ROWS) == 7){
+			*setupgame = CONWAY;
+			return SETUP;
 		}
 	}
 
@@ -69,7 +75,9 @@ int pong(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int tetris(int **grid, SDL_Event event, int game, int t, int width, int height);
 
-int space(int **grid, SDL_Event event, int game, int t, int width, int height);
+int conway(int **grid, SDL_Event event, int game, int t, int width, int height);
+
+int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
 
 int main(int argc, char **argv){
 	int size = 5; //Grid cell size
@@ -198,9 +206,9 @@ int main(int argc, char **argv){
 	SDL_Surface *tetris_img = IMG_Load("./img/tetris.png");
 	tetris_img = SDL_ConvertSurface( tetris_img, screenSurface->format, 0);
 
-	//Space Image
-	SDL_Surface *space_img = IMG_Load("./img/soon.png");
-	space_img = SDL_ConvertSurface( space_img, screenSurface->format, 0);
+	//Conway Image
+	SDL_Surface *conway_img = IMG_Load("./img/conway.png");
+	conway_img = SDL_ConvertSurface( conway_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -221,6 +229,9 @@ int main(int argc, char **argv){
 	int paused = 0; //Whether the game is paused
 	int speed = 256; //Speed for the gameplay loop
 	int game = ARCADE; //Current game within the arcade
+	int setupgame = CONWAY; //Game which is currently being setup
+	SDL_Event buttonheld;
+	buttonheld.type = SDL_USEREVENT;
 
 	//Gameplay Loop
 	while(running){
@@ -232,7 +243,13 @@ int main(int argc, char **argv){
 		leftbutton.type = SDL_USEREVENT;
 		SDL_Event direction;
 		direction.type = SDL_USEREVENT;
+		SDL_Event enter;
+		enter.type = SDL_USEREVENT;
 		while(SDL_PollEvent( &event ) != 0 || paused){
+			if(buttonheld.type != SDL_USEREVENT){
+				buttonheld.button.x = event.button.x;
+				buttonheld.button.y = event.button.y;
+			}
 			switch(event.type){
 			case SDL_KEYDOWN:
 				switch( event.key.keysym.sym ){
@@ -246,6 +263,9 @@ int main(int argc, char **argv){
 					} else {
 						paused = 1;
 					}
+					break;
+				case SDLK_RETURN:
+					enter = event;
 					break;
 				case SDLK_TAB:
 					if(speed == 1){
@@ -279,10 +299,24 @@ int main(int argc, char **argv){
 					break;
 				}
 				break;
+			case SDL_MOUSEBUTTONDOWN:
+				switch ( event.button.button ){
+				case SDL_BUTTON_LEFT:
+					buttonheld = event;
+					break;
+				case SDL_BUTTON_RIGHT:
+					buttonheld = event;
+					break;
+				}
+				break;
 			case SDL_MOUSEBUTTONUP:
 				switch ( event.button.button ){
 				case SDL_BUTTON_LEFT:
 					leftbutton = event;
+					buttonheld.type = SDL_USEREVENT;
+					break;
+				case SDL_BUTTON_RIGHT:
+					buttonheld.type = SDL_USEREVENT;
 					break;
 				}
 				break;
@@ -298,7 +332,7 @@ int main(int argc, char **argv){
 		//Game Step
 		switch(game){
 		case ARCADE:
-			if((game = arcade(leftbutton, game, fullwidth, fullheight)) != ARCADE){
+			if((game = arcade(leftbutton, game, fullwidth, fullheight, &setupgame)) != ARCADE){
 				clear(grid, width, height);
 				t = 0;
 			}
@@ -333,9 +367,14 @@ int main(int argc, char **argv){
 				t = 0;
 			}
 			break;
-		case SPACE:
-			if((game = space(grid, direction, game, t, width, height)) != SPACE){
+		case CONWAY:
+			if((game = conway(grid, direction, game, t, width, height)) != CONWAY){
 				clear(grid, width, height);
+				t = 0;
+			}
+			break;
+		case SETUP:
+			if((game = setup(grid, buttonheld, enter, setupgame, cellsize)) != SETUP){
 				t = 0;
 			}
 			break;
@@ -378,35 +417,35 @@ int main(int argc, char **argv){
 		if(game == ARCADE){
 			SDL_Rect img_rect;
 			img_rect.x = fullwidth*0.2;
-			img_rect.h = fullheight/9;
-			img_rect.y = fullheight/9;
+			img_rect.h = fullheight/ROWS;
+			img_rect.y = fullheight/ROWS;
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(title_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 2*(fullheight/9);
+			img_rect.y = 2*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(snake_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 3*(fullheight/9);
+			img_rect.y = 3*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(path_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 4*(fullheight/9);
+			img_rect.y = 4*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(mazes_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 5*(fullheight/9);
+			img_rect.y = 5*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(pong_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 6*(fullheight/9);
+			img_rect.y = 6*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(tetris_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 7*(fullheight/9);
+			img_rect.y = 7*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(space_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(conway_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
-			arrow_rect.y = 2*(fullheight/9);
-			arrow_rect.h = fullheight/9;
+			arrow_rect.y = 2*(fullheight/ROWS);
+			arrow_rect.h = fullheight/ROWS;
 			arrow_rect.w = fullwidth*0.1;
-			if(event.button.y / (fullheight/9) > 1 && event.button.y / (fullheight/9) < 8){
-				arrow_rect.y = (event.button.y / (fullheight/9)) * (fullheight/9);
+			if(event.button.y / (fullheight/ROWS) > 1 && event.button.y / (fullheight/ROWS) < (ROWS-1)){
+				arrow_rect.y = (event.button.y / (fullheight/ROWS)) * (fullheight/ROWS);
 			}
 			SDL_BlitScaled(arrow_img, NULL, screenSurface, &arrow_rect);
 		}
@@ -414,7 +453,7 @@ int main(int argc, char **argv){
 		SDL_UpdateWindowSurface( window );
 
 		//Delay Step
-		if(game != ARCADE){
+		if(game != ARCADE && game != SETUP){
 			SDL_Delay( speed );
 		}
 	}
@@ -433,6 +472,14 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(yellow);
 	SDL_FreeSurface(magenta);
 	SDL_FreeSurface(cyan);
+	SDL_FreeSurface(title_img);
+	SDL_FreeSurface(path_img);
+	SDL_FreeSurface(tetris_img);
+	SDL_FreeSurface(mazes_img);
+	SDL_FreeSurface(pong_img);
+	SDL_FreeSurface(snake_img);
+	SDL_FreeSurface(conway_img);
+	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
