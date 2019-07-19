@@ -1,7 +1,7 @@
 /* By Ethan Hughs */
 /* Written 12/1/2018 */
 
-//#define SDL_MAIN_HANDLED
+#define SDL_MAIN_HANDLED
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_image.h>
 #include<stdio.h>
@@ -33,7 +33,7 @@
 #define MAGENTA 5
 #define CYAN 6
 
-#define ROWS 9
+#define ROWS 10
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -59,6 +59,8 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 		} else if(event.button.y / (height/ROWS) == 7){
 			*setupgame = CONWAY;
 			return SETUP;
+		} else if(event.button.y / (height/ROWS) == 8){
+			return SPACE;
 		}
 	}
 
@@ -76,6 +78,8 @@ int pong(int **grid, SDL_Event event, int game, int t, int width, int height);
 int tetris(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int conway(int **grid, SDL_Event event, int game, int t, int width, int height);
+
+int space(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
 
@@ -97,17 +101,23 @@ int main(int argc, char **argv){
 			width = atoi(argv[2]);
 			height = atoi(argv[3]);
 			//Ensure minimum screen size.
-			if(width < 3){
-				fprintf(stderr, "Invalid width\n");
+			if(width < 8){
+				fprintf(stderr, "Invalid width needs to be > 8\n");
 				return EXIT_FAILURE;
-			} else if(height < 3){
-				fprintf(stderr, "Invalid height\n");
+			} else if(height < 8){
+				fprintf(stderr, "Invalid height needs to be > 8\n");
 				return EXIT_FAILURE;
 			}
 			break;
 		default:
 			fprintf(stderr, "usage: ./arcade [log2(cellsize)] [width] [height]\n");
 			return EXIT_FAILURE;
+	}
+	if(width << size < 64 || height << size < 64){
+		fprintf(stderr, "Invalid width, height, or cellsize\n");
+		fprintf(stderr, "width * cellsize must be > 64\n");
+		fprintf(stderr, "height * cellsize must be > 64\n");
+		return EXIT_FAILURE;
 	}
 
 	int cellsize = 1 << size;
@@ -209,6 +219,10 @@ int main(int argc, char **argv){
 	//Conway Image
 	SDL_Surface *conway_img = IMG_Load("./img/conway.png");
 	conway_img = SDL_ConvertSurface( conway_img, screenSurface->format, 0);
+
+	//Space Image
+	SDL_Surface *space_img = IMG_Load("./img/space.png");
+	space_img = SDL_ConvertSurface( space_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -373,6 +387,12 @@ int main(int argc, char **argv){
 				t = 0;
 			}
 			break;
+		case SPACE:
+			if((game = space(grid, direction, game, t, width, height)) != SPACE){
+				clear(grid, width, height);
+				t = 0;
+			}
+			break;
 		case SETUP:
 			if((game = setup(grid, buttonheld, enter, setupgame, cellsize)) != SETUP){
 				t = 0;
@@ -439,6 +459,9 @@ int main(int argc, char **argv){
 			img_rect.y = 7*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(conway_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 8*(fullheight/ROWS);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(space_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/ROWS);
@@ -479,6 +502,7 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(pong_img);
 	SDL_FreeSurface(snake_img);
 	SDL_FreeSurface(conway_img);
+	SDL_FreeSurface(space_img);
 	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);
