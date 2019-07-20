@@ -1,1 +1,1 @@
-gcc -o arcade arcade.c mazes.c snake.c path.c pong.c tetris.c conway.c space.c setup.c -Wall -lm -lSDL2 -lSDL2_image -lSDL2main
+gcc -o arcade arcade.c mazes.c snake.c path.c pong.c tetris.c conway.c space.c frogger.c setup.c -Wall -lm -lSDL2 -lSDL2_image -lSDL2main

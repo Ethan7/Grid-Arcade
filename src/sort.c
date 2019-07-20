@@ -87,8 +87,17 @@ int sort(int **grid, int game, int t, int width, int height){
 	}
 
 	gridarray = mergesort(width, gridarray);
+	int gridarray2[width];
 	for(int i = 0; i < width; i++){
-		
+		gridarray2[i] = gridarray[i];
+		for(int j = height-1; j > 0; j--){
+			if(gridarray2[i] > 0){
+				grid[i][j] = FILLED;
+				gridarray2[i]--;
+			} else {
+				grid[i][j] = EMPTY;
+			}
+		}
 	}
 
 	return SORT;

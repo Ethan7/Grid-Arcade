@@ -162,7 +162,7 @@ int space(int **grid, SDL_Event event, int game, int t, int width, int height){
 		int fire = 0;
 		do{
 			fire = rand() % width;
-		} while(invfire[fire] == -1);
+		} while(invfire[fire] == -1 && invcount > 0);
 		if(grid[fire][invfire[fire]+1] == ENEMY){
 			grid[fire][invfire[fire]+2] = EBULLET;
 		} else {
