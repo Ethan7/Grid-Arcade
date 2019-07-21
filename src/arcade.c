@@ -33,7 +33,7 @@
 #define MAGENTA 5
 #define CYAN 6
 
-#define ROWS 11
+#define ROWS 14
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -63,6 +63,11 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 			return SPACE;
 		} else if(event.button.y / (height/ROWS) == 9){
 			return FROGGER;
+		} else if(event.button.y / (height/ROWS) == 10){
+			*setupgame = LANGSTON;
+			return SETUP;
+		} else if(event.button.y / (height/ROWS) == 11){
+			return CONNECT4;
 		}
 	}
 
@@ -79,11 +84,15 @@ int pong(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int tetris(int **grid, SDL_Event event, int game, int t, int width, int height);
 
-int conway(int **grid, SDL_Event event, int game, int t, int width, int height);
+int conway(int **grid, int game, int t, int width, int height);
+
+int langston(int **grid, int game, int t, int width, int height);
 
 int space(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int frogger(int **grid, SDL_Event event, int game, int t, int width, int height);
+
+int connect4(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
 
@@ -231,6 +240,14 @@ int main(int argc, char **argv){
 	//Frogger Image
 	SDL_Surface *frogger_img = IMG_Load("./img/frogger.png");
 	frogger_img = SDL_ConvertSurface( frogger_img, screenSurface->format, 0);
+
+	//Langston Image
+	SDL_Surface *langston_img = IMG_Load("./img/langston.png");
+	langston_img = SDL_ConvertSurface( langston_img, screenSurface->format, 0);
+
+	//Connect4 Image
+	SDL_Surface *connect4_img = IMG_Load("./img/connect4.png");
+	connect4_img = SDL_ConvertSurface( connect4_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -390,7 +407,7 @@ int main(int argc, char **argv){
 			}
 			break;
 		case CONWAY:
-			if((game = conway(grid, direction, game, t, width, height)) != CONWAY){
+			if((game = conway(grid, game, t, width, height)) != CONWAY){
 				clear(grid, width, height);
 				t = 0;
 			}
@@ -403,6 +420,18 @@ int main(int argc, char **argv){
 			break;
 		case FROGGER:
 			if((game = frogger(grid, direction, game, t, width, height)) != FROGGER){
+				clear(grid, width, height);
+				t = 0;
+			}
+			break;
+		case LANGSTON:
+			if((game = langston(grid, game, t, width, height)) != LANGSTON){
+				clear(grid, width, height);
+				t = 0;
+			}
+			break;
+		case CONNECT4:
+			if((game = connect4(grid, direction, game, t, width, height)) != CONNECT4){
 				clear(grid, width, height);
 				t = 0;
 			}
@@ -479,6 +508,12 @@ int main(int argc, char **argv){
 			img_rect.y = 9*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(frogger_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 10*(fullheight/ROWS);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(langston_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 11*(fullheight/ROWS);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(connect4_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/ROWS);
@@ -521,6 +556,8 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(conway_img);
 	SDL_FreeSurface(space_img);
 	SDL_FreeSurface(frogger_img);
+	SDL_FreeSurface(langston_img);
+	SDL_FreeSurface(connect4_img);
 	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);

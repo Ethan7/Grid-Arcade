@@ -11,7 +11,7 @@
 #define EMPTY -1
 #define LIFE 0
 
-int conway(int **grid, SDL_Event event, int game, int t, int width, int height){
+int conway(int **grid, int game, int t, int width, int height){
 
 	int neighbor[width][height];
 	if(t == 1){
@@ -24,7 +24,7 @@ int conway(int **grid, SDL_Event event, int game, int t, int width, int height){
 			}
 		}
 	}
-	//MEMORY ISSUES, GRID SOMETIMES DOESN't RESET
+	//Update numbers of neighbors
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
 			int neighbors = 0;
@@ -60,6 +60,7 @@ int conway(int **grid, SDL_Event event, int game, int t, int width, int height){
 			neighbor[i][j] = neighbors;
 		}
 	}
+	//Update grid
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
 			if(neighbor[i][j] < 2){

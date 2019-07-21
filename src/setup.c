@@ -15,7 +15,7 @@ int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame
 
 	//Respond to user input
 	if(eventbutton.type == SDL_MOUSEBUTTONDOWN){
-		if(eventbutton.button.button == SDL_BUTTON_LEFT && eventbutton.button.x / cellsize < width && eventbutton.button.y / cellsize < height){
+		if(eventbutton.button.button == SDL_BUTTON_LEFT && eventbutton.button.x / cellsize < width && eventbutton.button.y / cellsize < height && eventbutton.button.x > 0 && eventbutton.button.y > 0){
 			grid[eventbutton.button.x / cellsize][eventbutton.button.y / cellsize] = FILLED;
 		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT){
 			grid[eventbutton.button.x / cellsize][eventbutton.button.y / cellsize] = EMPTY;
