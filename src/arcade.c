@@ -68,6 +68,8 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 			return SETUP;
 		} else if(event.button.y / (height/ROWS) == 11){
 			return CONNECT4;
+		} else if(event.button.y / (height/ROWS) == 12){
+			return FLAPPY;
 		}
 	}
 
@@ -93,6 +95,8 @@ int space(int **grid, SDL_Event event, int game, int t, int width, int height);
 int frogger(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int connect4(int **grid, SDL_Event event, int game, int t, int width, int height);
+
+int flappy(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
 
@@ -248,6 +252,10 @@ int main(int argc, char **argv){
 	//Connect4 Image
 	SDL_Surface *connect4_img = IMG_Load("./img/connect4.png");
 	connect4_img = SDL_ConvertSurface( connect4_img, screenSurface->format, 0);
+
+	//Flappy Image
+	SDL_Surface *flappy_img = IMG_Load("./img/flappy.png");
+	flappy_img = SDL_ConvertSurface( flappy_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -436,6 +444,12 @@ int main(int argc, char **argv){
 				t = 0;
 			}
 			break;
+		case FLAPPY:
+			if((game = flappy(grid, direction, game, t, width, height)) != FLAPPY){
+				clear(grid, width, height);
+				t = 0;
+			}
+			break;
 		case SETUP:
 			if((game = setup(grid, buttonheld, enter, setupgame, cellsize)) != SETUP){
 				t = 0;
@@ -514,6 +528,9 @@ int main(int argc, char **argv){
 			img_rect.y = 11*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(connect4_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 12*(fullheight/ROWS);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(flappy_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/ROWS);
@@ -528,7 +545,7 @@ int main(int argc, char **argv){
 		SDL_UpdateWindowSurface( window );
 
 		//Delay Step
-		if(game != ARCADE && game != SETUP){
+		if(game != ARCADE && game != SETUP && game != CONNECT4){
 			SDL_Delay( speed );
 		}
 	}
@@ -558,6 +575,7 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(frogger_img);
 	SDL_FreeSurface(langston_img);
 	SDL_FreeSurface(connect4_img);
+	SDL_FreeSurface(flappy_img);
 	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);

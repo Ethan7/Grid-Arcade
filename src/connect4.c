@@ -12,18 +12,37 @@
 #define PLAYER1 0
 #define PLAYER2 1
 
+//Test 4x4 diagonals, verticals, and horizontals for win condition
 int wintest(int i, int j, int **grid, int player){
 	if(grid[i][j] == player && grid[i+1][j+1] == player && grid[i+2][j+2] == player && grid[i+3][j+3] == player){
-		printf("PLAYER%d WINS!", player+1);
+		printf("PLAYER %d WINS!\n", player+1);
 		return ARCADE;
 	} else if(grid[i][j] == player && grid[i+1][j] == player && grid[i+2][j] == player && grid[i+3][j] == player){
-		printf("PLAYER%d WINS!", player+1);
+		printf("PLAYER %d WINS!\n", player+1);
+		return ARCADE;
+	} else if(grid[i][j+1] == player && grid[i+1][j+1] == player && grid[i+2][j+1] == player && grid[i+3][j+1] == player){
+		printf("PLAYER %d WINS!\n", player+1);
+		return ARCADE;
+	} else if(grid[i][j+2] == player && grid[i+1][j+2] == player && grid[i+2][j+2] == player && grid[i+3][j+2] == player){
+		printf("PLAYER %d WINS!\n", player+1);
+		return ARCADE;
+	} else if(grid[i][j+3] == player && grid[i+1][j+3] == player && grid[i+2][j+3] == player && grid[i+3][j+3] == player){
+		printf("PLAYER %d WINS!\n", player+1);
 		return ARCADE;
 	} else if(grid[i][j] == player && grid[i][j+1] == player && grid[i][j+2] == player && grid[i][j+3] == player){
-		printf("PLAYER%d WINS!", player+1);
+		printf("PLAYER %d WINS!\n", player+1);
+		return ARCADE;
+	} else if(grid[i+1][j] == player && grid[i+1][j+1] == player && grid[i+1][j+2] == player && grid[i+1][j+3] == player){
+		printf("PLAYER %d WINS!\n", player+1);
+		return ARCADE;
+	} else if(grid[i+2][j] == player && grid[i+2][j+1] == player && grid[i+2][j+2] == player && grid[i+2][j+3] == player){
+		printf("PLAYER %d WINS!\n", player+1);
+		return ARCADE;
+	} else if(grid[i+3][j] == player && grid[i+3][j+1] == player && grid[i+3][j+2] == player && grid[i+3][j+3] == player){
+		printf("PLAYER %d WINS!\n", player+1);
 		return ARCADE;
 	} else if(grid[i+3][j] == player && grid[i+2][j+1] == player && grid[i+1][j+2] == player && grid[i][j+3] == player){
-		printf("PLAYER%d WINS!", player+1);
+		printf("PLAYER %d WINS!\n", player+1);
 		return ARCADE;
 	} else {
 		return CONNECT4;
@@ -34,10 +53,12 @@ int placerx, player;
 int connect4(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	if(t == 1){
+		placerx = width/2;
 		player = PLAYER1;
 	}
 	grid[placerx][0] = EMPTY;
 
+	int movemade = -1;
 	//Respond to user input
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
@@ -74,6 +95,7 @@ int connect4(int **grid, SDL_Event event, int game, int t, int width, int height
 						player = PLAYER1;
 					}
 				}
+				movemade = CONNECT4;
 			}
 			break;
 		}
@@ -81,16 +103,18 @@ int connect4(int **grid, SDL_Event event, int game, int t, int width, int height
 
 	grid[placerx][0] = player;
 
-	int wincondition = CONNECT4;
-	for(int i = 0; i < width-3; i++){
-		for(int j = 1; j < height-3; j++){
-			if(player == PLAYER1){
-				wincondition = wintest(i, j, grid, PLAYER2);
-			} else {
-				wincondition = wintest(i, j, grid, PLAYER1);
-			}
-			if(wincondition == ARCADE){
-				return ARCADE;
+	//Check for a win after a player's turn
+	if(movemade == CONNECT4){
+		for(int i = 0; i < width-3; i++){
+			for(int j = 1; j < height-3; j++){
+				if(player == PLAYER1){
+					movemade = wintest(i, j, grid, PLAYER2);
+				} else {
+					movemade = wintest(i, j, grid, PLAYER1);
+				}
+				if(movemade == ARCADE){
+					return ARCADE;
+				}
 			}
 		}
 	}
