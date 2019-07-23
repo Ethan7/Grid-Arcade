@@ -17,7 +17,7 @@
 #define LEFT 3
 
 //Array of size [type = 7][height = ?][directions = 4][width = ?]
-static const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} },
+const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} },
 											  {   { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} }, 
 											  {   { 0, 1, 0, 0 }, {1, 1, 1, 1}, {0, 0, 1, 0}, {1, 1, 1, 1} }, 
 											  {   { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} } }, 
@@ -46,9 +46,9 @@ static const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, 
 											  {   { 1, 0, 0, 0 }, {0, 1, 1, 0}, {0, 1, 0, 0}, {0, 1, 1, 0} }, 
 											  {   { 0, 0, 0, 0 }, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0} } } };
 
-static const int dimensions[7] = {4, 3, 3, 2, 3, 3, 3};
+const int dimensions[7] = {4, 3, 3, 2, 3, 3, 3};
 
-static int rotationtop, delay, type, direction, bx, by, bwidth, bheight;
+int rotationtop, delay, type, direction, bx, by, bwidth, bheight;
 int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	if(t == 1){

@@ -17,24 +17,24 @@
 #define END 4
 #define START 5
 
-static struct node{
+struct node{
 	int type;
 	int gCost, hCost;
 	int x, y;
 	struct node * parent;
 } **openNodes, **closedNodes;
 
-static struct queue{ //priority queue
+struct queue{ //priority queue
 	struct node * item;
 	struct queue * next;
 	struct queue * prev;
 } *priorityq;
 
-static int chance = 3, startNodeX = 0, startNodeY = 0, thisheight = 0,
+int chance = 3, startNodeX = 0, startNodeY = 0, thisheight = 0,
 endNodeX = 19, endNodeY = 19, openNodesLen = 0, closedNodesLen = 0;
 
 //Add to priority queue
-static void enqueue(struct node * new){
+void enqueue(struct node * new){
 	struct queue * current = priorityq;
 	struct queue * last = priorityq;
 	while(current != NULL){
@@ -68,7 +68,7 @@ static void enqueue(struct node * new){
 }
 
 //Take one node off the priority queue
-static struct node * dequeue(){
+struct node * dequeue(){
 	if(priorityq == NULL){
 		return NULL;
 	}
@@ -82,7 +82,7 @@ static struct node * dequeue(){
 	return ret;
 }
 
-/*static int hasCoords(int nx, int ny, struct node ** nodes, int b){
+/*int hasCoords(int nx, int ny, struct node ** nodes, int b){
 	int i = 0;
 	if(b){
 		for(i = 0; i < openNodesLen; i++){
@@ -101,7 +101,7 @@ static struct node * dequeue(){
 	}
 }*/
 
-static void neighborFunction(int neighborx, int neighbory, double neighborCost, struct node *current){
+void neighborFunction(int neighborx, int neighbory, double neighborCost, struct node *current){
 	struct node * neighbor;
 	int index = neighborx * thisheight + neighbory;
 	if(closedNodes[index] != NULL){

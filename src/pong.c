@@ -13,7 +13,7 @@
 #define PADDLE 0
 #define BALL 1
 
-static int paddle1len, p1y, paddle2len, p2y, bx, by, bxv, byv, speedLimit, p1momentum, p2momentum;
+int paddle1len, p1y, paddle2len, p2y, bx, by, bxv, byv, speedLimit, p1momentum, p2momentum;
 int pong(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	if(t == 1){

@@ -15,13 +15,13 @@
 #define START 2
 #define END 3
 
-static struct wall{
+struct wall{
 	int x, y; //Position for this wall
 	int h, v; //Directional offset for this wall
 	struct wall *next; //Next wall on the list
 } *walls, *list, *list2, *prev, *afte;
 
-static int r = 0;
+int r = 0;
 
 int randomizer(){
 	srand(time(NULL)+r);
@@ -29,7 +29,7 @@ int randomizer(){
 	return rand();
 }
 
-static int px = 1, py = 1, tempwidth = 3, tempheight = 3;
+int px = 1, py = 1, tempwidth = 3, tempheight = 3;
 int mazes(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	if(t == 1){

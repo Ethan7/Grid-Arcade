@@ -14,8 +14,8 @@
 #define FOOD 0
 #define SNAKE 1
 
-static int tailLen, dir, currentX, currentY, foodcount, winLen, rx, ry;
-static int **snakeTail;
+int tailLen, dir, currentX, currentY, foodcount, winLen, rx, ry;
+int **snakeTail;
 
 int snake(int **grid, SDL_Event event, int game, int t, int width, int height, int wrap){
 	int ret = SNAKE;

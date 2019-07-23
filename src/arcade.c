@@ -33,7 +33,7 @@
 #define MAGENTA 5
 #define CYAN 6
 
-#define ROWS 14
+#define ROWS 15
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -70,6 +70,8 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 			return CONNECT4;
 		} else if(event.button.y / (height/ROWS) == 12){
 			return FLAPPY;
+		} else if(event.button.y / (height/ROWS) == 13){
+			return CHECKERS;
 		}
 	}
 
@@ -97,6 +99,8 @@ int frogger(int **grid, SDL_Event event, int game, int t, int width, int height)
 int connect4(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int flappy(int **grid, SDL_Event event, int game, int t, int width, int height);
+
+int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
 int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
 
@@ -256,6 +260,10 @@ int main(int argc, char **argv){
 	//Flappy Image
 	SDL_Surface *flappy_img = IMG_Load("./img/flappy.png");
 	flappy_img = SDL_ConvertSurface( flappy_img, screenSurface->format, 0);
+
+	//Checkers Image
+	SDL_Surface *checkers_img = IMG_Load("./img/checkers.png");
+	checkers_img = SDL_ConvertSurface( checkers_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -450,6 +458,12 @@ int main(int argc, char **argv){
 				t = 0;
 			}
 			break;
+		case CHECKERS:
+			if((game = checkers(grid, leftbutton, game, t, cellsize, width, height)) != CHECKERS){
+				clear(grid, width, height);
+				t = 0;
+			}
+			break;
 		case SETUP:
 			if((game = setup(grid, buttonheld, enter, setupgame, cellsize)) != SETUP){
 				t = 0;
@@ -531,6 +545,9 @@ int main(int argc, char **argv){
 			img_rect.y = 12*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(flappy_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 13*(fullheight/ROWS);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(checkers_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/ROWS);
@@ -545,7 +562,7 @@ int main(int argc, char **argv){
 		SDL_UpdateWindowSurface( window );
 
 		//Delay Step
-		if(game != ARCADE && game != SETUP && game != CONNECT4){
+		if(game != ARCADE && game != SETUP && game != CONNECT4 && game != CHECKERS){
 			SDL_Delay( speed );
 		}
 	}
@@ -576,6 +593,7 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(langston_img);
 	SDL_FreeSurface(connect4_img);
 	SDL_FreeSurface(flappy_img);
+	SDL_FreeSurface(checkers_img);
 	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);
