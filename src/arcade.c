@@ -22,7 +22,7 @@
 #define CONNECT4 11
 #define CHECKERS 12
 #define SETUP 13
-#define SORTING 14
+#define COMING 14
 
 //Color defines
 #define WHITE 0
@@ -33,7 +33,7 @@
 #define MAGENTA 5
 #define CYAN 6
 
-#define ROWS 15
+#define ROWS 16
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -264,6 +264,10 @@ int main(int argc, char **argv){
 	//Checkers Image
 	SDL_Surface *checkers_img = IMG_Load("./img/checkers.png");
 	checkers_img = SDL_ConvertSurface( checkers_img, screenSurface->format, 0);
+
+	//Coming Image
+	SDL_Surface *coming_img = IMG_Load("./img/soon.png");
+	coming_img = SDL_ConvertSurface( coming_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -548,6 +552,9 @@ int main(int argc, char **argv){
 			img_rect.y = 13*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
 			SDL_BlitScaled(checkers_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 14*(fullheight/ROWS);
+			img_rect.w = fullwidth*0.7;
+			SDL_BlitScaled(coming_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/ROWS);
@@ -573,7 +580,7 @@ int main(int argc, char **argv){
 	}
 	free(grid);
 
-	//End Program
+	//End Program cleanup
 	SDL_FreeSurface(white);
 	SDL_FreeSurface(red);
 	SDL_FreeSurface(green);
@@ -594,6 +601,7 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(connect4_img);
 	SDL_FreeSurface(flappy_img);
 	SDL_FreeSurface(checkers_img);
+	SDL_FreeSurface(coming_img);
 	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);
