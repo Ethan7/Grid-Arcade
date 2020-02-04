@@ -22,7 +22,7 @@
 #define CONNECT4 11
 #define CHECKERS 12
 #define SETUP 13
-#define COMING 14
+#define MINES 14
 
 //Color defines
 #define WHITE 0
@@ -32,6 +32,16 @@
 #define YELLOW 4
 #define MAGENTA 5
 #define CYAN 6
+
+//Number image defines
+#define ONE 7
+#define TWO 8
+#define THREE 9
+#define FOUR 10
+#define FIVE 11
+#define SIX 12
+#define SEVEN 13
+#define EIGHT 14
 
 #define ROWS 16
 
@@ -44,7 +54,7 @@ void clear(int **grid, int width, int height){
 }
 
 int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
-	if(event.type == SDL_MOUSEBUTTONUP){
+	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
 		if(event.button.y / (height/ROWS) == 2){
 			return SNAKE;
 		} else if(event.button.y / (height/ROWS) == 3){
@@ -72,6 +82,8 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 			return FLAPPY;
 		} else if(event.button.y / (height/ROWS) == 13){
 			return CHECKERS;
+		} else if(event.button.y / (height/ROWS) == 14){
+			return MINES;
 		}
 	}
 
@@ -101,6 +113,8 @@ int connect4(int **grid, SDL_Event event, int game, int t, int width, int height
 int flappy(int **grid, SDL_Event event, int game, int t, int width, int height);
 
 int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+
+int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
 int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
 
@@ -213,6 +227,38 @@ int main(int argc, char **argv){
 	SDL_Surface *cyan = SDL_CreateRGBSurface(0, cellsize, cellsize, 32, 0, 0, 0, 0);
 	SDL_FillRect(cyan, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0xFF, 0xFF));
 
+	//One Surface
+	SDL_Surface *one_img = IMG_Load("./img/one.png");
+	one_img = SDL_ConvertSurface( one_img, screenSurface->format, 0);
+
+	//Two Surface
+	SDL_Surface *two_img = IMG_Load("./img/two.png");
+	two_img = SDL_ConvertSurface( two_img, screenSurface->format, 0);
+
+	//Three Surface
+	SDL_Surface *three_img = IMG_Load("./img/three.png");
+	three_img = SDL_ConvertSurface( three_img, screenSurface->format, 0);
+
+	//Four Surface
+	SDL_Surface *four_img = IMG_Load("./img/four.png");
+	four_img = SDL_ConvertSurface( four_img, screenSurface->format, 0);
+
+	//Five Surface
+	SDL_Surface *five_img = IMG_Load("./img/five.png");
+	five_img = SDL_ConvertSurface( five_img, screenSurface->format, 0);
+
+	//Six Surface
+	SDL_Surface *six_img = IMG_Load("./img/six.png");
+	six_img = SDL_ConvertSurface( six_img, screenSurface->format, 0);
+
+	//Seven Surface
+	SDL_Surface *seven_img = IMG_Load("./img/seven.png");
+	seven_img = SDL_ConvertSurface( seven_img, screenSurface->format, 0);
+
+	//Eight Surface
+	SDL_Surface *eight_img = IMG_Load("./img/eight.png");
+	eight_img = SDL_ConvertSurface( eight_img, screenSurface->format, 0);
+
 	//Title Image
 	SDL_Surface *title_img = IMG_Load("./img/title.png");
 	title_img = SDL_ConvertSurface( title_img, screenSurface->format, 0);
@@ -265,9 +311,9 @@ int main(int argc, char **argv){
 	SDL_Surface *checkers_img = IMG_Load("./img/checkers.png");
 	checkers_img = SDL_ConvertSurface( checkers_img, screenSurface->format, 0);
 
-	//Coming Image
-	SDL_Surface *coming_img = IMG_Load("./img/soon.png");
-	coming_img = SDL_ConvertSurface( coming_img, screenSurface->format, 0);
+	//Mines Image
+	SDL_Surface *mines_img = IMG_Load("./img/mines.png");
+	mines_img = SDL_ConvertSurface( mines_img, screenSurface->format, 0);
 
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
@@ -298,8 +344,8 @@ int main(int argc, char **argv){
 		t++;
 
 		//Input Step
-		SDL_Event leftbutton;
-		leftbutton.type = SDL_USEREVENT;
+		SDL_Event leftrightbutton;
+		leftrightbutton.type = SDL_USEREVENT;
 		SDL_Event direction;
 		direction.type = SDL_USEREVENT;
 		SDL_Event enter;
@@ -371,10 +417,11 @@ int main(int argc, char **argv){
 			case SDL_MOUSEBUTTONUP:
 				switch ( event.button.button ){
 				case SDL_BUTTON_LEFT:
-					leftbutton = event;
+					leftrightbutton = event;
 					buttonheld.type = SDL_USEREVENT;
 					break;
 				case SDL_BUTTON_RIGHT:
+					leftrightbutton = event;
 					buttonheld.type = SDL_USEREVENT;
 					break;
 				}
@@ -391,7 +438,7 @@ int main(int argc, char **argv){
 		//Game Step
 		switch(game){
 		case ARCADE:
-			if((game = arcade(leftbutton, game, fullwidth, fullheight, &setupgame)) != ARCADE){
+			if((game = arcade(leftrightbutton, game, fullwidth, fullheight, &setupgame)) != ARCADE){
 				clear(grid, width, height);
 				t = 0;
 			}
@@ -463,7 +510,13 @@ int main(int argc, char **argv){
 			}
 			break;
 		case CHECKERS:
-			if((game = checkers(grid, leftbutton, game, t, cellsize, width, height)) != CHECKERS){
+			if((game = checkers(grid, leftrightbutton, game, t, cellsize, width, height)) != CHECKERS){
+				clear(grid, width, height);
+				t = 0;
+			}
+			break;
+		case MINES:
+			if((game = mines(grid, leftrightbutton, game, t, cellsize, width, height)) != MINES){
 				clear(grid, width, height);
 				t = 0;
 			}
@@ -502,6 +555,30 @@ int main(int argc, char **argv){
 					break;
 				case CYAN:
 					SDL_BlitSurface(cyan, NULL, screenSurface, &rect);
+					break;
+				case ONE:
+					SDL_BlitScaled(one_img, NULL, screenSurface, &rect);
+					break;
+				case TWO:
+					SDL_BlitScaled(two_img, NULL, screenSurface, &rect);
+					break;
+				case THREE:
+					SDL_BlitScaled(three_img, NULL, screenSurface, &rect);
+					break;
+				case FOUR:
+					SDL_BlitScaled(four_img, NULL, screenSurface, &rect);
+					break;
+				case FIVE:
+					SDL_BlitScaled(five_img, NULL, screenSurface, &rect);
+					break;
+				case SIX:
+					SDL_BlitScaled(six_img, NULL, screenSurface, &rect);
+					break;
+				case SEVEN:
+					SDL_BlitScaled(seven_img, NULL, screenSurface, &rect);
+					break;
+				case EIGHT:
+					SDL_BlitScaled(eight_img, NULL, screenSurface, &rect);
 					break;
 				default:
 					break;
@@ -554,7 +631,7 @@ int main(int argc, char **argv){
 			SDL_BlitScaled(checkers_img, NULL, screenSurface, &img_rect);
 			img_rect.y = 14*(fullheight/ROWS);
 			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(coming_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(mines_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/ROWS);
@@ -588,6 +665,14 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(yellow);
 	SDL_FreeSurface(magenta);
 	SDL_FreeSurface(cyan);
+	SDL_FreeSurface(one_img);
+	SDL_FreeSurface(two_img);
+	SDL_FreeSurface(three_img);
+	SDL_FreeSurface(four_img);
+	SDL_FreeSurface(five_img);
+	SDL_FreeSurface(six_img);
+	SDL_FreeSurface(seven_img);
+	SDL_FreeSurface(eight_img);
 	SDL_FreeSurface(title_img);
 	SDL_FreeSurface(path_img);
 	SDL_FreeSurface(tetris_img);
@@ -601,7 +686,7 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(connect4_img);
 	SDL_FreeSurface(flappy_img);
 	SDL_FreeSurface(checkers_img);
-	SDL_FreeSurface(coming_img);
+	SDL_FreeSurface(mines_img);
 	SDL_FreeSurface(arrow_img);
 	SDL_FreeSurface(screenSurface);
 	SDL_DestroyWindow(window);

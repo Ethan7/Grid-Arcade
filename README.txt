@@ -62,3 +62,8 @@ Up key - Wing hop
 Checkers
 
 Left mouse click - Select piece to move/Place piece in valid space/End turn after jumping/Stop selecting piece
+
+Minesweeper
+
+Left mouse click - Select spot to search in, be careful of mines!
+Right mouse click - Select spot to place or remove flag
