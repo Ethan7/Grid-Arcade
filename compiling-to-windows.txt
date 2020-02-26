@@ -1,4 +1,0 @@
-uncomment #SDL_MAIN_HANDLED
-
-On Linux
-i686-w64-mingw32-gcc -I../SDL2/SDL2/i686-w64-mingw32/include -I../SDL2/SDL2/i686-w64-mingw32/include/SDL2 -I../SDL2/SDL2_image/i686-w64-mingw32/include -L../SDL2/SDL2/i686-w64-mingw32/lib -L../SDL2/SDL2_image/i686-w64-mingw32/lib arcade.c mazes.c path.c pong.c snake.c tetris.c conway.c space.c frogger.c langston.c connect4.c flappy.c checkers.c mines.c setup.c -lm -lSDL2main -lSDL2_image -lSDL2 -o arcade.exe

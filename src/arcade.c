@@ -25,6 +25,7 @@
 #define MINES 14
 #define SETTINGS 15
 #define SETTINGS2 16
+#define SETTINGS3 17
 
 //Color defines
 #define WHITE 0
@@ -46,7 +47,7 @@
 #define EIGHT 14
 
 #define ROWS 17
-#define SROWS 9
+#define SROWS 10
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -58,37 +59,40 @@ void clear(int **grid, int width, int height){
 
 int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
-		if(event.button.y / (height/ROWS) == 2){
+		switch(event.button.y / (height/ROWS)){
+		case 2:
 			return SNAKE;
-		} else if(event.button.y / (height/ROWS) == 3){
+		case 3:
 			*setupgame = PATH;
 			return SETUP;
-		} else if(event.button.y / (height/ROWS) == 4){
+		case 4:
 			return MAZES;
-		} else if(event.button.y / (height/ROWS) == 5){
+		case 5:
 			return PONG;
-		} else if(event.button.y / (height/ROWS) == 6){
+		case 6:
 			return TETRIS;
-		} else if(event.button.y / (height/ROWS) == 7){
+		case 7:
 			*setupgame = CONWAY;
 			return SETUP;
-		} else if(event.button.y / (height/ROWS) == 8){
+		case 8:
 			return SPACE;
-		} else if(event.button.y / (height/ROWS) == 9){
+		case 9:
 			return FROGGER;
-		} else if(event.button.y / (height/ROWS) == 10){
+		case 10:
 			*setupgame = LANGSTON;
 			return SETUP;
-		} else if(event.button.y / (height/ROWS) == 11){
+		case 11:
 			return CONNECT4;
-		} else if(event.button.y / (height/ROWS) == 12){
+		case 12:
 			return FLAPPY;
-		} else if(event.button.y / (height/ROWS) == 13){
+		case 13:
 			return CHECKERS;
-		} else if(event.button.y / (height/ROWS) == 14){
+		case 14:
 			return MINES;
-		} else if(event.button.y / (height/ROWS) == 15){
+		case 15:
 			return SETTINGS;
+		default:
+			break;
 		}
 	}
 
@@ -150,16 +154,22 @@ int settings(SDL_Event event, int game, int height, int *placemarker, int *wentr
 	}
 
 	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
-		if(event.button.y / (height/SROWS) == 2){
+		switch(event.button.y / (height/SROWS)){
+		case 2:
 			*placemarker = 0;
 			*wentry = 0;
-		} else if(event.button.y / (height/SROWS) == 3){
+			break;
+		case 3:
 			*placemarker = 3;
 			*hentry = 0;
-		} else if(event.button.y / (height/SROWS) == 4){
+			break;
+		case 4:
 			*placemarker = 6;
 			*centry = 0;
-		} else if(event.button.y / (height/SROWS) == 6){
+			break;
+		case 6:
+			return SETTINGS3;
+		case 7:
 			if(*wentry < 8){
 				*wentry = 8;
 			}
@@ -170,8 +180,10 @@ int settings(SDL_Event event, int game, int height, int *placemarker, int *wentr
 				*centry = 1;
 			}
 			return SETTINGS2;
-		} else if(event.button.y / (height/SROWS) == 7){
+		case 8:
 			return ARCADE;
+		default:
+			break;
 		}
 	}
 
@@ -416,6 +428,10 @@ int main(int argc, char **argv){
 	//Settings Image
 	SDL_Surface *settings_img = IMG_Load("./img/settings.png");
 	settings_img = SDL_ConvertSurface( settings_img, screenSurface->format, 0);
+
+	//Fullscreen Image
+	SDL_Surface *fullscreen_img = IMG_Load("./img/fullscreen.png");
+	fullscreen_img = SDL_ConvertSurface( fullscreen_img, screenSurface->format, 0);
 
 	//Confirm Image
 	SDL_Surface *confirm_img = IMG_Load("./img/confirm.png");
@@ -663,14 +679,42 @@ int main(int argc, char **argv){
 						free(grid[i]);
 					}
 					free(grid);
+
+					SDL_SetWindowFullscreen(window, 0);
 					
 					cellsize = centry;
 					width = wentry;
 					height = hentry;
 					fullwidth = width * cellsize;
 					fullheight = height * cellsize;
+					
 					SDL_SetWindowSize(window, fullwidth, fullheight);
 					screenSurface = SDL_GetWindowSurface( window );
+
+					grid = (int **) calloc(width, sizeof(int *));
+					for(int i = 0; i < width; i++){
+						grid[i] = (int *) calloc(height, sizeof(int));
+					}
+
+					clear(grid, width, height);
+					game = ARCADE;
+				} else if(game == SETTINGS3){
+					for(int i = 0; i < width; i++){
+						free(grid[i]);
+					}
+					free(grid);
+
+					SDL_DisplayMode DM;
+					SDL_GetCurrentDisplayMode(0, &DM);
+					fullwidth = DM.w;
+					fullheight = DM.h;
+					
+					SDL_SetWindowSize(window, fullwidth, fullheight);
+					SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+					screenSurface = SDL_GetWindowSurface( window );
+
+					width = fullwidth / cellsize;
+					height = fullheight / cellsize;
 
 					grid = (int **) calloc(width, sizeof(int *));
 					for(int i = 0; i < width; i++){
@@ -838,8 +882,10 @@ int main(int argc, char **argv){
 			img_rect.x = fullwidth*0.2;
 			img_rect.w = fullwidth*0.7;
 			img_rect.y = 6*(fullheight/SROWS);
-			SDL_BlitScaled(confirm_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(fullscreen_img, NULL, screenSurface, &img_rect);
 			img_rect.y = 7*(fullheight/SROWS);
+			SDL_BlitScaled(confirm_img, NULL, screenSurface, &img_rect);
+			img_rect.y = 8*(fullheight/SROWS);
 			SDL_BlitScaled(cancel_img, NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
@@ -891,6 +937,7 @@ int main(int argc, char **argv){
 	SDL_FreeSurface(checkers_img);
 	SDL_FreeSurface(mines_img);
 	SDL_FreeSurface(settings_img);
+	SDL_FreeSurface(fullscreen_img);
 	SDL_FreeSurface(confirm_img);
 	SDL_FreeSurface(cancel_img);
 	SDL_FreeSurface(width_img);
