@@ -19,18 +19,11 @@ struct wall{
 	int x, y; //Position for this wall
 	int h, v; //Directional offset for this wall
 	struct wall *next; //Next wall on the list
-} *walls, *list, *list2, *prev, *afte;
+} *first, *list, *last, *prev;
 
-int r = 0;
-
-int randomizer(){
-	srand(time(NULL)+r);
-	r++;
-	return rand();
-}
-
-int px = 1, py = 1, tempwidth = 3, tempheight = 3;
+int px = 1, py = 1, tempwidth = 3, tempheight = 3, walllist = 2;
 int mazes(int **grid, SDL_Event event, int game, int t, int width, int height){
+	int ret = MAZES;
 
 	if(t == 1){
 		px = 1;
@@ -39,10 +32,12 @@ int mazes(int **grid, SDL_Event event, int game, int t, int width, int height){
 		tempheight = height;
 		if(width % 2 == 0){
 			tempwidth--;
+		}
+		if(height % 2 == 0){
 			tempheight--;
 		}
 
-		int i = 0, j = 0, random = 0;
+		int i = 0, j = 0;
 		for(i = 0; i < tempwidth; i++){
 			for(j = 0; j < tempheight; j++){
 				grid[i][j] = WALL;
@@ -50,103 +45,100 @@ int mazes(int **grid, SDL_Event event, int game, int t, int width, int height){
 		}
 		grid[1][1] = EMPTY;
 
-		walls = (struct wall *) malloc(sizeof(struct wall));
-		walls->next = (struct wall *) malloc(sizeof(struct wall));
-		walls->next->next = 0;
-		walls->x = 1;
-		walls->y = 2;
-		walls->h = 0;
-		walls->v = 1;
-		walls->next->x = 2;
-		walls->next->y = 1;
-		walls->next->h = 1;
-		walls->next->v = 0;
-		int walllist = 2;
+		//Generate initial two walls for wall list
+		first = (struct wall *) calloc(1, sizeof(struct wall));
+		first->next = (struct wall *) calloc(1, sizeof(struct wall));
+		first->next->next = 0;
+		first->x = 1;
+		first->y = 2;
+		first->h = 0;
+		first->v = 1;
+		first->next->x = 2;
+		first->next->y = 1;
+		first->next->h = 1;
+		first->next->v = 0;
+		last = first->next;
+		walllist = 2;
 
-		while(walls != 0){
-			random = randomizer()%walllist;
-			list = walls;
-			prev = 0;
-			afte = list->next;
-			for(i = 0; i < random; i++){
-				prev = list;
-				list = list->next;
-				afte = list->next;
-			}
-			if(grid[list->x+list->h][list->y+list->v] == WALL){
-				grid[list->x][list->y] = EMPTY;
-				grid[list->x+list->h][list->y+list->v] = EMPTY;
-				if(list->x > 2 && grid[list->x+list->h-2][list->y+list->v] == WALL){
-					list2 = walls;
-					while(list2->next != 0){
-						list2 = list2->next;
-					}
-					list2->next = (struct wall *) malloc(sizeof(struct wall));
-					list2->next->x = list->x+list->h-1;
-					list2->next->y = list->y+list->v;
-					list2->next->h = -1;
-					list2->next->v = 0;
-					list2->next->next = 0;
-					walllist++;
-				}
-				if(list->x < tempwidth-3 && grid[list->x+list->h+2][list->y+list->v] == WALL){
-					list2 = walls;
-					while(list2->next != 0){
-						list2 = list2->next;
-					}
-					list2->next = (struct wall *) malloc(sizeof(struct wall));
-					list2->next->x = list->x+list->h+1;
-					list2->next->y = list->y+list->v;
-					list2->next->h = 1;
-					list2->next->v = 0;
-					list2->next->next = 0;
-					walllist++;
-				}
-				if(list->y > 2 && grid[list->x+list->h][list->y+list->v-2] == WALL){
-					list2 = walls;
-					while(list2->next != 0){
-						list2 = list2->next;
-					}
-					list2->next = (struct wall *) malloc(sizeof(struct wall));
-					list2->next->x = list->x+list->h;
-					list2->next->y = list->y+list->v-1;
-					list2->next->h = 0;
-					list2->next->v = -1;
-					list2->next->next = 0;
-					walllist++;
-				}
-				if(list->y < tempheight-3 && grid[list->x+list->h][list->y+list->v+2] == WALL){
-					list2 = walls;
-					while(list2->next != 0){
-						list2 = list2->next;
-					}
-					list2->next = (struct wall *) malloc(sizeof(struct wall));
-					list2->next->x = list->x+list->h;
-					list2->next->y = list->y+list->v+1;
-					list2->next->h = 0;
-					list2->next->v = 1;
-					list2->next->next = 0;
-					walllist++;
-				}
-			}
-			if(prev){
-				if(afte){
-					prev->next = afte;
-				} else {
-					list2 = walls;
-					while(list2 != list){
-						list2 = list2->next;
-					}
-					prev->next = list2->next;
-				}
-			} else {
-				walls = afte;
-			}
-			free(list);
-			walllist--;
-		}
+		srand(time(NULL));
 	}
 
+	//Generate maze with Prim's algorithm
+	if(first != 0){
+		int random = rand()%walllist;
+		if(random > 0){
+			random--;
+		}
+
+		list = first; //Wall to build off of
+		prev = 0;
+
+		//Pick random wall from wall list
+		for(int i = 0; i < random; i++){
+			prev = list;
+			list = list->next;
+		}
+
+		//If current wall can be placed
+		if(grid[list->x+list->h][list->y+list->v] == WALL){
+			//Place current wall
+			grid[list->x][list->y] = EMPTY;
+			grid[list->x+list->h][list->y+list->v] = EMPTY;
+
+			//Add new potential walls to wall list
+			if(list->x > 2 && grid[list->x+list->h-2][list->y+list->v] == WALL){
+				last->next = (struct wall *) calloc(1, sizeof(struct wall));
+				last->next->x = list->x+list->h-1;
+				last->next->y = list->y+list->v;
+				last->next->h = -1;
+				last->next->v = 0;
+				last->next->next = 0;
+				walllist++;
+				last = last->next;
+			}
+			if(list->x < tempwidth-3 && grid[list->x+list->h+2][list->y+list->v] == WALL){
+				last->next = (struct wall *) calloc(1, sizeof(struct wall));
+				last->next->x = list->x+list->h+1;
+				last->next->y = list->y+list->v;
+				last->next->h = 1;
+				last->next->v = 0;
+				last->next->next = 0;
+				walllist++;
+				last = last->next;
+			}
+			if(list->y > 2 && grid[list->x+list->h][list->y+list->v-2] == WALL){
+				last->next = (struct wall *) calloc(1, sizeof(struct wall));
+				last->next->x = list->x+list->h;
+				last->next->y = list->y+list->v-1;
+				last->next->h = 0;
+				last->next->v = -1;
+				last->next->next = 0;
+				walllist++;
+				last = last->next;
+			}
+			if(list->y < tempheight-3 && grid[list->x+list->h][list->y+list->v+2] == WALL){
+				last->next = (struct wall *) calloc(1, sizeof(struct wall));
+				last->next->x = list->x+list->h;
+				last->next->y = list->y+list->v+1;
+				last->next->h = 0;
+				last->next->v = 1;
+				last->next->next = 0;
+				walllist++;
+				last = last->next;
+			}
+		}
+
+		//Clear current wall and shrink wall list
+		if(prev){
+			prev->next = list->next;
+		} else {
+			first = list->next;
+		}
+		free(list);
+		walllist--;
+	}
+
+	//Allow player to traverse the maze
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
 		case SDLK_UP:
@@ -176,15 +168,29 @@ int mazes(int **grid, SDL_Event event, int game, int t, int width, int height){
 		}
 	}
 
+	//Display start, player, and end point
 	grid[1][1] = START;
-	grid[tempwidth-2][tempheight-2] = END;
+	if(first == 0){
+		grid[tempwidth-2][tempheight-2] = END;
+	}
 	grid[px][py] = PLAYER;
 
+	//Check if player has completed maze
 	if(px == tempwidth-2 && py == tempheight-2){
 		printf("YOU WIN!\n");
 		printf("Time to beat: %d\n", t);
-		return ARCADE;
+		ret = ARCADE;
 	}
 
-	return MAZES;
+	//Memory Cleanup
+	if(ret == ARCADE){
+		while(first){
+			list = first->next;
+			free(first);
+			first = list;
+			walllist--;
+		}
+	}
+
+	return ret;
 }

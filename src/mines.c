@@ -24,6 +24,7 @@
 #define SEVEN 13
 #define EIGHT 14
 
+//Recursive Flood-fill algorithm
 void sweep(int buttonx, int buttony, int **undergrid, int **grid, int width, int height){
 	int mines = 0;
 	if(buttonx > 0){
@@ -96,6 +97,7 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 	if(t == 1){
 		started = 0;
 		srand(time(NULL));
+		//Place all mines
 		undergrid = (int **) calloc(width, sizeof(int *));
 		for(int i = 0; i < width; i++){
 			undergrid[i] = (int *) calloc(height, sizeof(int));
@@ -115,6 +117,7 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 		int buttony = eventbutton.button.y / cellsize;
 		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1){
 			if(started == 0){
+				//Clear out 3x3 area around first click to ensure you have a jumping off point
 				started = 1;
 				undergrid[buttonx][buttony] = CLEAR;
 				if(buttonx > 0){
@@ -154,6 +157,7 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 				return ARCADE;
 			} else {
 				sweep(buttonx, buttony, undergrid, grid, width, height);
+				//Check if all mines have been found
 				int winflag = 1;
 				for(int i = 0; i < width; i++){
 					for(int j = 0; j < height; j++){
@@ -168,6 +172,7 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 				}
 			}
 		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1){
+			//Place or remove flag
 			if(grid[buttonx][buttony] == EMPTY){
 				grid[buttonx][buttony] = FLAG;
 			} else if(grid[buttonx][buttony] == FLAG){

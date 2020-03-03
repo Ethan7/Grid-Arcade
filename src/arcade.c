@@ -28,6 +28,7 @@
 #define SETTINGS3 17
 
 //Color defines
+#define BLACK -1
 #define WHITE 0
 #define RED 1
 #define GREEN 2
@@ -46,6 +47,7 @@
 #define SEVEN 13
 #define EIGHT 14
 
+//Menu defines
 #define ROWS 17
 #define SROWS 10
 
@@ -216,7 +218,7 @@ int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, i
 
 int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
-int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize);
+int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize);
 
 int main(int argc, char **argv){
 	int cellsize = 32; //Grid cell size
@@ -297,6 +299,10 @@ int main(int argc, char **argv){
 	rect.y = 0;
 	rect.w = cellsize;
 	rect.h = cellsize;
+
+	//BLACK Surface
+	SDL_Surface *black = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
+	SDL_FillRect(black, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0x00, 0x00));
 
 	//WHITE Surface
 	SDL_Surface *white = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
@@ -456,14 +462,18 @@ int main(int argc, char **argv){
 	//Arrow Image
 	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
 	arrow_img = SDL_ConvertSurface( arrow_img, screenSurface->format, 0);
-
+	
 	//End SDL2 Stuff
 
-	int **grid = (int **) calloc(width, sizeof(int *));
+	//Allocate for grid and lastgrid
+	int **grid = (int **) calloc(width, sizeof(int *)); //Used to display grid of tiles
+	int **lastgrid = (int **) calloc(width, sizeof(int *)); //Used to keep track of last grid to speed up graphics
 	for(int i = 0; i < width; i++){
 		grid[i] = (int *) calloc(height, sizeof(int));
+		lastgrid[i] = (int *) calloc(height, sizeof(int));
 		for(int j = 0; j < height; j++){
 			grid[i][j] = -1;
+			lastgrid[i][j] = -1;
 		}
 	}
 
@@ -490,8 +500,6 @@ int main(int argc, char **argv){
 		leftrightbutton.type = SDL_USEREVENT;
 		SDL_Event direction;
 		direction.type = SDL_USEREVENT;
-		SDL_Event enter;
-		enter.type = SDL_USEREVENT;
 
 		while(SDL_PollEvent( &event ) != 0 || paused){
 			if(buttonheld.type != SDL_USEREVENT){
@@ -516,7 +524,7 @@ int main(int argc, char **argv){
 					}
 					break;
 				case SDLK_RETURN:
-					enter = event;
+					buttonheld = event;
 					break;
 				case SDLK_TAB:
 					if(speed == 1){
@@ -586,89 +594,104 @@ int main(int argc, char **argv){
 		case ARCADE:
 			if((game = arcade(leftrightbutton, game, fullwidth, fullheight, &setupgame)) != ARCADE){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
+				SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00) );
 				t = 0;
 			}
 			break;
 		case SNAKE:
 			if((game = snake(grid, direction, game, t, width, height, 0)) != SNAKE){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case PATH:
 			if((game = path(grid, event, game, t, width, height)) != PATH){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case MAZES:
 			if((game = mazes(grid, direction, game, t, width, height)) != MAZES){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case PONG:
 			if((game = pong(grid, direction, game, t, width, height)) != PONG){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case TETRIS:
 			if((game = tetris(grid, direction, game, t, width, height)) != TETRIS){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case CONWAY:
 			if((game = conway(grid, game, t, width, height)) != CONWAY){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case SPACE:
 			if((game = space(grid, direction, game, t, width, height)) != SPACE){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case FROGGER:
 			if((game = frogger(grid, direction, game, t, width, height)) != FROGGER){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case LANGSTON:
 			if((game = langston(grid, game, t, width, height)) != LANGSTON){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case CONNECT4:
 			if((game = connect4(grid, direction, game, t, width, height)) != CONNECT4){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case FLAPPY:
 			if((game = flappy(grid, direction, game, t, width, height)) != FLAPPY){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case CHECKERS:
 			if((game = checkers(grid, leftrightbutton, game, t, cellsize, width, height)) != CHECKERS){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case MINES:
 			if((game = mines(grid, leftrightbutton, game, t, cellsize, width, height)) != MINES){
 				clear(grid, width, height);
+				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case SETUP:
-			if((game = setup(grid, buttonheld, enter, setupgame, cellsize)) != SETUP){
+			if((game = setup(grid, buttonheld, setupgame, cellsize)) != SETUP){
 				t = 0;
 			}
 			break;
@@ -677,8 +700,10 @@ int main(int argc, char **argv){
 				if(game == SETTINGS2){
 					for(int i = 0; i < width; i++){
 						free(grid[i]);
+						free(lastgrid[i]);
 					}
 					free(grid);
+					free(lastgrid);
 
 					SDL_SetWindowFullscreen(window, 0);
 					
@@ -692,17 +717,22 @@ int main(int argc, char **argv){
 					screenSurface = SDL_GetWindowSurface( window );
 
 					grid = (int **) calloc(width, sizeof(int *));
+					lastgrid = (int **) calloc(width, sizeof(int *));
 					for(int i = 0; i < width; i++){
 						grid[i] = (int *) calloc(height, sizeof(int));
+						lastgrid[i] = (int *) calloc(height, sizeof(int));
 					}
 
 					clear(grid, width, height);
+					clear(lastgrid, width, height);
 					game = ARCADE;
 				} else if(game == SETTINGS3){
 					for(int i = 0; i < width; i++){
 						free(grid[i]);
+						free(lastgrid[i]);
 					}
 					free(grid);
+					free(lastgrid);
 
 					SDL_DisplayMode DM;
 					SDL_GetCurrentDisplayMode(0, &DM);
@@ -717,11 +747,14 @@ int main(int argc, char **argv){
 					height = fullheight / cellsize;
 
 					grid = (int **) calloc(width, sizeof(int *));
+					lastgrid = (int **) calloc(width, sizeof(int *));
 					for(int i = 0; i < width; i++){
 						grid[i] = (int *) calloc(height, sizeof(int));
+						lastgrid[i] = (int *) calloc(height, sizeof(int));
 					}
 
 					clear(grid, width, height);
+					clear(lastgrid, width, height);
 					game = ARCADE;
 				}
 				centry = cellsize;
@@ -733,46 +766,58 @@ int main(int argc, char **argv){
 		}
 
 		//Display Step
-		SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00) );
+		if(game == ARCADE || game == SETTINGS){
+			SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00) );
+		}
+		rect.w = cellsize;
+		rect.h = cellsize;
+		rect.x = 0;
 		for(int i = 0; i < width; i++){
+			rect.y = 0;
 			for(int j = 0; j < height; j++){
-				rect.w = cellsize;
-				rect.h = cellsize;
-				rect.x = i * cellsize;
-				rect.y = j * cellsize;
-				switch(grid[i][j]){
-				case WHITE:
-					SDL_BlitScaled(white, NULL, screenSurface, &rect);
-					break;
-				case RED:
-					SDL_BlitScaled(red, NULL, screenSurface, &rect);
-					break;
-				case GREEN:
-					SDL_BlitScaled(green, NULL, screenSurface, &rect);
-					break;
-				case BLUE:
-					SDL_BlitScaled(blue, NULL, screenSurface, &rect);
-					break;
-				case YELLOW:
-					SDL_BlitScaled(yellow, NULL, screenSurface, &rect);
-					break;
-				case MAGENTA:
-					SDL_BlitScaled(magenta, NULL, screenSurface, &rect);
-					break;
-				case CYAN:
-					SDL_BlitScaled(cyan, NULL, screenSurface, &rect);
-					break;
-				default:
-					//Blit numbers for Minesweeper
-					if(grid[i][j] != -1){
-						SDL_BlitScaled(numbers_img[grid[i][j]-6], NULL, screenSurface, &rect);
+				//rect.x = i * cellsize;
+				//rect.y = j * cellsize;
+				if(grid[i][j] != lastgrid[i][j]){
+					lastgrid[i][j] = grid[i][j];
+					switch(grid[i][j]){
+					case BLACK:
+						SDL_BlitScaled(black, NULL, screenSurface, &rect);
+						break;
+					case WHITE:
+						SDL_BlitScaled(white, NULL, screenSurface, &rect);
+						break;
+					case RED:
+						SDL_BlitScaled(red, NULL, screenSurface, &rect);
+						break;
+					case GREEN:
+						SDL_BlitScaled(green, NULL, screenSurface, &rect);
+						break;
+					case BLUE:
+						SDL_BlitScaled(blue, NULL, screenSurface, &rect);
+						break;
+					case YELLOW:
+						SDL_BlitScaled(yellow, NULL, screenSurface, &rect);
+						break;
+					case MAGENTA:
+						SDL_BlitScaled(magenta, NULL, screenSurface, &rect);
+						break;
+					case CYAN:
+						SDL_BlitScaled(cyan, NULL, screenSurface, &rect);
+						break;
+					default:
+						//Blit numbers for Minesweeper
+						if(grid[i][j] != -1){
+							SDL_BlitScaled(numbers_img[grid[i][j]-6], NULL, screenSurface, &rect);
+						}
+						break;
 					}
-					break;
 				}
+				rect.y += cellsize;
 			}
+			rect.x += cellsize;
 		}
 
-		if(game == ARCADE){
+		if(game == ARCADE){ //Display main menu
 			SDL_Rect img_rect;
 			img_rect.x = fullwidth*0.2;
 			img_rect.h = fullheight/ROWS;
@@ -830,7 +875,7 @@ int main(int argc, char **argv){
 				arrow_rect.y = (event.button.y / (fullheight/ROWS)) * (fullheight/ROWS);
 			}
 			SDL_BlitScaled(arrow_img, NULL, screenSurface, &arrow_rect);
-		} else if(game == SETTINGS){
+		} else if(game == SETTINGS){ //Display settings menu
 			SDL_Rect img_rect;
 			img_rect.h = fullheight/SROWS;
 			img_rect.w = fullwidth*0.7;
@@ -901,7 +946,7 @@ int main(int argc, char **argv){
 		SDL_UpdateWindowSurface( window );
 
 		//Delay Step
-		if(game != ARCADE && game != SETTINGS && game != SETUP && game != CONNECT4 && game != CHECKERS){
+		if(game != ARCADE && game != SETTINGS && game != SETUP && game != CONNECT4 && game != CHECKERS && speed != 1){
 			SDL_Delay( speed );
 		}
 	}
@@ -909,8 +954,11 @@ int main(int argc, char **argv){
 	//Free Dynamic memory
 	for(int i = 0; i < width; i++){
 		free(grid[i]);
+		free(lastgrid[i]);
 	}
 	free(grid);
+	free(lastgrid);
+	SDL_FreeSurface(black);
 	SDL_FreeSurface(white);
 	SDL_FreeSurface(red);
 	SDL_FreeSurface(green);

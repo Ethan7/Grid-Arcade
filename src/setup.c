@@ -11,7 +11,7 @@
 #define EMPTY -1
 #define FILLED 0
 
-int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame, int cellsize, int width, int height){
+int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize, int width, int height){
 
 	//Respond to user input
 	if(eventbutton.type == SDL_MOUSEBUTTONDOWN){
@@ -20,7 +20,7 @@ int setup(int **grid, SDL_Event eventbutton, SDL_Event evententer, int setupgame
 		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT){
 			grid[eventbutton.button.x / cellsize][eventbutton.button.y / cellsize] = EMPTY;
 		}
-	} else if(evententer.type == SDL_KEYDOWN && evententer.key.keysym.sym == SDLK_RETURN){
+	} else if(eventbutton.type == SDL_KEYDOWN && eventbutton.key.keysym.sym == SDLK_RETURN){
 		return setupgame;
 	}
 
