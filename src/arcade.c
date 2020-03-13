@@ -21,11 +21,12 @@
 #define FLAPPY 10
 #define CONNECT4 11
 #define CHECKERS 12
-#define SETUP 13
-#define MINES 14
+#define MINES 13
+#define CHESS 14
 #define SETTINGS 15
 #define SETTINGS2 16
 #define SETTINGS3 17
+#define SETUP 18
 
 //Color defines
 #define BLACK -1
@@ -38,18 +39,50 @@
 #define CYAN 6
 
 //Number image defines
-#define ONE 7
-#define TWO 8
-#define THREE 9
-#define FOUR 10
-#define FIVE 11
-#define SIX 12
-#define SEVEN 13
-#define EIGHT 14
+#define ZERO 7
+#define ONE 8
+#define TWO 9
+#define THREE 10
+#define FOUR 11
+#define FIVE 12
+#define SIX 13
+#define SEVEN 14
+#define EIGHT 15
+#define NINE 16
+
+//Chess defines
+#define P1PAWN 17
+#define P1ROOK 18
+#define P1BISHOP 19
+#define P1KNIGHT 20
+#define P1QUEEN 21
+#define P1KING 22
+#define P2PAWN 23
+#define P2ROOK 24
+#define P2BISHOP 25
+#define P2KNIGHT 26
+#define P2QUEEN 27
+#define P2KING 28
+
+//Menu image defines
+#define TITLE 30
+#define settings_img 45
+#define fullscreen_img 46
+#define confirm_img 47
+#define cancel_img 48
+#define width_img 49
+#define height_img 50
+#define cellsize_img 51
+#define arrow_img 52
+#define arrow_flip 53
+
+#define TEXTURES 54
 
 //Menu defines
-#define ROWS 17
+#define ROWS 18
 #define SROWS 10
+
+const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/settings.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png"};
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -61,7 +94,7 @@ void clear(int **grid, int width, int height){
 
 int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
-		switch(event.button.y / (height/ROWS)){
+		switch(((event.button.y / (height/((ROWS/2)+2))) * 2) - 2 + (event.button.x / (width/2))){
 		case 2:
 			return SNAKE;
 		case 3:
@@ -74,24 +107,26 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 		case 6:
 			return TETRIS;
 		case 7:
+			return SPACE;
+		case 8:
+			return FROGGER;
+		case 9:
 			*setupgame = CONWAY;
 			return SETUP;
-		case 8:
-			return SPACE;
-		case 9:
-			return FROGGER;
 		case 10:
 			*setupgame = LANGSTON;
 			return SETUP;
 		case 11:
-			return CONNECT4;
-		case 12:
 			return FLAPPY;
+		case 12:
+			return CONNECT4;
 		case 13:
 			return CHECKERS;
 		case 14:
 			return MINES;
 		case 15:
+			return CHESS;
+		case 16:
 			return SETTINGS;
 		default:
 			break;
@@ -218,12 +253,14 @@ int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, i
 
 int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
-int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize);
+int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+
+int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize, int width, int height);
 
 int main(int argc, char **argv){
 	int cellsize = 32; //Grid cell size
 	int width = 20; //Grid width
-	int height = 20; //Grid height
+	int height = 15; //Grid height
 
 	//Possible starting cases
 	switch(argc){
@@ -300,168 +337,12 @@ int main(int argc, char **argv){
 	rect.w = cellsize;
 	rect.h = cellsize;
 
-	//BLACK Surface
-	SDL_Surface *black = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(black, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0x00, 0x00));
-
-	//WHITE Surface
-	SDL_Surface *white = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(white, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
-	//RED Surface
-	SDL_Surface *red = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(red, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0x00, 0x00));
-
-	//GREEN Surface
-	SDL_Surface *green = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(green, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0xFF, 0x00));
-
-	//BLUE Surface
-	SDL_Surface *blue = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(blue, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0x00, 0xFF));
-
-	//YELLOW Surface
-	SDL_Surface *yellow = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(yellow, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0x00));
-
-	//MAGENTA Surface
-	SDL_Surface *magenta = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(magenta, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0x00, 0xFF));
-
-	//CYAN Surface
-	SDL_Surface *cyan = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
-	SDL_FillRect(cyan, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0xFF, 0xFF));
-
-	//Number Surface Array
-	SDL_Surface **numbers_img = (SDL_Surface **) calloc(10, sizeof(SDL_Surface *));
-	
-	//Zero Surface
-	numbers_img[0] = IMG_Load("./img/zero.png");
-	numbers_img[0] = SDL_ConvertSurface( numbers_img[0], screenSurface->format, 0);
-
-	//One Surface
-	numbers_img[1] = IMG_Load("./img/one.png");
-	numbers_img[1] = SDL_ConvertSurface( numbers_img[1], screenSurface->format, 0);
-
-	//Two Surface
-	numbers_img[2] = IMG_Load("./img/two.png");
-	numbers_img[2] = SDL_ConvertSurface( numbers_img[2], screenSurface->format, 0);
-
-	//Three Surface
-	numbers_img[3] = IMG_Load("./img/three.png");
-	numbers_img[3] = SDL_ConvertSurface( numbers_img[3], screenSurface->format, 0);
-
-	//Four Surface
-	numbers_img[4] = IMG_Load("./img/four.png");
-	numbers_img[4] = SDL_ConvertSurface( numbers_img[4], screenSurface->format, 0);
-
-	//Five Surface
-	numbers_img[5] = IMG_Load("./img/five.png");
-	numbers_img[5] = SDL_ConvertSurface( numbers_img[5], screenSurface->format, 0);
-
-	//Six Surface
-	numbers_img[6] = IMG_Load("./img/six.png");
-	numbers_img[6] = SDL_ConvertSurface( numbers_img[6], screenSurface->format, 0);
-
-	//Seven Surface
-	numbers_img[7] = IMG_Load("./img/seven.png");
-	numbers_img[7] = SDL_ConvertSurface( numbers_img[7], screenSurface->format, 0);
-
-	//Eight Surface
-	numbers_img[8] = IMG_Load("./img/eight.png");
-	numbers_img[8] = SDL_ConvertSurface( numbers_img[8], screenSurface->format, 0);
-
-	//Nine Surface
-	numbers_img[9] = IMG_Load("./img/nine.png");
-	numbers_img[9] = SDL_ConvertSurface( numbers_img[9], screenSurface->format, 0);
-
-	//Title Image
-	SDL_Surface *title_img = IMG_Load("./img/title.png");
-	title_img = SDL_ConvertSurface( title_img, screenSurface->format, 0);
-
-	//Mazes Image
-	SDL_Surface *mazes_img = IMG_Load("./img/mazes.png");
-	mazes_img = SDL_ConvertSurface( mazes_img, screenSurface->format, 0);
-
-	//Path Image
-	SDL_Surface *path_img = IMG_Load("./img/path.png");
-	path_img = SDL_ConvertSurface( path_img, screenSurface->format, 0);
-
-	//Pong Image
-	SDL_Surface *pong_img = IMG_Load("./img/pong.png");
-	pong_img = SDL_ConvertSurface( pong_img, screenSurface->format, 0);
-
-	//Snake Image
-	SDL_Surface *snake_img = IMG_Load("./img/snake.png");
-	snake_img = SDL_ConvertSurface( snake_img, screenSurface->format, 0);
-
-	//Tetris Image
-	SDL_Surface *tetris_img = IMG_Load("./img/tetris.png");
-	tetris_img = SDL_ConvertSurface( tetris_img, screenSurface->format, 0);
-
-	//Conway Image
-	SDL_Surface *conway_img = IMG_Load("./img/conway.png");
-	conway_img = SDL_ConvertSurface( conway_img, screenSurface->format, 0);
-
-	//Space Image
-	SDL_Surface *space_img = IMG_Load("./img/space.png");
-	space_img = SDL_ConvertSurface( space_img, screenSurface->format, 0);
-
-	//Frogger Image
-	SDL_Surface *frogger_img = IMG_Load("./img/frogger.png");
-	frogger_img = SDL_ConvertSurface( frogger_img, screenSurface->format, 0);
-
-	//Langston Image
-	SDL_Surface *langston_img = IMG_Load("./img/langston.png");
-	langston_img = SDL_ConvertSurface( langston_img, screenSurface->format, 0);
-
-	//Connect4 Image
-	SDL_Surface *connect4_img = IMG_Load("./img/connect4.png");
-	connect4_img = SDL_ConvertSurface( connect4_img, screenSurface->format, 0);
-
-	//Flappy Image
-	SDL_Surface *flappy_img = IMG_Load("./img/flappy.png");
-	flappy_img = SDL_ConvertSurface( flappy_img, screenSurface->format, 0);
-
-	//Checkers Image
-	SDL_Surface *checkers_img = IMG_Load("./img/checkers.png");
-	checkers_img = SDL_ConvertSurface( checkers_img, screenSurface->format, 0);
-
-	//Mines Image
-	SDL_Surface *mines_img = IMG_Load("./img/mines.png");
-	mines_img = SDL_ConvertSurface( mines_img, screenSurface->format, 0);
-
-	//Settings Image
-	SDL_Surface *settings_img = IMG_Load("./img/settings.png");
-	settings_img = SDL_ConvertSurface( settings_img, screenSurface->format, 0);
-
-	//Fullscreen Image
-	SDL_Surface *fullscreen_img = IMG_Load("./img/fullscreen.png");
-	fullscreen_img = SDL_ConvertSurface( fullscreen_img, screenSurface->format, 0);
-
-	//Confirm Image
-	SDL_Surface *confirm_img = IMG_Load("./img/confirm.png");
-	confirm_img = SDL_ConvertSurface( confirm_img, screenSurface->format, 0);
-
-	//Cancel Image
-	SDL_Surface *cancel_img = IMG_Load("./img/cancel.png");
-	cancel_img = SDL_ConvertSurface( cancel_img, screenSurface->format, 0);
-
-	//Width Image
-	SDL_Surface *width_img = IMG_Load("./img/width.png");
-	width_img = SDL_ConvertSurface( width_img, screenSurface->format, 0);
-
-	//Height Image
-	SDL_Surface *height_img = IMG_Load("./img/height.png");
-	height_img = SDL_ConvertSurface( height_img, screenSurface->format, 0);
-
-	//Cellsize Image
-	SDL_Surface *cellsize_img = IMG_Load("./img/cellsize.png");
-	cellsize_img = SDL_ConvertSurface( cellsize_img, screenSurface->format, 0);
-
-	//Arrow Image
-	SDL_Surface *arrow_img = IMG_Load("./img/arrow.png");
-	arrow_img = SDL_ConvertSurface( arrow_img, screenSurface->format, 0);
+	//Load all Texture Surfaces
+	SDL_Surface **texture_img = (SDL_Surface **) calloc(TEXTURES, sizeof(SDL_Surface *));
+	for(int i = 0; i < TEXTURES; i++){
+		texture_img[i] = IMG_Load(texturenames[i]);
+		texture_img[i] = SDL_ConvertSurface( texture_img[i], screenSurface->format, 0);
+	}
 	
 	//End SDL2 Stuff
 
@@ -487,6 +368,7 @@ int main(int argc, char **argv){
 	int hentry = height; //Height setting
 	int centry = cellsize; //Cellsize setting
 	int placemarker = 0; //Placemarker for which digit of which setting you're changing
+	int delay = 0; //Allows certain games and projects to display output one last time
 	SDL_Event buttonheld;
 	buttonheld.type = SDL_USEREVENT;
 
@@ -608,9 +490,8 @@ int main(int argc, char **argv){
 			break;
 		case PATH:
 			if((game = path(grid, event, game, t, width, height)) != PATH){
-				clear(grid, width, height);
-				clear(lastgrid, width, height);
-				t = 0;
+				game = PATH;
+				delay = 1;
 			}
 			break;
 		case MAZES:
@@ -664,9 +545,8 @@ int main(int argc, char **argv){
 			break;
 		case CONNECT4:
 			if((game = connect4(grid, direction, game, t, width, height)) != CONNECT4){
-				clear(grid, width, height);
-				clear(lastgrid, width, height);
-				t = 0;
+				game = CONNECT4;
+				delay = 1;
 			}
 			break;
 		case FLAPPY:
@@ -685,13 +565,18 @@ int main(int argc, char **argv){
 			break;
 		case MINES:
 			if((game = mines(grid, leftrightbutton, game, t, cellsize, width, height)) != MINES){
-				clear(grid, width, height);
-				clear(lastgrid, width, height);
-				t = 0;
+				game = MINES;
+				delay = 1;
+			}
+			break;
+		case CHESS:
+			if((game = chess(grid, leftrightbutton, game, t, cellsize, width, height)) != CHESS){
+				game = CHESS;
+				delay = 1;
 			}
 			break;
 		case SETUP:
-			if((game = setup(grid, buttonheld, setupgame, cellsize)) != SETUP){
+			if((game = setup(grid, buttonheld, setupgame, cellsize, width, height)) != SETUP){
 				t = 0;
 			}
 			break;
@@ -779,38 +664,7 @@ int main(int argc, char **argv){
 				//rect.y = j * cellsize;
 				if(grid[i][j] != lastgrid[i][j]){
 					lastgrid[i][j] = grid[i][j];
-					switch(grid[i][j]){
-					case BLACK:
-						SDL_BlitScaled(black, NULL, screenSurface, &rect);
-						break;
-					case WHITE:
-						SDL_BlitScaled(white, NULL, screenSurface, &rect);
-						break;
-					case RED:
-						SDL_BlitScaled(red, NULL, screenSurface, &rect);
-						break;
-					case GREEN:
-						SDL_BlitScaled(green, NULL, screenSurface, &rect);
-						break;
-					case BLUE:
-						SDL_BlitScaled(blue, NULL, screenSurface, &rect);
-						break;
-					case YELLOW:
-						SDL_BlitScaled(yellow, NULL, screenSurface, &rect);
-						break;
-					case MAGENTA:
-						SDL_BlitScaled(magenta, NULL, screenSurface, &rect);
-						break;
-					case CYAN:
-						SDL_BlitScaled(cyan, NULL, screenSurface, &rect);
-						break;
-					default:
-						//Blit numbers for Minesweeper
-						if(grid[i][j] != -1){
-							SDL_BlitScaled(numbers_img[grid[i][j]-6], NULL, screenSurface, &rect);
-						}
-						break;
-					}
+					SDL_BlitScaled(texture_img[grid[i][j]+1], NULL, screenSurface, &rect);
 				}
 				rect.y += cellsize;
 			}
@@ -819,119 +673,94 @@ int main(int argc, char **argv){
 
 		if(game == ARCADE){ //Display main menu
 			SDL_Rect img_rect;
-			img_rect.x = fullwidth*0.2;
-			img_rect.h = fullheight/ROWS;
-			img_rect.y = fullheight/ROWS;
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(title_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 2*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(snake_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 3*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(path_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 4*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(mazes_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 5*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(pong_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 6*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(tetris_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 7*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(conway_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 8*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(space_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 9*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(frogger_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 10*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(langston_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 11*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(connect4_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 12*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(flappy_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 13*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(checkers_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 14*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(mines_img, NULL, screenSurface, &img_rect);
-			img_rect.y = 15*(fullheight/ROWS);
-			img_rect.w = fullwidth*0.7;
-			SDL_BlitScaled(settings_img, NULL, screenSurface, &img_rect);
+			img_rect.x = fullwidth*0.325;
+			img_rect.h = fullheight/((ROWS/2)+2);
+			img_rect.y = fullheight/((ROWS/2)+2);
+			img_rect.w = fullwidth*0.35;
+			for(int i = 0; i < ROWS-2; i++){
+				SDL_BlitScaled(texture_img[i+TITLE], NULL, screenSurface, &img_rect);
+				img_rect.y = (2+(i/2))*img_rect.h;
+				if(i == ROWS-4){
+					img_rect.x = fullwidth*0.325;
+				} else if(i % 2 == 0){
+					img_rect.x = fullwidth*0.15;
+				} else {
+					img_rect.x = fullwidth*0.5;
+				}
+				//img_rect.w = fullwidth*0.7;
+			}
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
-			arrow_rect.y = 2*(fullheight/ROWS);
-			arrow_rect.h = fullheight/ROWS;
-			arrow_rect.w = fullwidth*0.1;
-			if(event.button.y / (fullheight/ROWS) > 1 && event.button.y / (fullheight/ROWS) < (ROWS-1)){
-				arrow_rect.y = (event.button.y / (fullheight/ROWS)) * (fullheight/ROWS);
+			arrow_rect.h = fullheight/((ROWS/2)+2);
+			arrow_rect.y = 2*arrow_rect.h;
+			arrow_rect.w = fullwidth*0.05;
+			if(event.button.y / arrow_rect.h > 1 && event.button.y / arrow_rect.h < (ROWS/2)+1){
+				arrow_rect.y = (event.button.y / arrow_rect.h) * arrow_rect.h;
 			}
-			SDL_BlitScaled(arrow_img, NULL, screenSurface, &arrow_rect);
+			if(event.button.x < fullwidth * 0.5){
+				arrow_rect.x = fullwidth*0.1;
+				SDL_BlitScaled(texture_img[arrow_img], NULL, screenSurface, &arrow_rect);
+			} else if(event.button.y / arrow_rect.h < ROWS/2){
+				arrow_rect.x = fullwidth*0.85;
+				SDL_BlitScaled(texture_img[arrow_flip], NULL, screenSurface, &arrow_rect);
+			}
 		} else if(game == SETTINGS){ //Display settings menu
 			SDL_Rect img_rect;
 			img_rect.h = fullheight/SROWS;
 			img_rect.w = fullwidth*0.7;
 			img_rect.x = fullwidth*0.2;
 			img_rect.y = fullheight/SROWS;
-			SDL_BlitScaled(settings_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[settings_img], NULL, screenSurface, &img_rect);
 			img_rect.w = fullwidth*0.4;
 			img_rect.x = fullwidth*0.2;
 			img_rect.y = 2*(fullheight/SROWS);
-			SDL_BlitScaled(width_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[width_img], NULL, screenSurface, &img_rect);
 			img_rect.w = fullwidth*0.1;
 			img_rect.x = fullwidth*0.6;
 			img_rect.y = 2*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[wentry/100], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[wentry/100 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.7;
 			img_rect.y = 2*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[wentry/10 % 10], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[wentry/10 % 10 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.8;
 			img_rect.y = 2*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[wentry % 10], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[wentry % 10 + 8], NULL, screenSurface, &img_rect);
 			img_rect.w = fullwidth*0.4;
 			img_rect.x = fullwidth*0.2;
 			img_rect.y = 3*(fullheight/SROWS);
-			SDL_BlitScaled(height_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[height_img], NULL, screenSurface, &img_rect);
 			img_rect.w = fullwidth*0.1;
 			img_rect.x = fullwidth*0.6;
 			img_rect.y = 3*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[hentry/100], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[hentry/100 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.7;
 			img_rect.y = 3*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[hentry/10 % 10], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[hentry/10 % 10 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.8;
 			img_rect.y = 3*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[hentry % 10], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[hentry % 10 + 8], NULL, screenSurface, &img_rect);
 			img_rect.w = fullwidth*0.4;
 			img_rect.x = fullwidth*0.2;
 			img_rect.y = 4*(fullheight/SROWS);
-			SDL_BlitScaled(cellsize_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[cellsize_img], NULL, screenSurface, &img_rect);
 			img_rect.w = fullwidth*0.1;
 			img_rect.x = fullwidth*0.6;
 			img_rect.y = 4*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[centry/100], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[centry/100 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.7;
 			img_rect.y = 4*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[centry/10 % 10], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[centry/10 % 10 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.8;
 			img_rect.y = 4*(fullheight/SROWS);
-			SDL_BlitScaled(numbers_img[centry % 10], NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[centry % 10 + 8], NULL, screenSurface, &img_rect);
 			img_rect.x = fullwidth*0.2;
 			img_rect.w = fullwidth*0.7;
 			img_rect.y = 6*(fullheight/SROWS);
-			SDL_BlitScaled(fullscreen_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[fullscreen_img], NULL, screenSurface, &img_rect);
 			img_rect.y = 7*(fullheight/SROWS);
-			SDL_BlitScaled(confirm_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[confirm_img], NULL, screenSurface, &img_rect);
 			img_rect.y = 8*(fullheight/SROWS);
-			SDL_BlitScaled(cancel_img, NULL, screenSurface, &img_rect);
+			SDL_BlitScaled(texture_img[cancel_img], NULL, screenSurface, &img_rect);
 			SDL_Rect arrow_rect;
 			arrow_rect.x = fullwidth*0.1;
 			arrow_rect.y = 2*(fullheight/SROWS);
@@ -940,7 +769,7 @@ int main(int argc, char **argv){
 			if(event.button.y / (fullheight/SROWS) > 1 && event.button.y / (fullheight/SROWS) < (SROWS-1) && event.button.y / (fullheight/SROWS) != 5){
 				arrow_rect.y = (event.button.y / (fullheight/SROWS)) * (fullheight/SROWS);
 			}
-			SDL_BlitScaled(arrow_img, NULL, screenSurface, &arrow_rect);
+			SDL_BlitScaled(texture_img[arrow_img], NULL, screenSurface, &arrow_rect);
 		}
 
 		SDL_UpdateWindowSurface( window );
@@ -948,6 +777,15 @@ int main(int argc, char **argv){
 		//Delay Step
 		if(game != ARCADE && game != SETTINGS && game != SETUP && game != CONNECT4 && game != CHECKERS && speed != 1){
 			SDL_Delay( speed );
+		}
+
+		if(delay){
+			SDL_Delay(5000);
+			clear(grid, width, height);
+			clear(lastgrid, width, height);
+			game = ARCADE;
+			t = 0;
+			delay = 0;
 		}
 	}
 
@@ -958,40 +796,11 @@ int main(int argc, char **argv){
 	}
 	free(grid);
 	free(lastgrid);
-	SDL_FreeSurface(black);
-	SDL_FreeSurface(white);
-	SDL_FreeSurface(red);
-	SDL_FreeSurface(green);
-	SDL_FreeSurface(blue);
-	SDL_FreeSurface(yellow);
-	SDL_FreeSurface(magenta);
-	SDL_FreeSurface(cyan);
-	for(int i = 0; i < 10; i++){
-		SDL_FreeSurface(numbers_img[i]);
+
+	for(int i = 0; i < TEXTURES; i++){
+		SDL_FreeSurface(texture_img[i]);
 	}
-	free(numbers_img);
-	SDL_FreeSurface(title_img);
-	SDL_FreeSurface(path_img);
-	SDL_FreeSurface(tetris_img);
-	SDL_FreeSurface(mazes_img);
-	SDL_FreeSurface(pong_img);
-	SDL_FreeSurface(snake_img);
-	SDL_FreeSurface(conway_img);
-	SDL_FreeSurface(space_img);
-	SDL_FreeSurface(frogger_img);
-	SDL_FreeSurface(langston_img);
-	SDL_FreeSurface(connect4_img);
-	SDL_FreeSurface(flappy_img);
-	SDL_FreeSurface(checkers_img);
-	SDL_FreeSurface(mines_img);
-	SDL_FreeSurface(settings_img);
-	SDL_FreeSurface(fullscreen_img);
-	SDL_FreeSurface(confirm_img);
-	SDL_FreeSurface(cancel_img);
-	SDL_FreeSurface(width_img);
-	SDL_FreeSurface(height_img);
-	SDL_FreeSurface(cellsize_img);
-	SDL_FreeSurface(arrow_img);
+	free(texture_img);
 	SDL_FreeSurface(screenSurface);
 
 	SDL_DestroyWindow(window);

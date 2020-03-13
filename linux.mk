@@ -1,10 +1,10 @@
 # Written 2/23/2020 #
 CC=gcc
 
-CFLAGS=-Wall -lm -lSDL2 -lSDL2_image -lSDL2main
+CFLAGS=-Wall -lm -lSDL2 -lSDL2_image -lSDL2main -g
 
-all: arcade.o mazes.o snake.o path.o pong.o tetris.o conway.o space.o frogger.o langston.o connect4.o flappy.o checkers.o mines.o setup.o
-	$(CC) arcade.o mazes.o snake.o path.o pong.o tetris.o conway.o space.o frogger.o langston.o connect4.o flappy.o checkers.o mines.o setup.o $(CFLAGS) -o arcade
+all: arcade.o mazes.o snake.o path.o pong.o tetris.o conway.o space.o frogger.o langston.o connect4.o flappy.o checkers.o mines.o chess.o setup.o
+	$(CC) arcade.o mazes.o snake.o path.o pong.o tetris.o conway.o space.o frogger.o langston.o connect4.o flappy.o checkers.o mines.o chess.o setup.o $(CFLAGS) -o arcade
 
 #May just want to compile in one step in the future, as all my projects are small in size
 arcade.o: src/arcade.c
@@ -35,6 +35,8 @@ checkers.o: src/checkers.c
 	$(CC) -c src/checkers.c $(CFLAGS)
 mines.o: src/mines.c
 	$(CC) -c src/mines.c $(CFLAGS)
+chess.o: src/chess.c
+	$(CC) -c src/chess.c $(CFLAGS)
 setup.o: src/setup.c
 	$(CC) -c src/setup.c $(CFLAGS)
 

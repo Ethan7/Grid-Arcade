@@ -46,9 +46,9 @@ int frogger(int **grid, SDL_Event event, int game, int t, int width, int height)
 		for(int j = 0; j < height-1; j++){
 			spacing[j] = rand() % 2;
 			carloglen[j] = (rand() % 4)+1;
-			rowspeed[j] = (rand() % 7) - 3;
-			if(rowspeed[j] == 0){
-				rowspeed[j]++;
+			rowspeed[j] = (rand() % 3) + 1;
+			if(j % 2 == 0){
+				rowspeed[j] *= -1;
 			}
 		}
 		rowspeed[height/2] = 0;

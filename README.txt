@@ -67,3 +67,7 @@ Minesweeper
 
 Left mouse click - Select spot to search in, be careful of mines!
 Right mouse click - Select spot to place or remove flag
+
+Chess
+
+Left mouse click - Select piece to move/Place piece in valid space/Stop selecting piece

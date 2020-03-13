@@ -7,7 +7,7 @@
 #include<time.h>
 
 #define ARCADE 0
-#define MINES 14
+#define MINES 13
 
 #define EMPTY -1
 #define MINE 1
@@ -15,14 +15,14 @@
 #define CLEAR 0
 
 //Number defines
-#define ONE 7
-#define TWO 8
-#define THREE 9
-#define FOUR 10
-#define FIVE 11
-#define SIX 12
-#define SEVEN 13
-#define EIGHT 14
+#define ONE 8
+#define TWO 9
+#define THREE 10
+#define FOUR 11
+#define FIVE 12
+#define SIX 13
+#define SEVEN 14
+#define EIGHT 15
 
 //Recursive Flood-fill algorithm
 void sweep(int buttonx, int buttony, int **undergrid, int **grid, int width, int height){
@@ -86,7 +86,7 @@ void sweep(int buttonx, int buttony, int **undergrid, int **grid, int width, int
 			sweep(buttonx, buttony+1, undergrid, grid, width, height);
 		}
 	} else {
-		grid[buttonx][buttony] = 6+mines;
+		grid[buttonx][buttony] = 7+mines;
 	}
 }
 
