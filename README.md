@@ -2,7 +2,7 @@
 Grid-based Arcade platform using SDL2 and written entirely in C
 
 ## Screenshot
-![Main Menu](https://raw.githubusercontent.com/Ethan7/Grid-Arcade/gh-pages/arcade-screen.png)
+![Main Menu](https://raw.githubusercontent.com/Ethan7/Grid-Arcade/master/arcade-screen.png)
 
 ## Windows
 Extract the game from the x86_64 zip file into one folder and play.
