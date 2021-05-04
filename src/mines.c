@@ -92,11 +92,13 @@ void sweep(int buttonx, int buttony, int **undergrid, int **grid, int width, int
 
 int **undergrid;
 int started;
+int ret;
 int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height){
 
 	if(t == 1){
 		started = 0;
 		srand(time(NULL));
+		ret = MINES;
 		//Place all mines
 		undergrid = (int **) calloc(width, sizeof(int *));
 		for(int i = 0; i < width; i++){
@@ -154,7 +156,7 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 					}
 				}
 				printf("YOU LOSE!\n");
-				return ARCADE;
+				ret = ARCADE;
 			} else {
 				sweep(buttonx, buttony, undergrid, grid, width, height);
 				//Check if all mines have been found
@@ -168,7 +170,7 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 				}
 				if(winflag == 1){
 					printf("YOU WIN!\n");
-					return ARCADE;
+					ret =  ARCADE;
 				}
 			}
 		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1){
@@ -181,5 +183,13 @@ int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 		}
 	}
 
-	return MINES;
+	//Free Dynamic Memory
+	if(ret == ARCADE){
+		for(int i = 0; i < width; i++){
+			free(undergrid[i]);
+		}
+		free(undergrid);
+	}
+
+	return ret;
 }

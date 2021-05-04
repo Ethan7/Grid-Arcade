@@ -23,10 +23,12 @@
 #define CHECKERS 12
 #define MINES 13
 #define CHESS 14
-#define SETTINGS 15
-#define SETTINGS2 16
-#define SETTINGS3 17
-#define SETUP 18
+#define BATTLE1 15
+#define BATTLE2 16
+#define SETTINGS 17
+#define SETTINGS2 18
+#define SETTINGS3 19
+#define SETUP 20
 
 //Color defines
 #define BLACK -1
@@ -66,23 +68,23 @@
 
 //Menu image defines
 #define TITLE 30
-#define settings_img 45
-#define fullscreen_img 46
-#define confirm_img 47
-#define cancel_img 48
-#define width_img 49
-#define height_img 50
-#define cellsize_img 51
-#define arrow_img 52
-#define arrow_flip 53
+#define settings_img 47
+#define fullscreen_img 48
+#define confirm_img 49
+#define cancel_img 50
+#define width_img 51
+#define height_img 52
+#define cellsize_img 53
+#define arrow_img 54
+#define arrow_flip 55
 
-#define TEXTURES 54
+#define TEXTURES 56
 
 //Menu defines
-#define ROWS 18
-#define SROWS 10
+#define ROWS 20 //Main menu two-sided rows
+#define SROWS 10 //Settings menu rows
 
-const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/settings.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png"};
+const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/battle1.png", "./img/battle2.png", "./img/settings.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png"};
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -127,6 +129,10 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 		case 15:
 			return CHESS;
 		case 16:
+			return BATTLE1;
+		case 17:
+			return BATTLE2;
+		case 18:
 			return SETTINGS;
 		default:
 			break;
@@ -254,6 +260,10 @@ int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, i
 int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
 int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+
+int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+
+int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
 int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize, int width, int height);
 
@@ -399,11 +409,7 @@ int main(int argc, char **argv){
 					running = 0;
 					break;
 				case SDLK_SPACE:
-					if(paused){
-						paused = 0;
-					} else {
-						paused = 1;
-					}
+					paused = 1 - paused;
 					break;
 				case SDLK_RETURN:
 					buttonheld = event;
@@ -575,6 +581,18 @@ int main(int argc, char **argv){
 				delay = 1;
 			}
 			break;
+		case BATTLE1:
+			if((game = battle1(grid, leftrightbutton, game, t, cellsize, width, height)) != BATTLE1){
+				game = BATTLE1;
+				delay = 1;
+			}
+			break;
+		case BATTLE2:
+			if((game = battle2(grid, leftrightbutton, game, t, cellsize, width, height)) != BATTLE2){
+				game = BATTLE2;
+				delay = 1;
+			}
+			break;
 		case SETUP:
 			if((game = setup(grid, buttonheld, setupgame, cellsize, width, height)) != SETUP){
 				t = 0;
@@ -669,6 +687,19 @@ int main(int argc, char **argv){
 				rect.y += cellsize;
 			}
 			rect.x += cellsize;
+		}
+
+		//Delay screen clear
+		if(delay){
+			SDL_UpdateWindowSurface( window );
+			SDL_Delay(5000);
+			clear(grid, width, height);
+			clear(lastgrid, width, height);
+			SDL_PumpEvents();
+			SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+			game = ARCADE;
+			t = 0;
+			delay = 0;
 		}
 
 		if(game == ARCADE){ //Display main menu
@@ -777,15 +808,6 @@ int main(int argc, char **argv){
 		//Delay Step
 		if(game != ARCADE && game != SETTINGS && game != SETUP && game != CONNECT4 && game != CHECKERS && speed != 1){
 			SDL_Delay( speed );
-		}
-
-		if(delay){
-			SDL_Delay(5000);
-			clear(grid, width, height);
-			clear(lastgrid, width, height);
-			game = ARCADE;
-			t = 0;
-			delay = 0;
 		}
 	}
 

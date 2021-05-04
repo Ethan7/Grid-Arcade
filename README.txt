@@ -71,3 +71,12 @@ Right mouse click - Select spot to place or remove flag
 Chess
 
 Left mouse click - Select piece to move/Place piece in valid space/Stop selecting piece
+
+Battleship 1 player
+
+Left mouse click - Select spot to search for ships
+
+Battleship 2 player
+
+Left mouse click - Select spot to place ship/Select spot to search for ships
+Right mouse click - Rotate ships before you place them
