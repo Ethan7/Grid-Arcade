@@ -25,10 +25,12 @@
 #define CHESS 14
 #define BATTLE1 15
 #define BATTLE2 16
-#define SETTINGS 17
-#define SETTINGS2 18
-#define SETTINGS3 19
-#define SETUP 20
+#define SUDOKU 17
+#define BREAKOUT 18
+#define SETTINGS 19
+#define SETTINGS2 20
+#define SETTINGS3 21
+#define SETUP 22
 
 //Color defines
 #define BLACK -1
@@ -67,24 +69,24 @@
 #define P2KING 28
 
 //Menu image defines
-#define TITLE 30
-#define settings_img 47
-#define fullscreen_img 48
-#define confirm_img 49
-#define cancel_img 50
-#define width_img 51
-#define height_img 52
-#define cellsize_img 53
-#define arrow_img 54
-#define arrow_flip 55
+#define TITLE 38
+#define settings_img 57
+#define fullscreen_img 30
+#define confirm_img 31
+#define cancel_img 32
+#define width_img 33
+#define height_img 34
+#define cellsize_img 35
+#define arrow_img 36
+#define arrow_flip 37
 
-#define TEXTURES 56
+#define TEXTURES 58
 
 //Menu defines
-#define ROWS 20 //Main menu two-sided rows
+#define ROWS 22 //Main menu two-sided rows
 #define SROWS 10 //Settings menu rows
 
-const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/battle1.png", "./img/battle2.png", "./img/settings.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png"};
+const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/battle1.png", "./img/battle2.png", "./img/sudoku.png", "./img/breakout.png", "./img/settings.png"};
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -133,6 +135,10 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 		case 17:
 			return BATTLE2;
 		case 18:
+			return SUDOKU;
+		case 19:
+			return BREAKOUT;
+		case 20:
 			return SETTINGS;
 		default:
 			break;
@@ -213,11 +219,11 @@ int settings(SDL_Event event, int game, int height, int *placemarker, int *wentr
 		case 6:
 			return SETTINGS3;
 		case 7:
-			if(*wentry < 8){
-				*wentry = 8;
+			if(*wentry < 9){
+				*wentry = 9;
 			}
-			if(*hentry < 8){
-				*hentry = 8;
+			if(*hentry < 9){
+				*hentry = 9;
 			}
 			if(*centry == 0){
 				*centry = 1;
@@ -265,6 +271,10 @@ int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 
 int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
 
+int sudoku(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+
+int breakout(int **grid, SDL_Event event, int game, int t, int width, int height);
+
 int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize, int width, int height);
 
 int main(int argc, char **argv){
@@ -285,10 +295,10 @@ int main(int argc, char **argv){
 			width = atoi(argv[2]);
 			height = atoi(argv[3]);
 			//Ensure minimum screen size.
-			if(width < 8){
+			if(width < 9){
 				fprintf(stderr, "Invalid width needs to be > 7\n");
 				return EXIT_FAILURE;
-			} else if(height < 8){
+			} else if(height < 9){
 				fprintf(stderr, "Invalid height needs to be > 7\n");
 				return EXIT_FAILURE;
 			}
@@ -412,6 +422,7 @@ int main(int argc, char **argv){
 					paused = 1 - paused;
 					break;
 				case SDLK_RETURN:
+					leftrightbutton = event;
 					buttonheld = event;
 					break;
 				case SDLK_TAB:
@@ -443,6 +454,9 @@ int main(int argc, char **argv){
 					break;
 				case SDLK_s:
 					direction = event;
+					break;
+				case SDLK_r:
+					leftrightbutton = event;
 					break;
 				}
 				break;
@@ -591,6 +605,19 @@ int main(int argc, char **argv){
 			if((game = battle2(grid, leftrightbutton, game, t, cellsize, width, height)) != BATTLE2){
 				game = BATTLE2;
 				delay = 1;
+			}
+			break;
+		case SUDOKU:
+			if((game = sudoku(grid, leftrightbutton, game, t, cellsize, width, height)) != SUDOKU){
+				game = SUDOKU;
+				delay = 1;
+			}
+			break;
+		case BREAKOUT:
+			if((game = breakout(grid, direction, game, t, width, height)) != BREAKOUT){
+				clear(grid, width, height);
+				clear(lastgrid, width, height);
+				t = 0;
 			}
 			break;
 		case SETUP:
@@ -806,7 +833,7 @@ int main(int argc, char **argv){
 		SDL_UpdateWindowSurface( window );
 
 		//Delay Step
-		if(game != ARCADE && game != SETTINGS && game != SETUP && game != CONNECT4 && game != CHECKERS && speed != 1){
+		if(game != ARCADE && game != SETTINGS && game != SETUP && game != CONNECT4 && game != CHECKERS && game != MINES && game != CHESS && game != BATTLE1 && game != BATTLE2 && game != SUDOKU && speed != 1){
 			SDL_Delay( speed );
 		}
 	}

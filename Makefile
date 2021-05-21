@@ -1,5 +1,5 @@
 # Written 2/23/2020 #
-all: clean1 windows clean2 linux clean3
+all: windows linux
 
 windows:
 	make -f windows.mk

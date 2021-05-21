@@ -6,7 +6,7 @@
 #include<stdlib.h>
 
 #define ARCADE 0
-#define SETUP 20
+#define SETUP 21
 
 #define EMPTY -1
 #define FILLED 0

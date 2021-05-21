@@ -80,3 +80,13 @@ Battleship 2 player
 
 Left mouse click - Select spot to place ship/Select spot to search for ships
 Right mouse click - Rotate ships before you place them
+
+Sudoku
+
+Left mouse click - Cycle through possible numbers in the current spot
+Enter - Test if current configuration is finished sudoku
+R - generate new random sudoku
+
+Breakout
+
+Left and Right keys - Move Paddle left and right
