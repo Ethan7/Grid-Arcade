@@ -63,7 +63,7 @@ int space(int **grid, SDL_Event event, int game, int t, int width, int height){
 			}
 			break;
 		case SDLK_RIGHT:
-			if(playerx < height-1){
+			if(playerx < width-1){
 				grid[playerx][playery] = EMPTY;
 				playerx++;
 			}
