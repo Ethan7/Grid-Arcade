@@ -5,7 +5,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define SUDOKU 17
 
@@ -22,20 +23,19 @@
 #define SEVEN 14
 #define EIGHT 15
 #define NINE 16
-
-int **undergrid;
-int ret;
+*/
+int **sudokugrid;
 int stopper;
 
 //Guess checker
 int sudokuhelper(int x, int y, int guess){
 	for(int i = 0; i < 9; i++){
-		if(undergrid[i][y] == guess && x != i){
+		if(sudokugrid[i][y] == guess && x != i){
 			return 0;
 		}
 	}
 	for(int i = 0; i < 9; i++){
-		if(undergrid[x][i] == guess && y != i){
+		if(sudokugrid[x][i] == guess && y != i){
 			return 0;
 		}
 	}
@@ -45,7 +45,7 @@ int sudokuhelper(int x, int y, int guess){
 	int y1 = y0+3;
 	for(int i = x0; i < x1; i++){
 		for(int j = y0; j < y1; j++){
-			if(undergrid[i][j] == guess && (x != i || y != j)){
+			if(sudokugrid[i][j] == guess && (x != i || y != j)){
 				return 0;
 			}
 		}
@@ -58,14 +58,14 @@ int sudokusolver(){
 	int solutions = 0;
 	for(int i = 0; i < 9; i++){
 		for(int j = 0; j < 9; j++){
-			if(undergrid[i][j] == EMPTY){
+			if(sudokugrid[i][j] == EMPTY){
 				for(int k = 0; k < 9; k++){
 					if(sudokuhelper(i, j, k)){
 						stopper++;
 						if(stopper == 10000){
 							return 2;
 						}
-						undergrid[i][j] = k;
+						sudokugrid[i][j] = k;
 						//Recursive call until the sudoku is solved
 						int test = 0;
 						if((test = sudokusolver())){
@@ -77,7 +77,7 @@ int sudokusolver(){
 								return 1;
 							}
 						}
-						undergrid[i][j] = EMPTY;
+						sudokugrid[i][j] = EMPTY;
 					}
 				}
 				if(solutions == 1){
@@ -90,13 +90,13 @@ int sudokusolver(){
 	return 1;
 }
 
-//Generate new undergrid and display it on the main grid
+//Generate new sudokugrid and display it on the main grid
 void sudokugenerate(int **grid){
 	do{
 		//Clear the grid
 		for(int i = 0; i < 9; i++){
 			for(int j = 0; j < 9; j++){
-				undergrid[i][j] = EMPTY;
+				sudokugrid[i][j] = EMPTY;
 			}
 		}
 		//Add 17 initial random number placements
@@ -107,30 +107,33 @@ void sudokugenerate(int **grid){
 				y = rand() % 9;
 				guess = rand() % 9;
 			} while(sudokuhelper(x, y, guess) == 0);
-			undergrid[x][y] = guess;
+			sudokugrid[x][y] = guess;
 		}
 		stopper = 0;
 	} while(sudokusolver() == 0 || stopper == 10000);
+	int hints = 0;
 	for(int i = 0; i < 9; i++){
 		for(int j = 0; j < 9; j++){
-			if(undergrid[i][j] > EMPTY){
-				grid[i][j] = undergrid[i][j]+ONE;
+			if(sudokugrid[i][j] > EMPTY){
+				grid[i][j] = sudokugrid[i][j]+ONE;
+				hints++;
 			} else {
 				grid[i][j] = CLEAR;
 			}
 		}
 	}
+	printf("number of hints: %d\n", hints);
 }
 
-int sudoku(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height){
+int sudoku(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){	
+	int ret = SUDOKU;
 
 	if(t == 1){
 		//Allocate grid and set random seed
 		srand(time(NULL));
-		ret = SUDOKU;
-		undergrid = (int **) calloc(9, sizeof(int *));
+		sudokugrid = (int **) calloc(9, sizeof(int *));
 		for(int i = 0; i < 9; i++){
-			undergrid[i] = (int *) calloc(9, sizeof(int));
+			sudokugrid[i] = (int *) calloc(9, sizeof(int));
 		}
 		//Generate Sudoku
 		sudokugenerate(grid);
@@ -144,9 +147,9 @@ int sudoku(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int
 			//Add to current grid number
 			if(grid[buttonx][buttony] == CLEAR){
 				grid[buttonx][buttony] = ONE;
-			} else if(grid[buttonx][buttony] > CLEAR && grid[buttonx][buttony] < NINE && undergrid[buttonx][buttony] == EMPTY){
+			} else if(grid[buttonx][buttony] > CLEAR && grid[buttonx][buttony] < NINE && sudokugrid[buttonx][buttony] == EMPTY){
 				grid[buttonx][buttony]++;
-			} else if(grid[buttonx][buttony] == NINE && undergrid[buttonx][buttony] == EMPTY){
+			} else if(grid[buttonx][buttony] == NINE && sudokugrid[buttonx][buttony] == EMPTY){
 				grid[buttonx][buttony] = CLEAR;
 			}
 		}
@@ -179,9 +182,9 @@ int sudoku(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int
 	//Free Dynamic Memory
 	if(ret == ARCADE){
 		for(int i = 0; i < width; i++){
-			free(undergrid[i]);
+			free(sudokugrid[i]);
 		}
-		free(undergrid);
+		free(sudokugrid);
 	}
 
 	return ret;

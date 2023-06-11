@@ -4,14 +4,15 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define SETUP 21
 
 #define EMPTY -1
 #define FILLED 0
-
-int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize, int width, int height){
+*/
+int setup(int **grid, SDL_Event eventbutton, enum GAMEMODE setupgame, int cellsize, int width, int height){
 
 	//Respond to user input
 	if(eventbutton.type == SDL_MOUSEBUTTONDOWN){

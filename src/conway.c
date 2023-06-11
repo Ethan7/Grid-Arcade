@@ -4,14 +4,15 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define CONWAY 8
 
 #define EMPTY -1
 #define LIFE 0
-
-int conway(int **grid, int game, int t, int width, int height){
+*/
+int conway(int **grid, int t, int width, int height){
 
 	int neighbor[width][height];
 	if(t == 1){

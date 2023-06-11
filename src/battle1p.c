@@ -6,27 +6,27 @@
 #include<stdlib.h>
 #include<time.h>
 #include<math.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define BATTLE1 15
 
 #define EMPTY -1
 #define SHIP 1
 #define CLEAR 0
-
-int **undergrid;
+*/
+int **shipgrid;
 int cannonballs;
-int ret;
-int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height){
+int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
+	int ret = BATTLE1;
 
 	if(t == 1){
 		srand(time(NULL));
-		ret = BATTLE1;
 		cannonballs = width*height/3; //Only enough cannonballs to test 1/3 of the spaces
-		//Allocate undergrid
-		undergrid = (int **) calloc(width, sizeof(int *));
+		//Allocate shipgrid
+		shipgrid = (int **) calloc(width, sizeof(int *));
 		for(int i = 0; i < width; i++){
-			undergrid[i] = (int *) calloc(height, sizeof(int));
+			shipgrid[i] = (int *) calloc(height, sizeof(int));
 		}
 		int shipcount = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
 		//Place all the ships
@@ -45,21 +45,21 @@ int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 							break;
 						} else if(dir == 1 && y + j >= height){
 							break;
-						} else if(dir == 0 && undergrid[x+j][y] == SHIP){
+						} else if(dir == 0 && shipgrid[x+j][y] == SHIP){
 							break;
-						} else if(dir == 1 && undergrid[x][y+j] == SHIP){
+						} else if(dir == 1 && shipgrid[x][y+j] == SHIP){
 							break;
 						}
-					} else if(undergrid[x][y] == SHIP){
+					} else if(shipgrid[x][y] == SHIP){
 						break;
 					}
 					//Place current ship
 					if(j == shipsize-1){
 						for(int k = 0; k < shipsize; k++){
 							if(dir == 0){
-								undergrid[x+k][y] = SHIP;
+								shipgrid[x+k][y] = SHIP;
 							} else {
-								undergrid[x][y+k] = SHIP;
+								shipgrid[x][y+k] = SHIP;
 							}
 						}
 						shipunplaced = 0;
@@ -74,7 +74,7 @@ int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 		int buttonx = eventbutton.button.x / cellsize;
 		int buttony = eventbutton.button.y / cellsize;
 		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1 && grid[buttonx][buttony] == EMPTY){
-			grid[buttonx][buttony] = undergrid[buttonx][buttony];
+			grid[buttonx][buttony] = shipgrid[buttonx][buttony];
 			cannonballs--;
 			if(grid[buttonx][buttony] == SHIP){
 				printf("HIT! %d cannonballs left.\n", cannonballs);
@@ -85,7 +85,7 @@ int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 			int winflag = 1;
 			for(int i = 0; i < width; i++){
 				for(int j = 0; j < height; j++){
-					if(undergrid[i][j] == SHIP && grid[i][j] == EMPTY){
+					if(shipgrid[i][j] == SHIP && grid[i][j] == EMPTY){
 						winflag = 0;
 					}
 				}
@@ -96,7 +96,7 @@ int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 			} else if(cannonballs == 0){
 				for(int i = 0; i < width; i++){
 					for(int j = 0; j < height; j++){
-						if(undergrid[i][j] == SHIP){
+						if(shipgrid[i][j] == SHIP){
 							grid[i][j] = SHIP;
 						}
 					}
@@ -110,9 +110,9 @@ int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 	//Free Dynamic Memory
 	if(ret == ARCADE){
 		for(int i = 0; i < width; i++){
-			free(undergrid[i]);
+			free(shipgrid[i]);
 		}
-		free(undergrid);
+		free(shipgrid);
 	}
 
 	return ret;

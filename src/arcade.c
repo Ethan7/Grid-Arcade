@@ -1,12 +1,17 @@
 /* By Ethan Hughs */
 /* Written 12/1/2018 */
 
-#define SDL_MAIN_HANDLED
-#include<SDL2/SDL.h>
+#ifdef _WIN32
+	#define SDL_MAIN_HANDLED
+	#include<SDL.h>
+#else
+	#include<SDL2/SDL.h>
+#endif
 #include<SDL2/SDL_image.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 //Game defines
 #define ARCADE 0
 #define SNAKE 1
@@ -27,6 +32,8 @@
 #define BATTLE2 16
 #define SUDOKU 17
 #define BREAKOUT 18
+#define COLLAPSE 19
+#define TRON 20
 #define SETTINGS 19
 #define SETTINGS2 20
 #define SETTINGS3 21
@@ -85,8 +92,8 @@
 //Menu defines
 #define ROWS 22 //Main menu two-sided rows
 #define SROWS 10 //Settings menu rows
-
-const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/battle1.png", "./img/battle2.png", "./img/sudoku.png", "./img/breakout.png", "./img/settings.png"};
+*/
+const char *texturenames[TEXTURES] = { "./img/black.png", "./img/white.png", "./img/red.png", "./img/green.png", "./img/blue.png", "./img/yellow.png", "./img/magenta.png", "./img/cyan.png", "./img/zero.png", "./img/one.png", "./img/two.png", "./img/three.png", "./img/four.png", "./img/five.png", "./img/six.png", "./img/seven.png", "./img/eight.png", "./img/nine.png", "./img/p1pawn.png", "./img/p1rook.png", "./img/p1bishop.png", "./img/p1knight.png", "./img/p1queen.png", "./img/p1king.png", "./img/p2pawn.png", "./img/p2rook.png", "./img/p2bishop.png", "./img/p2knight.png", "./img/p2queen.png", "./img/p2king.png", "./img/fullscreen.png", "./img/confirm.png", "./img/cancel.png", "./img/width.png", "./img/height.png", "./img/cellsize.png", "./img/arrow.png", "./img/arrow_flip.png", "./img/title.png", "./img/snake.png", "./img/path.png", "./img/mazes.png", "./img/pong.png", "./img/tetris.png", "./img/space.png", "./img/frogger.png", "./img/conway.png", "./img/langston.png", "./img/flappy.png", "./img/connect4.png", "./img/checkers.png", "./img/mines.png", "./img/chess.png", "./img/battle1.png", "./img/battle2.png", "./img/sudoku.png", "./img/breakout.png", "./img/collapse.png", "./img/snaketron.png", "./img/settings.png"};
 
 void clear(int **grid, int width, int height){
 	for(int i = 0; i < width; i++){
@@ -96,7 +103,7 @@ void clear(int **grid, int width, int height){
 	}
 }
 
-int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
+enum GAMEMODE arcade(SDL_Event event, int width, int height, enum GAMEMODE *setupgame){
 	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
 		switch(((event.button.y / (height/((ROWS/2)+2))) * 2) - 2 + (event.button.x / (width/2))){
 		case 2:
@@ -139,6 +146,10 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 		case 19:
 			return BREAKOUT;
 		case 20:
+			return COLLAPSE;
+		case 21:
+			return TRON;
+		case 22:
 			return SETTINGS;
 		default:
 			break;
@@ -148,7 +159,7 @@ int arcade(SDL_Event event, int game, int width, int height, int *setupgame){
 	return ARCADE;
 }
 
-int settings(SDL_Event event, int game, int height, int *placemarker, int *wentry, int *hentry, int *centry){
+enum GAMEMODE settings(SDL_Event event, int height, int *placemarker, int *wentry, int *hentry, int *centry){
 	if(event.type == SDL_KEYDOWN){
 		int key = -1;
 		switch( event.key.keysym.sym ){
@@ -239,43 +250,47 @@ int settings(SDL_Event event, int game, int height, int *placemarker, int *wentr
 	return SETTINGS;
 }
 
-int snake(int **grid, SDL_Event event, int game, int t, int width, int height, int wrap);
+int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap);
 
-int path(int **grid, SDL_Event event, int game, int t, int width, int height);
+int path(int **grid, SDL_Event event, int t, int width, int height);
 
-int mazes(int **grid, SDL_Event event, int game, int t, int width, int height);
+int mazes(int **grid, SDL_Event event, int t, int width, int height);
 
-int pong(int **grid, SDL_Event event, int game, int t, int width, int height);
+int pong(int **grid, SDL_Event event, int t, int width, int height);
 
-int tetris(int **grid, SDL_Event event, int game, int t, int width, int height);
+int tetris(int **grid, SDL_Event event, int t, int width, int height);
 
-int conway(int **grid, int game, int t, int width, int height);
+int conway(int **grid, int t, int width, int height);
 
-int langston(int **grid, int game, int t, int width, int height);
+int langston(int **grid, int t, int width, int height);
 
-int space(int **grid, SDL_Event event, int game, int t, int width, int height);
+int space(int **grid, SDL_Event event, int t, int width, int height);
 
-int frogger(int **grid, SDL_Event event, int game, int t, int width, int height);
+int frogger(int **grid, SDL_Event event, int t, int width, int height);
 
-int connect4(int **grid, SDL_Event event, int game, int t, int width, int height);
+int connect4(int **grid, SDL_Event event, int t, int width, int height);
 
-int flappy(int **grid, SDL_Event event, int game, int t, int width, int height);
+int flappy(int **grid, SDL_Event event, int t, int width, int height);
 
-int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+int checkers(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int mines(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+int mines(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+int chess(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int battle1(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+int battle2(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int sudoku(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height);
+int sudoku(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int breakout(int **grid, SDL_Event event, int game, int t, int width, int height);
+int breakout(int **grid, SDL_Event event, int t, int width, int height);
 
-int setup(int **grid, SDL_Event eventbutton, int setupgame, int cellsize, int width, int height);
+int collapse(int **grid, SDL_Event event, int t, int width, int height);
+
+int tron(int **grid, SDL_Event event, int t, int width, int height);
+
+int setup(int **grid, SDL_Event eventbutton, enum GAMEMODE setupgame, int cellsize, int width, int height);
 
 int main(int argc, char **argv){
 	int cellsize = 32; //Grid cell size
@@ -289,6 +304,10 @@ int main(int argc, char **argv){
 			break;
 		case 2:
 			cellsize = atoi(argv[1]);
+			if(cellsize < 1){
+				fprintf(stderr, "Invalid cellsize needs to be > 0\n");
+				return EXIT_FAILURE;
+			}
 			break;
 		case 4:
 			cellsize = atoi(argv[1]);
@@ -300,6 +319,9 @@ int main(int argc, char **argv){
 				return EXIT_FAILURE;
 			} else if(height < 9){
 				fprintf(stderr, "Invalid height needs to be > 7\n");
+				return EXIT_FAILURE;
+			} else if(cellsize < 1){
+				fprintf(stderr, "Invalid cellsize needs to be > 0\n");
 				return EXIT_FAILURE;
 			}
 			break;
@@ -382,8 +404,8 @@ int main(int argc, char **argv){
 	int t = 0; //Running time
 	int paused = 0; //Whether the game is paused
 	int speed = 256; //Speed for the gameplay loop
-	int game = ARCADE; //Current game within the arcade
-	int setupgame = CONWAY; //Game which is currently being setup
+	enum GAMEMODE game = ARCADE; //Current game within the arcade
+	enum GAMEMODE setupgame = CONWAY; //Game which is currently being setup
 	int wentry = width; //Width setting
 	int hentry = height; //Height setting
 	int centry = cellsize; //Cellsize setting
@@ -424,6 +446,7 @@ int main(int argc, char **argv){
 				case SDLK_RETURN:
 					leftrightbutton = event;
 					buttonheld = event;
+					direction = event;
 					break;
 				case SDLK_TAB:
 					if(speed == 1){
@@ -453,6 +476,12 @@ int main(int argc, char **argv){
 					direction = event;
 					break;
 				case SDLK_s:
+					direction = event;
+					break;
+				case SDLK_a:
+					direction = event;
+					break;
+				case SDLK_d:
 					direction = event;
 					break;
 				case SDLK_r:
@@ -494,7 +523,7 @@ int main(int argc, char **argv){
 		//Game Step
 		switch(game){
 		case ARCADE:
-			if((game = arcade(leftrightbutton, game, fullwidth, fullheight, &setupgame)) != ARCADE){
+			if((game = arcade(leftrightbutton, fullwidth, fullheight, &setupgame)) != ARCADE){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0x00, 0x00, 0x00) );
@@ -502,119 +531,133 @@ int main(int argc, char **argv){
 			}
 			break;
 		case SNAKE:
-			if((game = snake(grid, direction, game, t, width, height, 0)) != SNAKE){
+			if((game = snake(grid, direction, t, width, height, 0)) != SNAKE){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case PATH:
-			if((game = path(grid, event, game, t, width, height)) != PATH){
+			if((game = path(grid, event, t, width, height)) != PATH){
 				game = PATH;
 				delay = 1;
 			}
 			break;
 		case MAZES:
-			if((game = mazes(grid, direction, game, t, width, height)) != MAZES){
+			if((game = mazes(grid, direction, t, width, height)) != MAZES){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case PONG:
-			if((game = pong(grid, direction, game, t, width, height)) != PONG){
+			if((game = pong(grid, direction, t, width, height)) != PONG){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case TETRIS:
-			if((game = tetris(grid, direction, game, t, width, height)) != TETRIS){
+			if((game = tetris(grid, direction, t, width, height)) != TETRIS){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case CONWAY:
-			if((game = conway(grid, game, t, width, height)) != CONWAY){
+			if((game = conway(grid, t, width, height)) != CONWAY){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case SPACE:
-			if((game = space(grid, direction, game, t, width, height)) != SPACE){
+			if((game = space(grid, direction, t, width, height)) != SPACE){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case FROGGER:
-			if((game = frogger(grid, direction, game, t, width, height)) != FROGGER){
+			if((game = frogger(grid, direction, t, width, height)) != FROGGER){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case LANGSTON:
-			if((game = langston(grid, game, t, width, height)) != LANGSTON){
+			if((game = langston(grid, t, width, height)) != LANGSTON){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case CONNECT4:
-			if((game = connect4(grid, direction, game, t, width, height)) != CONNECT4){
+			if((game = connect4(grid, direction, t, width, height)) != CONNECT4){
 				game = CONNECT4;
 				delay = 1;
 			}
 			break;
 		case FLAPPY:
-			if((game = flappy(grid, direction, game, t, width, height)) != FLAPPY){
+			if((game = flappy(grid, direction, t, width, height)) != FLAPPY){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case CHECKERS:
-			if((game = checkers(grid, leftrightbutton, game, t, cellsize, width, height)) != CHECKERS){
+			if((game = checkers(grid, leftrightbutton, t, cellsize, width, height)) != CHECKERS){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
 			}
 			break;
 		case MINES:
-			if((game = mines(grid, leftrightbutton, game, t, cellsize, width, height)) != MINES){
+			if((game = mines(grid, leftrightbutton, t, cellsize, width, height)) != MINES){
 				game = MINES;
 				delay = 1;
 			}
 			break;
 		case CHESS:
-			if((game = chess(grid, leftrightbutton, game, t, cellsize, width, height)) != CHESS){
+			if((game = chess(grid, leftrightbutton, t, cellsize, width, height)) != CHESS){
 				game = CHESS;
 				delay = 1;
 			}
 			break;
 		case BATTLE1:
-			if((game = battle1(grid, leftrightbutton, game, t, cellsize, width, height)) != BATTLE1){
+			if((game = battle1(grid, leftrightbutton, t, cellsize, width, height)) != BATTLE1){
 				game = BATTLE1;
 				delay = 1;
 			}
 			break;
 		case BATTLE2:
-			if((game = battle2(grid, leftrightbutton, game, t, cellsize, width, height)) != BATTLE2){
+			if((game = battle2(grid, leftrightbutton, t, cellsize, width, height)) != BATTLE2){
 				game = BATTLE2;
 				delay = 1;
 			}
 			break;
 		case SUDOKU:
-			if((game = sudoku(grid, leftrightbutton, game, t, cellsize, width, height)) != SUDOKU){
+			if((game = sudoku(grid, leftrightbutton, t, cellsize, width, height)) != SUDOKU){
 				game = SUDOKU;
 				delay = 1;
 			}
 			break;
 		case BREAKOUT:
-			if((game = breakout(grid, direction, game, t, width, height)) != BREAKOUT){
+			if((game = breakout(grid, direction, t, width, height)) != BREAKOUT){
+				clear(grid, width, height);
+				clear(lastgrid, width, height);
+				t = 0;
+			}
+			break;
+		case COLLAPSE:
+			if((game = collapse(grid, direction, t, width, height)) != COLLAPSE){
+				clear(grid, width, height);
+				clear(lastgrid, width, height);
+				t = 0;
+			}
+			break;
+		case TRON:
+			if((game = tron(grid, direction, t, width, height)) != TRON){
 				clear(grid, width, height);
 				clear(lastgrid, width, height);
 				t = 0;
@@ -626,7 +669,7 @@ int main(int argc, char **argv){
 			}
 			break;
 		case SETTINGS:
-			if((game = settings(leftrightbutton, game, fullheight, &placemarker, &wentry, &hentry, &centry)) != SETTINGS){
+			if((game = settings(leftrightbutton, fullheight, &placemarker, &wentry, &hentry, &centry)) != SETTINGS){
 				if(game == SETTINGS2){
 					for(int i = 0; i < width; i++){
 						free(grid[i]);
@@ -693,6 +736,9 @@ int main(int argc, char **argv){
 				t = 0;
 			}
 			break;
+		default:
+			printf("gamemode error\n");
+			break;
 		}
 
 		//Display Step
@@ -708,6 +754,7 @@ int main(int argc, char **argv){
 				//rect.x = i * cellsize;
 				//rect.y = j * cellsize;
 				if(grid[i][j] != lastgrid[i][j]){
+					//printf("grid value: %d\n", grid[i][j]);
 					lastgrid[i][j] = grid[i][j];
 					SDL_BlitScaled(texture_img[grid[i][j]+1], NULL, screenSurface, &rect);
 				}

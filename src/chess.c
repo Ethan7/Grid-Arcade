@@ -4,7 +4,8 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define CHESS 14
 
@@ -22,8 +23,8 @@
 #define P2QUEEN 27
 #define P2KING 28
 #define PMOVE 2
-
-int selectedx, selectedy, p1castle1, p1castle2, p2castle1, p2castle2, playerturn, p1kingx, p1kingy, p2kingx, p2kingy, p1enpassant, p2enpassant;
+*/
+int chosenx, choseny, p1castle1, p1castle2, p2castle1, p2castle2, turn, p1kingx, p1kingy, p2kingx, p2kingy, p1enpassant, p2enpassant;
 int **movegrid;
 
 //Deternube if after the given move your king is left exposed
@@ -837,7 +838,7 @@ int checkmate(int **grid, int pturn){
 	return pturn+1;
 }
 
-int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height){
+int chess(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
 	int ret = CHESS;
 
 	if(t == 1){
@@ -850,9 +851,9 @@ int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 			}
 		}
 
-		selectedx = -1;
-		selectedy = -1;
-		playerturn = 0;
+		chosenx = -1;
+		choseny = -1;
+		turn = 0;
 		p1enpassant = -1;
 		p2enpassant = -1;
 
@@ -896,31 +897,31 @@ int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 			//Make potential move
 			if(movegrid[buttonx][buttony] == PMOVE){
 				//Move piece
-				grid[buttonx][buttony] = grid[selectedx][selectedy];
-				grid[selectedx][selectedy] = EMPTY;
-				if(playerturn == 0){
+				grid[buttonx][buttony] = grid[chosenx][choseny];
+				grid[chosenx][choseny] = EMPTY;
+				if(turn == 0){
 					if(grid[buttonx][buttony] == P1KING){
 						p1kingx = buttonx;
 						p1kingy = buttony;
 						p1castle1 = 1;
 						p1castle2 = 1;
-						if(buttonx-selectedx == 2){
+						if(buttonx-chosenx == 2){
 							grid[7][0] = EMPTY;
 							grid[4][0] = P1ROOK;
-						} else if(buttonx-selectedx == -2){
+						} else if(buttonx-chosenx == -2){
 							grid[0][0] = EMPTY;
 							grid[2][0] = P1ROOK;
 						}
-					} else if (selectedx == 0 && selectedy == 0){
+					} else if (chosenx == 0 && choseny == 0){
 						p1castle1 = 1;
-					} else if (selectedx == 7 && selectedy == 0){
+					} else if (chosenx == 7 && choseny == 0){
 						p1castle2 = 1;
 					} else if (buttonx == 0 && buttony == 7){
 						p2castle1 = 1;
 					} else if (buttonx == 7 && buttony == 7){
 						p2castle2 = 1;
 					}
-					if(grid[buttonx][buttony] == P1PAWN && buttony-selectedy == 2){
+					if(grid[buttonx][buttony] == P1PAWN && buttony-choseny == 2){
 						p1enpassant = buttonx;
 					} else {
 						p1enpassant = -1;
@@ -937,23 +938,23 @@ int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 						p2kingy = buttony;
 						p2castle1 = 1;
 						p2castle2 = 1;
-						if(buttonx-selectedx == 2){
+						if(buttonx-chosenx == 2){
 							grid[7][7] = EMPTY;
 							grid[4][7] = P2ROOK;
-						} else if(buttonx-selectedx == -2){
+						} else if(buttonx-chosenx == -2){
 							grid[0][7] = EMPTY;
 							grid[2][7] = P2ROOK;
 						}
-					} else if (selectedx == 0 && selectedy == 7){
+					} else if (chosenx == 0 && choseny == 7){
 						p2castle1 = 1;
-					} else if (selectedx == 7 && selectedy == 7){
+					} else if (chosenx == 7 && choseny == 7){
 						p2castle2 = 1;
 					} else if (buttonx == 0 && buttony == 0){
 						p1castle1 = 1;
 					} else if (buttonx == 7 && buttony == 0){
 						p1castle2 = 1;
 					}
-					if(grid[buttonx][buttony] == P2PAWN && selectedy-buttony == 2){
+					if(grid[buttonx][buttony] == P2PAWN && choseny-buttony == 2){
 						p2enpassant = buttonx;
 					} else {
 						p2enpassant = -1;
@@ -976,21 +977,21 @@ int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 					}
 				}
 
-				selectedx = -1;
-				selectedy = -1;
+				chosenx = -1;
+				choseny = -1;
 
 				//Checkmate decides winner
-				if(playerturn == 0 && checkmate(grid, 1)){
+				if(turn == 0 && checkmate(grid, 1)){
 					printf("PLAYER 1 WINS!\n");
 					ret = ARCADE;
-				} else if(playerturn == 1 && checkmate(grid, 0)){
+				} else if(turn == 1 && checkmate(grid, 0)){
 					printf("PLAYER 2 WINS!\n");
 					ret = ARCADE;
 				}
 
-				playerturn = 1-playerturn; //Swap to next player's turn
+				turn = 1-turn; //Swap to next player's turn
 
-			} else if(selectedx != -1){
+			} else if(chosenx != -1){
 
 				//Clear other potential moves
 				for(int i = 0; i < 8; i++){
@@ -1002,21 +1003,21 @@ int chess(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int 
 					}
 				}
 
-				selectedx = -1;
-				selectedy = -1;
+				chosenx = -1;
+				choseny = -1;
 
 				//Look at potential moves
-				if(grid[buttonx][buttony] != EMPTY && grid[buttonx][buttony] / 23 == playerturn){
-					selectedx = buttonx;
-					selectedy = buttony;
-					getmoves(grid, selectedx, selectedy, playerturn);
+				if(grid[buttonx][buttony] != EMPTY && grid[buttonx][buttony] / 23 == turn){
+					chosenx = buttonx;
+					choseny = buttony;
+					getmoves(grid, chosenx, choseny, turn);
 				}
 			} else {
 				//Look at potential moves
-				if(grid[buttonx][buttony] != EMPTY && grid[buttonx][buttony] / 23 == playerturn){
-					selectedx = buttonx;
-					selectedy = buttony;
-					getmoves(grid, selectedx, selectedy, playerturn);
+				if(grid[buttonx][buttony] != EMPTY && grid[buttonx][buttony] / 23 == turn){
+					chosenx = buttonx;
+					choseny = buttony;
+					getmoves(grid, chosenx, choseny, turn);
 				}
 			}
 		}

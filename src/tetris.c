@@ -5,7 +5,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define TETRIS 5
 
@@ -15,7 +16,7 @@
 #define RIGHT 1
 #define DOWN 2
 #define LEFT 3
-
+*/
 //Array of size [type = 7][height = ?][directions = 4][width = ?]
 const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} },
 											  {   { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} }, 
@@ -48,14 +49,14 @@ const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 
 
 const int dimensions[7] = {4, 3, 3, 2, 3, 3, 3};
 
-int rotationtop, delay, type, direction, bx, by, bwidth, bheight;
-int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
+int rotationtop, delay, type, blockdir, blockx, blocky, bwidth, bheight;
+int tetris(int **grid, SDL_Event event, int t, int width, int height){
 
 	if(t == 1){
 		type = rand() % 7;
-		direction = rand() % 4;
-		bx = width/2;
-		by = 0;
+		blockdir = rand() % 4;
+		blockx = width/2;
+		blocky = 0;
 		bwidth = dimensions[type];
 		bheight = dimensions[type];
 		rotationtop = height;
@@ -65,8 +66,8 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	for(int i = 0; i < bwidth; i++){
 		for(int j = 0; j < bheight; j++){
-			if(bx+i >= 0 && by+j >= 0 && blockshapes[type][j][direction][i]){
-				grid[bx+i][by+j] = EMPTY;
+			if(blockx+i >= 0 && blocky+j >= 0 && blockshapes[type][j][blockdir][i]){
+				grid[blockx+i][blocky+j] = EMPTY;
 			}
 		}
 	}
@@ -76,12 +77,12 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 		int stopped = 0;
 		switch( event.key.keysym.sym ){
 		case SDLK_UP:
-			if(bx+bwidth < width && by+bheight < rotationtop &&
-				bx >= 0 && by >= 0){
-				if(direction == LEFT){
-					direction = UP;
+			if(blockx+bwidth < width && blocky+bheight < rotationtop &&
+				blockx >= 0 && blocky >= 0){
+				if(blockdir == LEFT){
+					blockdir = UP;
 				} else {
-					direction++;
+					blockdir++;
 				}
 			}
 			break;
@@ -93,9 +94,9 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 		case SDLK_LEFT:
 			for(int i = 0; i < bwidth; i++){
 				for(int j = 0; j < bheight; j++){
-					if(blockshapes[type][j][direction][i] == 1 && 
-							(bx+i-1 < 0 || (bx+i-1 < width && 
-							grid[bx+i-1][by+j] != EMPTY))){
+					if(blockshapes[type][j][blockdir][i] == 1 && 
+							(blockx+i-1 < 0 || (blockx+i-1 < width && 
+							grid[blockx+i-1][blocky+j] != EMPTY))){
 						stopped = 1;
 						break;
 					}
@@ -105,15 +106,15 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 				}
 			}
 			if(!stopped){
-				bx--;
+				blockx--;
 			}
 			break;
 		case SDLK_RIGHT:
 			for(int i = 0; i < bwidth; i++){
 				for(int j = 0; j < bheight; j++){
-					if(blockshapes[type][j][direction][i] == 1 && 
-							(bx+i+1 >= width || (bx+i+1 > 0 && 
-							grid[bx+i+1][by+j] != EMPTY))){
+					if(blockshapes[type][j][blockdir][i] == 1 && 
+							(blockx+i+1 >= width || (blockx+i+1 > 0 && 
+							grid[blockx+i+1][blocky+j] != EMPTY))){
 						stopped = 1;
 						break;
 					}
@@ -123,7 +124,7 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 				}
 			}
 			if(!stopped){
-				bx++;
+				blockx++;
 			}
 			break;
 		}
@@ -137,12 +138,12 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	for(int i = 0; i < bwidth; i++){
 		for(int j = 0; j < bheight; j++){
-			if(blockshapes[type][j][direction][i] == 1 &&
-					by+j < height && bx+i >= 0 && by+j >= 0 &&
-					grid[bx+i][by+j+1] != EMPTY){
+			if(blockshapes[type][j][blockdir][i] == 1 &&
+					blocky+j < height && blockx+i >= 0 && blocky+j >= 0 &&
+					grid[blockx+i][blocky+j+1] != EMPTY){
 				fallen = 1;
 				break;
-			} else if(by+j+1 >= height && blockshapes[type][j][direction][i] == 1){
+			} else if(blocky+j+1 >= height && blockshapes[type][j][blockdir][i] == 1){
 				fallen = 1;
 				break;
 			}
@@ -153,28 +154,28 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 	}
 
 	if(!fallen && !delay){
-		by++;
+		blocky++;
 
 		delay = 4;
 	}
 
 	if(fallen){
 		//End game if blocks reach the top
-		if(by == 0){
+		if(blocky == 0){
 			printf("YOU LOSE!\n");
 			return ARCADE;
 		}
 		//Store block in place
 		for(int i = 0; i < bwidth; i++){
 			for(int j = 0; j < bheight; j++){
-				if(bx+i >= 0 && by+j >= 0 && blockshapes[type][j][direction][i]){
-					grid[bx+i][by+j] = type;
+				if(blockx+i >= 0 && blocky+j >= 0 && blockshapes[type][j][blockdir][i]){
+					grid[blockx+i][blocky+j] = type;
 				}
 			}
 		}
 		//Raise heighest block top value
-		if(by < rotationtop){
-			rotationtop = by;
+		if(blocky < rotationtop){
+			rotationtop = blocky;
 		}
 		//Check for line to erase
 		for(int i = rotationtop; i < height; i++){
@@ -197,9 +198,9 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 		}
 		//Make new block
 		type = rand() % 7;
-		direction = rand() % 4;
-		bx = width/2;
-		by = 0;
+		blockdir = rand() % 4;
+		blockx = width/2;
+		blocky = 0;
 		bwidth = dimensions[type];
 		bheight = dimensions[type];
 
@@ -208,8 +209,8 @@ int tetris(int **grid, SDL_Event event, int game, int t, int width, int height){
 
 	for(int i = 0; i < bwidth; i++){
 		for(int j = 0; j < bheight; j++){
-			if(bx+i >= 0 && by+j >= 0 && blockshapes[type][j][direction][i]){
-				grid[bx+i][by+j] = type;
+			if(blockx+i >= 0 && blocky+j >= 0 && blockshapes[type][j][blockdir][i]){
+				grid[blockx+i][blocky+j] = type;
 			}
 		}
 	}

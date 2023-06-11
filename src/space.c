@@ -4,23 +4,24 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define SPACE 6
 
 #define EMPTY -1
-#define PLAYER 0
-#define ENEMY 1
+#define PLAYER 1
+#define ENEMY 0
 #define EBULLET 2
 #define PBULLET 3
 #define HOUSE 4
 #define MOVED -2
 
 #define LAG 8
-
+*/
 int invadersx = 0, invadersy = 0, invcount = 0, playerx = 0, playery = 0, enemylag = 0, househealth = 0;
 int *invfire;
-int space(int **grid, SDL_Event event, int game, int t, int width, int height){
+int space(int **grid, SDL_Event event, int t, int width, int height){
 	if(t == 1){
 		invcount = 0;
 		invadersx = 0;

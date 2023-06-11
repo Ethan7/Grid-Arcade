@@ -6,4 +6,7 @@ RELEASE 0.8 x86_64.zip
 buildlin
 buildwin
 src/sudokutest/test
+src/.idea
 .vscode
+.idea
+.dccache

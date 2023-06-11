@@ -4,7 +4,8 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define FLAPPY 10
 
@@ -13,12 +14,12 @@
 #define BIRD 1
 
 #define HOLESIZE 5
-
-int flappyy, spacing;
-int flappy(int **grid, SDL_Event event, int game, int t, int width, int height){
+*/
+int flappyy;
+int flappy(int **grid, SDL_Event event, int t, int width, int height){
+	int spacing = height/2;
 
 	if(t == 1){
-		spacing = height/2;
 		flappyy = height/2;
 	}
 

@@ -5,18 +5,19 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define PATH 2
 
 #define EMPTY -1
 #define WALL 0
 #define CLOSED 1
-#define OPEN 2
-#define FINAL 3
-#define END 4
-#define START 5
-
+#define START 2
+#define END 3
+#define OPEN 4
+#define FINAL 5
+*/
 struct node{
 	int type;
 	int gCost, hCost;
@@ -131,7 +132,7 @@ void neighborFunction(int neighborx, int neighbory, double neighborCost, struct 
 	}
 }
 
-int path(int **grid, SDL_Event event, int game, int t, int width, int height){
+int path(int **grid, SDL_Event event, int t, int width, int height){
 	int ret = PATH;
 
 	if(t == 1){

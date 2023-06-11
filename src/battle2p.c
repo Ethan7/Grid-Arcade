@@ -5,7 +5,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define BATTLE2 16
 
@@ -15,14 +16,13 @@
 #define P1SHIPATTACKED 2
 #define P2SHIP 3
 #define P2SHIPATTACKED 5
-
+*/
 int **undergrid1, **undergrid2;
 int cannonballs1, cannonballs2;
 int shipcount;
 int phase;
 int shipsplaced;
-int dir;
-int ret;
+int direction;
 void phase1(int width, int height, int newship, int **grid, int **undergrid, int newphase, int x, int y, int dir){
 	//Place all the ships
 	int shipsize = shipsplaced / 2 + 2; //Place increasingly larger ships
@@ -131,7 +131,9 @@ int phase2(int **grid, int x, int y, int width, int height, int player){
 	return 0;
 }
 
-int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height){
+int battle2(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
+	int ret = BATTLE2;
+
 	if(t == 1){
 		cannonballs1 = width*height/3; //Only enough cannonballs to test 1/3 of the spaces
 		cannonballs2 = width*height/3;
@@ -149,8 +151,7 @@ int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 		shipcount = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
 		phase = 0;
 		shipsplaced = 0;
-		dir = 0;
-		ret = BATTLE2;
+		direction = 0;
 	}
 
 	//Respond to user input
@@ -160,10 +161,10 @@ int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1 && grid[buttonx][buttony] == EMPTY){
 			switch(phase){
 			case 0:
-				phase1(width, height, P1SHIP, grid, undergrid1, 1, buttonx, buttony, dir);
+				phase1(width, height, P1SHIP, grid, undergrid1, 1, buttonx, buttony, direction);
 				break;
 			case 1:
-				phase1(width, height, P2SHIP, grid, undergrid2, 2, buttonx, buttony, dir);
+				phase1(width, height, P2SHIP, grid, undergrid2, 2, buttonx, buttony, direction);
 				break;
 			case 2:
 				if(phase2(grid, buttonx, buttony, width, height, 1) == 1){
@@ -210,7 +211,7 @@ int battle2(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, in
 				break;
 			}
 		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT){
-			dir = 1 - dir;
+			direction = 1 - direction;
 		}
 	}
 

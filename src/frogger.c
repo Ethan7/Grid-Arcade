@@ -4,7 +4,8 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define FROGGER 7
 
@@ -13,10 +14,11 @@
 #define CAR 1
 #define FROG 2
 #define WATER 3
-
+*/
 int frogx, frogy, placeholder;
 int *rowspeed, *carloglen, *spacing, **gridcopy;
 
+//Memory cleanup for end of frame
 void cleanup(int width){
 	free(rowspeed);
 	free(carloglen);
@@ -27,7 +29,7 @@ void cleanup(int width){
 	free(gridcopy);
 }
 
-int frogger(int **grid, SDL_Event event, int game, int t, int width, int height){
+int frogger(int **grid, SDL_Event event, int t, int width, int height){
 
 	if(t == 1){
 		gridcopy = (int **) calloc(width, sizeof(int *));
@@ -105,6 +107,7 @@ int frogger(int **grid, SDL_Event event, int game, int t, int width, int height)
 		}
 	}
 
+	//Store grid
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
 			gridcopy[i][j] = grid[i][j];
@@ -152,6 +155,7 @@ int frogger(int **grid, SDL_Event event, int game, int t, int width, int height)
 		}
 	}
 
+	//Update grid
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height-1; j++){
 			grid[i][j] = gridcopy[i][j];

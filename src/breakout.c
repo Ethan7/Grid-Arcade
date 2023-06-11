@@ -5,7 +5,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define BREAKOUT 18
 
@@ -17,20 +18,20 @@
 #define GREEN 2
 #define BLUE 3
 #define YELLOW 4
-
-int paddlelen, px, bx, by, bxv, byv, speedLimit, pmomentum, pmomentumlife, lives, blocks;
-int breakout(int **grid, SDL_Event event, int game, int t, int width, int height){
+*/
+int paddlelen, paddlex, bx, by, bxv, byv, pmomentum, pmomentumlife, lives, blocks;
+int breakout(int **grid, SDL_Event event, int t, int width, int height){
+	int speedLimit = 4;
 
 	if(t == 1){
 		paddlelen = width/5;
-		px = 4*width/10;
+		paddlex = 4*width/10;
 		bx = width/2;
 		by = height/2;
 		bxv = 0;
 		byv = 1;
 		pmomentum = 0;
 		pmomentumlife = 0;
-		speedLimit = 4;
 		lives = 3;
 		blocks = 0;
 		for(int i = 0; i < width; i++){
@@ -53,7 +54,7 @@ int breakout(int **grid, SDL_Event event, int game, int t, int width, int height
 
 	//Erase old Ball and Paddle positions
 	for(int i = 0; i < paddlelen; i++){
-		grid[px+i][height-1] = EMPTY;
+		grid[paddlex+i][height-1] = EMPTY;
 	}
 	grid[bx][by] = EMPTY;
 
@@ -67,15 +68,15 @@ int breakout(int **grid, SDL_Event event, int game, int t, int width, int height
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
 		case SDLK_LEFT:
-			if(px > 0){
-				px--;
+			if(paddlex > 0){
+				paddlex--;
 				pmomentum = -1;
 				pmomentumlife = 3;
 			}
 			break;
 		case SDLK_RIGHT:
-			if(px < width-1-paddlelen){
-				px++;
+			if(paddlex < width-1-paddlelen){
+				paddlex++;
 				pmomentum = 1;
 				pmomentumlife = 3;
 			}
@@ -146,7 +147,7 @@ int breakout(int **grid, SDL_Event event, int game, int t, int width, int height
 		lives--;
 		byv *= -1;
 		printf("Lives Remaining: %d\n", lives);
-	} else if(bx < px+paddlelen && bx+1 > px && by+1 > height-1-byv && byv > 0){
+	} else if(bx < paddlex+paddlelen && bx+1 > paddlex && by+1 > height-1-byv && byv > 0){
 		//Ball bounces off of paddle
 		bxv += pmomentum;
 		byv *= -1;
@@ -155,7 +156,7 @@ int breakout(int **grid, SDL_Event event, int game, int t, int width, int height
 		} else if(bxv < -speedLimit){
 			bxv = -speedLimit;
 		}
-	} else if(bx < px+paddlelen && bx+2 > px && by+1 > height-1-byv && byv > 0 && bxv > 0){
+	} else if(bx < paddlex+paddlelen && bx+2 > paddlex && by+1 > height-1-byv && byv > 0 && bxv > 0){
 		//Edge case diagonal ball at corner of paddle left
 		bxv += pmomentum;
 		byv *= -1;
@@ -164,7 +165,7 @@ int breakout(int **grid, SDL_Event event, int game, int t, int width, int height
 		} else if(bxv < -speedLimit){
 			bxv = -speedLimit;
 		}
-	} else if(bx < px+paddlelen+1 && bx+1 > px && by+1 > height-1-byv && byv > 0 && bxv < 0){
+	} else if(bx < paddlex+paddlelen+1 && bx+1 > paddlex && by+1 > height-1-byv && byv > 0 && bxv < 0){
 		//Edge case diagonal ball at corner of paddle right
 		bxv += pmomentum;
 		byv *= -1;
@@ -189,7 +190,7 @@ int breakout(int **grid, SDL_Event event, int game, int t, int width, int height
 
 	//Draw Ball and Paddle
 	for(int i = 0; i < paddlelen; i++){
-		grid[px+i][height-1] = PADDLE;
+		grid[paddlex+i][height-1] = PADDLE;
 	}
 	grid[bx][by] = BALL;
 

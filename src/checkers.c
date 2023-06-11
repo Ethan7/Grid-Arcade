@@ -4,7 +4,8 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include"arcade-defs.h"
+/*
 #define ARCADE 0
 #define CHECKERS 12
 
@@ -15,7 +16,7 @@
 #define P2KING 3
 #define P1MOVE 4
 #define P2MOVE 5
-
+*/
 int selectedx, selectedy, player, playerking, playermove, opponent, opponentking, opponentmove, p1pieces, p2pieces, followup;
 
 //Determine all potential moves with given piece and display them
@@ -114,7 +115,7 @@ int moveset(int **grid, int width, int height, int i, int j, int recurs){
 	return followups;
 }
 
-int checkers(int **grid, SDL_Event eventbutton, int game, int t, int cellsize, int width, int height){
+int checkers(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
 
 	if(t == 1){
 		followup = 0;
