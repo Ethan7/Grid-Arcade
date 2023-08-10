@@ -838,7 +838,7 @@ int checkmate(int **grid, int pturn){
 	return pturn+1;
 }
 
-int chess(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
+int chess(int **grid, SDL_Event eventbutton, int t, int cellsize){
 	int ret = CHESS;
 
 	if(t == 1){

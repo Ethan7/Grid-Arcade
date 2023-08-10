@@ -105,52 +105,32 @@ void clear(int **grid, int width, int height){
 
 enum GAMEMODE arcade(SDL_Event event, int width, int height, enum GAMEMODE *setupgame){
 	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
-		switch(((event.button.y / (height/((ROWS/2)+2))) * 2) - 2 + (event.button.x / (width/2))){
+		int index = ((event.button.y / (height/((ROWS/2)+2))) * 2) - 2 + (event.button.x / (width/2));
+		switch(index){
 		case 2:
-			return SNAKE;
-		case 3:
-			*setupgame = PATH;
-			return SETUP;
 		case 4:
-			return MAZES;
 		case 5:
-			return PONG;
 		case 6:
-			return TETRIS;
 		case 7:
-			return SPACE;
 		case 8:
-			return FROGGER;
-		case 9:
-			*setupgame = CONWAY;
-			return SETUP;
-		case 10:
-			*setupgame = LANGSTON;
-			return SETUP;
 		case 11:
-			return FLAPPY;
 		case 12:
-			return CONNECT4;
 		case 13:
-			return CHECKERS;
 		case 14:
-			return MINES;
 		case 15:
-			return CHESS;
 		case 16:
-			return BATTLE1;
 		case 17:
-			return BATTLE2;
 		case 18:
-			return SUDOKU;
 		case 19:
-			return BREAKOUT;
 		case 20:
-			return COLLAPSE;
 		case 21:
-			return TRON;
 		case 22:
-			return SETTINGS;
+			return index-1;
+		case 3:
+		case 9:
+		case 10:
+			*setupgame = index-1;
+			return SETUP;
 		default:
 			break;
 		}
@@ -276,7 +256,7 @@ int checkers(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, 
 
 int mines(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
-int chess(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
+int chess(int **grid, SDL_Event eventbutton, int t, int cellsize);
 
 int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height);
 
@@ -420,9 +400,9 @@ int main(int argc, char **argv){
 		t++;
 
 		//Input Step
-		SDL_Event leftrightbutton;
+		SDL_Event leftrightbutton; //stores mouse buttons + return and r keys
 		leftrightbutton.type = SDL_USEREVENT;
-		SDL_Event direction;
+		SDL_Event direction; //stores direction + return keys
 		direction.type = SDL_USEREVENT;
 
 		while(SDL_PollEvent( &event ) != 0 || paused){
@@ -619,7 +599,7 @@ int main(int argc, char **argv){
 			}
 			break;
 		case CHESS:
-			if((game = chess(grid, leftrightbutton, t, cellsize, width, height)) != CHESS){
+			if((game = chess(grid, leftrightbutton, t, cellsize)) != CHESS){
 				game = CHESS;
 				delay = 1;
 			}

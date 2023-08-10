@@ -11,7 +11,7 @@ Extract the game from the x86_64 zip file into one folder and play.
 Extract the game from the linux zip file into one folder, then give executable permissions to the folder with chmod and play.
 
 ## Compile on Linux
-1) Install essential packages:
+1) Install essential packages (for debian/apt users):
 ```
 sudo apt-get install build-essential
 sudo apt-get install gcc-mingw-w64

@@ -6,6 +6,7 @@ RELEASE 0.9 x86_64.zip
 buildlin
 buildwin
 src/sudokutest/test
+src/priorityqueue
 src/.idea
 .vscode
 .idea
