@@ -10,10 +10,10 @@
 #define CHECKERS 12
 
 #define EMPTY -1
-#define P1PAWN 0
-#define P2PAWN 1
-#define P1KING 2
-#define P2KING 3
+#define P1CPAWN 0
+#define P2CPAWN 1
+#define P1CKING 2
+#define P2CKING 3
 #define P1MOVE 4
 #define P2MOVE 5
 */
@@ -23,7 +23,7 @@ int selectedx, selectedy, player, playerking, playermove, opponent, opponentking
 int moveset(int **grid, int width, int height, int i, int j, int recurs){
 	int followups = 0;
 	if(grid[i][j] == player){
-		if(player == P2PAWN && j > 0){
+		if(player == P2CPAWN && j > 0){
 			if(i > 0){
 				if(grid[i-1][j-1] == opponent || grid[i-1][j-1] == opponentking){
 					if(i-1 > 0 && j-1 > 0 && grid[i-2][j-2] == EMPTY){
@@ -44,7 +44,7 @@ int moveset(int **grid, int width, int height, int i, int j, int recurs){
 					grid[i+1][j-1] = playermove;
 				}
 			}
-		} else if(player == P1PAWN && j < height-1){
+		} else if(player == P1CPAWN && j < height-1){
 			if(i > 0){
 				if(grid[i-1][j+1] == opponent || grid[i-1][j+1] == opponentking){
 					if(i-1 > 0 && j+1 < height-1 && grid[i-2][j+2] == EMPTY){
@@ -121,26 +121,26 @@ int checkers(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, 
 		followup = 0;
 		selectedx = -1;
 		selectedy = -1;
-		player = P1PAWN;
-		playerking = P1KING;
+		player = P1CPAWN;
+		playerking = P1CKING;
 		playermove = P1MOVE;
-		opponent = P2PAWN;
-		opponentking = P2KING;
+		opponent = P2CPAWN;
+		opponentking = P2CKING;
 		opponentmove = P2MOVE;
 		p1pieces = 0;
 		p2pieces = 0;
 		//Setup initial board pieces
 		for(int i = 0; i < width; i++){
 			if(i % 2 == 0){
-				grid[i][0] = P1PAWN;
-				grid[i][2] = P1PAWN;
-				grid[i][height-2] = P2PAWN;
+				grid[i][0] = P1CPAWN;
+				grid[i][2] = P1CPAWN;
+				grid[i][height-2] = P2CPAWN;
 				p1pieces += 2;
 				p2pieces += 1;
 			} else {
-				grid[i][1] = P1PAWN;
-				grid[i][height-1] = P2PAWN;
-				grid[i][height-3] = P2PAWN;
+				grid[i][1] = P1CPAWN;
+				grid[i][height-1] = P2CPAWN;
+				grid[i][height-3] = P2CPAWN;
 				p1pieces += 1;
 				p2pieces += 2;
 			}
@@ -157,10 +157,10 @@ int checkers(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, 
 				//Move piece
 				grid[buttonx][buttony] = grid[selectedx][selectedy];
 				grid[selectedx][selectedy] = EMPTY;
-				if(grid[buttonx][buttony] == P1PAWN && buttony == height-1){
-					grid[buttonx][buttony] = P1KING;
-				} else if(grid[buttonx][buttony] == P2PAWN && buttony == 0){
-					grid[buttonx][buttony] = P2KING;
+				if(grid[buttonx][buttony] == P1CPAWN && buttony == height-1){
+					grid[buttonx][buttony] = P1CKING;
+				} else if(grid[buttonx][buttony] == P2CPAWN && buttony == 0){
+					grid[buttonx][buttony] = P2CKING;
 				}
 				//Erase other potential moves
 				for(int i = 0; i < width; i++){
@@ -176,7 +176,7 @@ int checkers(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, 
 				int takeny = (buttony+selectedy)/2;
 				if(grid[takenx][takeny] == opponent || grid[takenx][takeny] == opponentking){
 					grid[takenx][takeny] = EMPTY;
-					if(opponent == P1PAWN){
+					if(opponent == P1CPAWN){
 						p1pieces--;
 					} else {
 						p2pieces--;
