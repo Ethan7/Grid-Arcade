@@ -25,7 +25,7 @@
 #define PMOVE 2
 */
 int chosenx, choseny, p1castle1, p1castle2, p2castle1, p2castle2, turn, p1kingx, p1kingy, p2kingx, p2kingy, p1enpassant, p2enpassant;
-int **movegrid;
+int movegrid[8][8];
 
 //Deternube if after the given move your king is left exposed
 int kingatrisk(int **grid, int beforex, int beforey, int afterx, int aftery, int pturn){
@@ -842,9 +842,7 @@ int chess(int **grid, SDL_Event eventbutton, int t, int cellsize){
 	int ret = CHESS;
 
 	if(t == 1){
-		movegrid = (int **) calloc(8, sizeof(int *));
 		for(int i = 0; i < 8; i++){
-			movegrid[i] = (int *) calloc(8, sizeof(int));
 			for(int j = 0; j < 8; j++){
 				movegrid[i][j] = EMPTY;
 				grid[i][j] = EMPTY;
@@ -1021,14 +1019,6 @@ int chess(int **grid, SDL_Event eventbutton, int t, int cellsize){
 				}
 			}
 		}
-	}
-
-	//Free Dynamic Memory
-	if(ret == ARCADE){
-		for(int i = 0; i < 8; i++){
-			free(movegrid[i]);
-		}
-		free(movegrid);
 	}
 
 	return ret;

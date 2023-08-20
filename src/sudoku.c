@@ -24,18 +24,18 @@
 #define EIGHT 15
 #define NINE 16
 */
-int **sudokugrid;
+int sudokugrid[9][9];
 int stopper;
 
 //Guess checker
 int sudokuhelper(int x, int y, int guess){
 	for(int i = 0; i < 9; i++){
-		if(sudokugrid[i][y] == guess && x != i){
+		if(sudokugrid[i][y] == guess){
 			return 0;
 		}
 	}
 	for(int i = 0; i < 9; i++){
-		if(sudokugrid[x][i] == guess && y != i){
+		if(sudokugrid[x][i] == guess){
 			return 0;
 		}
 	}
@@ -45,7 +45,7 @@ int sudokuhelper(int x, int y, int guess){
 	int y1 = y0+3;
 	for(int i = x0; i < x1; i++){
 		for(int j = y0; j < y1; j++){
-			if(sudokugrid[i][j] == guess && (x != i || y != j)){
+			if(sudokugrid[i][j] == guess){
 				return 0;
 			}
 		}
@@ -106,7 +106,7 @@ void sudokugenerate(int **grid){
 				x = rand() % 9;
 				y = rand() % 9;
 				guess = rand() % 9;
-			} while(sudokuhelper(x, y, guess) == 0);
+			} while(sudokugrid[x][y] != EMPTY || sudokuhelper(x, y, guess) == 0);
 			sudokugrid[x][y] = guess;
 		}
 		stopper = 0;
@@ -129,12 +129,9 @@ int sudoku(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, in
 	int ret = SUDOKU;
 
 	if(t == 1){
-		//Allocate grid and set random seed
+		//set random seed
 		srand(time(NULL));
-		sudokugrid = (int **) calloc(9, sizeof(int *));
-		for(int i = 0; i < 9; i++){
-			sudokugrid[i] = (int *) calloc(9, sizeof(int));
-		}
+
 		//Generate Sudoku
 		sudokugenerate(grid);
 	}
@@ -177,14 +174,6 @@ int sudoku(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, in
 			}
 			break;
 		}
-	}
-
-	//Free Dynamic Memory
-	if(ret == ARCADE){
-		for(int i = 0; i < width; i++){
-			free(sudokugrid[i]);
-		}
-		free(sudokugrid);
 	}
 
 	return ret;
