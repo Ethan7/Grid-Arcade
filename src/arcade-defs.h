@@ -15,7 +15,7 @@ enum CHESSPIECE {P1PAWN = 17, P1ROOK, P1BISHOP, P1KNIGHT, P1QUEEN, P1KING,
 P2PAWN, P2ROOK, P2BISHOP, P2KNIGHT, P2QUEEN, P2KING};
 
 //Menu image defines
-enum MENUIMG {settings_img = 57, fullscreen_img = 30, confirm_img, cancel_img, 
+enum MENUIMG {settings_img = 59, fullscreen_img = 30, confirm_img, cancel_img, 
 width_img, height_img, cellsize_img, arrow_img, arrow_flip, TITLE};
 
 enum COUNTS {TEXTURES = 60};

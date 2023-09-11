@@ -1,7 +1,7 @@
 # Written 2/23/2020 #
 CC=gcc
 
-CFLAGS=-Wall -lm -lSDL2 -lSDL2_image -lSDL2main -g
+CFLAGS=-Wall -lm -lSDL2 -lSDL2_image -lSDL2main -O3
 
 MKDIR= mkdir -p
 

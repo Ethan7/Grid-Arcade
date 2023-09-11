@@ -1,7 +1,7 @@
 # Written 2/23/2020 #
 CC=i686-w64-mingw32-gcc
 
-CFLAGS=-I../SDL2/SDL2/i686-w64-mingw32/include -I../SDL2/SDL2/i686-w64-mingw32/include/SDL2 -I../SDL2/SDL2_image/i686-w64-mingw32/include -L../SDL2/SDL2/i686-w64-mingw32/lib -L../SDL2/SDL2_image/i686-w64-mingw32/lib -Wall -lm -lSDL2 -lSDL2_image -lSDL2main -g
+CFLAGS=-I../SDL2/SDL2/i686-w64-mingw32/include -I../SDL2/SDL2/i686-w64-mingw32/include/SDL2 -I../SDL2/SDL2_image/i686-w64-mingw32/include -L../SDL2/SDL2/i686-w64-mingw32/lib -L../SDL2/SDL2_image/i686-w64-mingw32/lib -Wall -lm -lSDL2 -lSDL2_image -lSDL2main -O3
 
 MKDIR= mkdir -p
 

@@ -77,7 +77,7 @@
 
 //Menu image defines
 #define TITLE 38
-#define settings_img 57
+#define settings_img 59
 #define fullscreen_img 30
 #define confirm_img 31
 #define cancel_img 32

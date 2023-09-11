@@ -114,6 +114,57 @@ void sudokuwave(int x, int y, int guess, int sudokucollapse[9][9][9], int sudoku
 	}
 }
 
+void uniquecollapse(int sudokucollapse[9][9][9], int sudokucount[9][9], int *count){
+	int guessrow;
+	int guesscol;
+	int guessbox;
+	int rowx = -1;
+	int rowy = -1;
+	int colx = -1;
+	int coly = -1;
+	int boxx = -1;
+	int boxy = -1;
+	for(int k = 0; k < 9; k++){
+		for(int i = 0; i < 9; i++){
+			guessrow = 0;
+			guesscol = 0;
+			guessbox = 0;
+			for(int j = 0; j < 9; j++){
+				if(sudokucollapse[i][j][k] == 0){
+					rowx = i;
+					rowy = j;
+					guessrow++;
+				}
+				if(sudokucollapse[j][i][k] == 0){
+					colx = j;
+					coly = i;
+					guesscol++;
+				}
+				if(sudokucollapse[i*3+j%3][j/3+i-i%3][k] == 0){
+					boxx = i*3+j%3;
+					boxy = j/3+i-i%3;
+					guessbox++;
+				}
+			}
+			if(guessrow == 1){
+				sudokugrid[rowx][rowy] = k;
+				sudokuwave(rowx, rowy, k, sudokucollapse, sudokucount, count);
+				(*count)++;
+			}
+			if(guesscol == 1){
+				sudokugrid[colx][coly] = k;
+				sudokuwave(colx, coly, k, sudokucollapse, sudokucount, count);
+				(*count)++;
+			}
+			if(guessbox == 1){
+				sudokugrid[boxx][boxy] = k;
+				sudokuwave(boxx, boxy, k, sudokucollapse, sudokucount, count);
+				(*count)++;
+			}
+		}
+	}
+}
+
 //Generate new sudokugrid and display it on the main grid
 void sudokugenerate(int **grid){
 	int sudokucount[9][9];
@@ -165,6 +216,7 @@ void sudokugenerate(int **grid){
 			memcpy(sudokufinal, sudokugrid, sizeof(sudokufinal));
 			hintcount = i;
 			sudokuwave(x, y, guess, sudokucollapse, sudokucount, &i);
+			uniquecollapse(sudokucollapse, sudokucount, &i);
 		}
 	} while(stopper == 10000 || solutionhelper() || hintcount > 40);
 	//Get the number of hints and display the generated sudoku
