@@ -14,21 +14,21 @@
 #define PADDLE 0
 #define BALL 1
 */
-int paddle1len, p1y, paddle2len, p2y, ballx, bally, ballxv, ballyv, p1momentum, p2momentum;
+int paddle1_length, p1y, paddle2_length, p2y, ball_x, ball_y, ball_xv, ball_yv, p1_momentum, p2_momentum;
 int pong(int **grid, SDL_Event event, int t, int width, int height){
-	int speedLimit = 4;
+	int speed_limit = 4;
 
 	if(t == 1){
-		paddle1len = 4;
-		paddle2len = 4;
+		paddle1_length = 4;
+		paddle2_length = 4;
 		p1y = height >> 1;
 		p2y = height >> 1;
-		ballx = width >> 1;
-		bally = height >> 1;
-		ballxv = 1;
-		ballyv = 0;
-		p1momentum = 0;
-		p2momentum = 0;
+		ball_x = width >> 1;
+		ball_y = height >> 1;
+		ball_xv = 1;
+		ball_yv = 0;
+		p1_momentum = 0;
+		p2_momentum = 0;
 	}
 
 	//Respond to user input
@@ -37,25 +37,25 @@ int pong(int **grid, SDL_Event event, int t, int width, int height){
 		case SDLK_UP:
 			if(p2y > 0){
 				p2y--;
-				p2momentum = -1;
+				p2_momentum = -1;
 			}
 			break;
 		case SDLK_DOWN:
-			if(p2y < height-1-paddle2len){
+			if(p2y < height-1-paddle2_length){
 				p2y++;
-				p2momentum = 1;
+				p2_momentum = 1;
 			}
 			break;
 		case SDLK_w:
 			if(p1y > 0){
 				p1y--;
-				p1momentum = -1;
+				p1_momentum = -1;
 			}
 			break;
 		case SDLK_s:
-			if(p1y < height-1-paddle1len){
+			if(p1y < height-1-paddle1_length){
 				p1y++;
-				p1momentum = 1;
+				p1_momentum = 1;
 			}
 			break;
 		}
@@ -66,40 +66,40 @@ int pong(int **grid, SDL_Event event, int t, int width, int height){
 	//Apply Movement
 
 	//Ball Movement
-	ballx += ballxv;
-	bally += ballyv;
+	ball_x += ball_xv;
+	ball_y += ball_yv;
 
 	//AABB Collisions
-	if(bally < -ballyv && ballyv < 0){
-		ballyv *= -1;
-		bally = 0;
-	} else if(bally+1 > height-ballyv && ballyv > 0){
-		ballyv *= -1;
-		bally = height-1;
+	if(ball_y < -ball_yv && ball_yv < 0){
+		ball_yv *= -1;
+		ball_y = 0;
+	} else if(ball_y+1 > height-ball_yv && ball_yv > 0){
+		ball_yv *= -1;
+		ball_y = height-1;
 	}
-	if(bally < p1y+paddle1len && bally+1 > p1y && ballx < 1-ballxv && ballxv < 0){
-		ballxv *= -1;
-		ballyv += p1momentum;
-		if(ballyv > speedLimit){
-			ballyv = speedLimit;
-		} else if(ballyv < -speedLimit){
-			ballyv = -speedLimit;
+	if(ball_y < p1y+paddle1_length && ball_y+1 > p1y && ball_x < 1-ball_xv && ball_xv < 0){
+		ball_xv *= -1;
+		ball_yv += p1_momentum;
+		if(ball_yv > speed_limit){
+			ball_yv = speed_limit;
+		} else if(ball_yv < -speed_limit){
+			ball_yv = -speed_limit;
 		}
-	} else if(bally < p2y+paddle2len && bally+1 > p2y && ballx+1 >width-1-ballxv && ballxv > 0){
-		ballxv *= -1;
-		ballyv += p2momentum;
-		if(ballyv > speedLimit){
-			ballyv = speedLimit;
-		} else if(ballyv < -speedLimit){
-			ballyv = -speedLimit;
+	} else if(ball_y < p2y+paddle2_length && ball_y+1 > p2y && ball_x+1 >width-1-ball_xv && ball_xv > 0){
+		ball_xv *= -1;
+		ball_yv += p2_momentum;
+		if(ball_yv > speed_limit){
+			ball_yv = speed_limit;
+		} else if(ball_yv < -speed_limit){
+			ball_yv = -speed_limit;
 		}
 	}
 
 	//Win Condition
-	if(ballx+1 >= width){
+	if(ball_x+1 >= width){
 		printf("Player 1 Wins\n");
 		return ARCADE;
-	} else if(ballx <= 0){
+	} else if(ball_x <= 0){
 		printf("Player 2 Wins\n");
 		return ARCADE;
 	}
@@ -110,13 +110,13 @@ int pong(int **grid, SDL_Event event, int t, int width, int height){
 			grid[i][j] = EMPTY;
 		}
 	}
-	for(int i = 0; i < paddle1len; i++){
+	for(int i = 0; i < paddle1_length; i++){
 		grid[0][p1y+i] = PADDLE;
 	}
-	for(int i = 0; i < paddle2len; i++){
+	for(int i = 0; i < paddle2_length; i++){
 		grid[width-1][p2y+i] = PADDLE;
 	}
-	grid[ballx][bally] = BALL;
+	grid[ball_x][ball_y] = BALL;
 
 	return PONG;
 }

@@ -15,54 +15,54 @@
 #define SHIP 1
 #define CLEAR 0
 */
-int **shipgrid;
+int **ship_grid;
 int cannonballs;
-int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
+int battle1(int **grid, SDL_Event event, int t, int cellsize, int width, int height){
 	int ret = BATTLE1;
 
 	if(t == 1){
 		srand(time(NULL));
 		cannonballs = width*height/3; //Only enough cannonballs to test 1/3 of the spaces
-		//Allocate shipgrid
-		shipgrid = (int **) calloc(width, sizeof(int *));
+		//Allocate ship_grid
+		ship_grid = (int **) calloc(width, sizeof(int *));
 		for(int i = 0; i < width; i++){
-			shipgrid[i] = (int *) calloc(height, sizeof(int));
+			ship_grid[i] = (int *) calloc(height, sizeof(int));
 		}
-		int shipcount = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
+		int ship_count = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
 		//Place all the ships
-		for(int i = 0; i < shipcount; i++){
-			int shipsize = i / 2 + 2; //Place increasingly larger ships
-			int shipunplaced = 1;
+		for(int i = 0; i < ship_count; i++){
+			int ship_size = i / 2 + 2; //Place increasingly larger ships
+			int ship_unplaced = 1;
 			//Loop until the current ship has been placed without overlapping other ships or running offscreen
-			while(shipunplaced){
+			while(ship_unplaced){
 				//Choose random ship position and direction
 				int x = rand() % width;
 				int y = rand() % height;
 				int dir = rand() % 2;
-				for(int j = 0; j < shipsize; j++){
+				for(int j = 0; j < ship_size; j++){
 					if(j > 0){
 						if(dir == 0 && x + j >= width){
 							break;
 						} else if(dir == 1 && y + j >= height){
 							break;
-						} else if(dir == 0 && shipgrid[x+j][y] == SHIP){
+						} else if(dir == 0 && ship_grid[x+j][y] == SHIP){
 							break;
-						} else if(dir == 1 && shipgrid[x][y+j] == SHIP){
+						} else if(dir == 1 && ship_grid[x][y+j] == SHIP){
 							break;
 						}
-					} else if(shipgrid[x][y] == SHIP){
+					} else if(ship_grid[x][y] == SHIP){
 						break;
 					}
 					//Place current ship
-					if(j == shipsize-1){
-						for(int k = 0; k < shipsize; k++){
+					if(j == ship_size-1){
+						for(int k = 0; k < ship_size; k++){
 							if(dir == 0){
-								shipgrid[x+k][y] = SHIP;
+								ship_grid[x+k][y] = SHIP;
 							} else {
-								shipgrid[x][y+k] = SHIP;
+								ship_grid[x][y+k] = SHIP;
 							}
 						}
-						shipunplaced = 0;
+						ship_unplaced = 0;
 					}
 				}
 			}
@@ -70,13 +70,13 @@ int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, i
 	}
 
 	//Respond to user input
-	if(eventbutton.type == SDL_MOUSEBUTTONUP){
-		int buttonx = eventbutton.button.x / cellsize;
-		int buttony = eventbutton.button.y / cellsize;
-		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1 && grid[buttonx][buttony] == EMPTY){
-			grid[buttonx][buttony] = shipgrid[buttonx][buttony];
+	if(event.type == SDL_MOUSEBUTTONUP){
+		int button_x = event.button.x / cellsize;
+		int button_y = event.button.y / cellsize;
+		if(event.button.button == SDL_BUTTON_LEFT && button_x < width && button_y < height && button_x > -1 && button_y > -1 && grid[button_x][button_y] == EMPTY){
+			grid[button_x][button_y] = ship_grid[button_x][button_y];
 			cannonballs--;
-			if(grid[buttonx][buttony] == SHIP){
+			if(grid[button_x][button_y] == SHIP){
 				printf("HIT! %d cannonballs left.\n", cannonballs);
 			} else {
 				printf("MISS! %d cannonballs left.\n", cannonballs);
@@ -85,7 +85,7 @@ int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, i
 			int winflag = 1;
 			for(int i = 0; i < width; i++){
 				for(int j = 0; j < height; j++){
-					if(shipgrid[i][j] == SHIP && grid[i][j] == EMPTY){
+					if(ship_grid[i][j] == SHIP && grid[i][j] == EMPTY){
 						winflag = 0;
 					}
 				}
@@ -96,7 +96,7 @@ int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, i
 			} else if(cannonballs == 0){
 				for(int i = 0; i < width; i++){
 					for(int j = 0; j < height; j++){
-						if(shipgrid[i][j] == SHIP){
+						if(ship_grid[i][j] == SHIP){
 							grid[i][j] = SHIP;
 						}
 					}
@@ -110,9 +110,9 @@ int battle1(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, i
 	//Free Dynamic Memory
 	if(ret == ARCADE){
 		for(int i = 0; i < width; i++){
-			free(shipgrid[i]);
+			free(ship_grid[i]);
 		}
-		free(shipgrid);
+		free(ship_grid);
 	}
 
 	return ret;

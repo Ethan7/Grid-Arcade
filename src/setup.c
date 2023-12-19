@@ -12,16 +12,16 @@
 #define EMPTY -1
 #define FILLED 0
 */
-int setup(int **grid, SDL_Event eventbutton, enum GAMEMODE setupgame, int cellsize, int width, int height){
+int setup(int **grid, SDL_Event event, enum GAMEMODE setupgame, int cellsize, int width, int height){
 
 	//Respond to user input
-	if(eventbutton.type == SDL_MOUSEBUTTONDOWN){
-		if(eventbutton.button.button == SDL_BUTTON_LEFT && eventbutton.button.x / cellsize < width && eventbutton.button.y / cellsize < height && eventbutton.button.x > -1 && eventbutton.button.y > -1){
-			grid[eventbutton.button.x / cellsize][eventbutton.button.y / cellsize] = FILLED;
-		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT){
-			grid[eventbutton.button.x / cellsize][eventbutton.button.y / cellsize] = EMPTY;
+	if(event.type == SDL_MOUSEBUTTONDOWN){
+		if(event.button.button == SDL_BUTTON_LEFT && event.button.x / cellsize < width && event.button.y / cellsize < height && event.button.x > -1 && event.button.y > -1){
+			grid[event.button.x / cellsize][event.button.y / cellsize] = FILLED;
+		} else if(event.button.button == SDL_BUTTON_RIGHT){
+			grid[event.button.x / cellsize][event.button.y / cellsize] = EMPTY;
 		}
-	} else if(eventbutton.type == SDL_KEYDOWN && eventbutton.key.keysym.sym == SDLK_RETURN){
+	} else if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN){
 		return setupgame;
 	}
 

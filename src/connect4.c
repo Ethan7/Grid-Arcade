@@ -14,7 +14,7 @@
 #define PLAYER2 1
 */
 //Test 4x4 diagonals, verticals, and horizontals for win condition
-int wintest(int i, int j, int **grid, int player){
+int win_test(int i, int j, int **grid, int player){
 	if(grid[i][j] == player && grid[i+1][j+1] == player && grid[i+2][j+2] == player && grid[i+3][j+3] == player){
 		printf("PLAYER %d WINS!\n", player+1);
 		return ARCADE;
@@ -50,70 +50,70 @@ int wintest(int i, int j, int **grid, int player){
 	}
 }
 
-int placerx, playerturn;
+int placer_x, player_turn;
 int connect4(int **grid, SDL_Event event, int t, int width, int height){
 
 	if(t == 1){
-		placerx = width/2;
-		playerturn = PLAYER1;
+		placer_x = width/2;
+		player_turn = PLAYER1;
 	}
-	grid[placerx][0] = EMPTY;
+	grid[placer_x][0] = EMPTY;
 
-	int movemade = -1;
+	int move_made = -1;
 	//Respond to user input
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
 		case SDLK_LEFT:
-			if(placerx > 0){
-				placerx--;
+			if(placer_x > 0){
+				placer_x--;
 			}
 			break;
 		case SDLK_RIGHT:
-			if(placerx < width-1){
-				placerx++;
+			if(placer_x < width-1){
+				placer_x++;
 			}
 			break;
 		case SDLK_DOWN:
-			if(grid[placerx][1] == EMPTY){
+			if(grid[placer_x][1] == EMPTY){
 				int flag = 0;
 				for(int i = 1; i < height-1; i++){
-					if(grid[placerx][i+1] != EMPTY){
-						grid[placerx][i] = playerturn;
-						if(playerturn == PLAYER1){
-							playerturn = PLAYER2;
+					if(grid[placer_x][i+1] != EMPTY){
+						grid[placer_x][i] = player_turn;
+						if(player_turn == PLAYER1){
+							player_turn = PLAYER2;
 						} else {
-							playerturn = PLAYER1;
+							player_turn = PLAYER1;
 						}
 						flag = 1;
 						break;
 					}
 				}
 				if(flag == 0){
-					grid[placerx][height-1] = playerturn;
-					if(playerturn == PLAYER1){
-						playerturn = PLAYER2;
+					grid[placer_x][height-1] = player_turn;
+					if(player_turn == PLAYER1){
+						player_turn = PLAYER2;
 					} else {
-						playerturn = PLAYER1;
+						player_turn = PLAYER1;
 					}
 				}
-				movemade = CONNECT4;
+				move_made = CONNECT4;
 			}
 			break;
 		}
 	}
 
-	grid[placerx][0] = playerturn;
+	grid[placer_x][0] = player_turn;
 
 	//Check for a win after a player's turn
-	if(movemade == CONNECT4){
+	if(move_made == CONNECT4){
 		for(int i = 0; i < width-3; i++){
 			for(int j = 1; j < height-3; j++){
-				if(playerturn == PLAYER1){
-					movemade = wintest(i, j, grid, PLAYER2);
+				if(player_turn == PLAYER1){
+					move_made = win_test(i, j, grid, PLAYER2);
 				} else {
-					movemade = wintest(i, j, grid, PLAYER1);
+					move_made = win_test(i, j, grid, PLAYER1);
 				}
-				if(movemade == ARCADE){
+				if(move_made == ARCADE){
 					return ARCADE;
 				}
 			}

@@ -18,7 +18,7 @@
 #define LEFT 3
 */
 //Array of size [type = 7][height = ?][directions = 4][width = ?]
-const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} },
+const char block_shapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} },
 											  {   { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} }, 
 											  {   { 0, 1, 0, 0 }, {1, 1, 1, 1}, {0, 0, 1, 0}, {1, 1, 1, 1} }, 
 											  {   { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 0} } }, 
@@ -49,25 +49,25 @@ const char blockshapes[7][4][4][4] = { { { { 0, 1, 0, 0 }, {0, 0, 0, 0}, {0, 0, 
 
 const int dimensions[7] = {4, 3, 3, 2, 3, 3, 3};
 
-int rotationtop, delay, type, blockdir, blockx, blocky, bwidth, bheight;
+int rotation_top, delay, type, block_dir, block_x, block_y, block_width, block_height;
 int tetris(int **grid, SDL_Event event, int t, int width, int height){
 
 	if(t == 1){
 		type = rand() % 7;
-		blockdir = rand() % 4;
-		blockx = width/2;
-		blocky = 0;
-		bwidth = dimensions[type];
-		bheight = dimensions[type];
-		rotationtop = height;
+		block_dir = rand() % 4;
+		block_x = width/2;
+		block_y = 0;
+		block_width = dimensions[type];
+		block_height = dimensions[type];
+		rotation_top = height;
 		delay = 4;
 		srand(time(NULL));
 	}
 
-	for(int i = 0; i < bwidth; i++){
-		for(int j = 0; j < bheight; j++){
-			if(blockx+i >= 0 && blocky+j >= 0 && blockshapes[type][j][blockdir][i]){
-				grid[blockx+i][blocky+j] = EMPTY;
+	for(int i = 0; i < block_width; i++){
+		for(int j = 0; j < block_height; j++){
+			if(block_x+i >= 0 && block_y+j >= 0 && block_shapes[type][j][block_dir][i]){
+				grid[block_x+i][block_y+j] = EMPTY;
 			}
 		}
 	}
@@ -77,12 +77,12 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 		int stopped = 0;
 		switch( event.key.keysym.sym ){
 		case SDLK_UP:
-			if(blockx+bwidth < width && blocky+bheight < rotationtop &&
-				blockx >= 0 && blocky >= 0){
-				if(blockdir == LEFT){
-					blockdir = UP;
+			if(block_x+block_width < width && block_y+block_height < rotation_top &&
+				block_x >= 0 && block_y >= 0){
+				if(block_dir == LEFT){
+					block_dir = UP;
 				} else {
-					blockdir++;
+					block_dir++;
 				}
 			}
 			break;
@@ -92,11 +92,11 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 			}
 			break;
 		case SDLK_LEFT:
-			for(int i = 0; i < bwidth; i++){
-				for(int j = 0; j < bheight; j++){
-					if(blockshapes[type][j][blockdir][i] == 1 && 
-							(blockx+i-1 < 0 || (blockx+i-1 < width && 
-							grid[blockx+i-1][blocky+j] != EMPTY))){
+			for(int i = 0; i < block_width; i++){
+				for(int j = 0; j < block_height; j++){
+					if(block_shapes[type][j][block_dir][i] == 1 && 
+							(block_x+i-1 < 0 || (block_x+i-1 < width && 
+							grid[block_x+i-1][block_y+j] != EMPTY))){
 						stopped = 1;
 						break;
 					}
@@ -106,15 +106,15 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 				}
 			}
 			if(!stopped){
-				blockx--;
+				block_x--;
 			}
 			break;
 		case SDLK_RIGHT:
-			for(int i = 0; i < bwidth; i++){
-				for(int j = 0; j < bheight; j++){
-					if(blockshapes[type][j][blockdir][i] == 1 && 
-							(blockx+i+1 >= width || (blockx+i+1 > 0 && 
-							grid[blockx+i+1][blocky+j] != EMPTY))){
+			for(int i = 0; i < block_width; i++){
+				for(int j = 0; j < block_height; j++){
+					if(block_shapes[type][j][block_dir][i] == 1 && 
+							(block_x+i+1 >= width || (block_x+i+1 > 0 && 
+							grid[block_x+i+1][block_y+j] != EMPTY))){
 						stopped = 1;
 						break;
 					}
@@ -124,7 +124,7 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 				}
 			}
 			if(!stopped){
-				blockx++;
+				block_x++;
 			}
 			break;
 		}
@@ -136,14 +136,14 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 
 	int fallen = 0;
 
-	for(int i = 0; i < bwidth; i++){
-		for(int j = 0; j < bheight; j++){
-			if(blockshapes[type][j][blockdir][i] == 1 &&
-					blocky+j < height && blockx+i >= 0 && blocky+j >= 0 &&
-					grid[blockx+i][blocky+j+1] != EMPTY){
+	for(int i = 0; i < block_width; i++){
+		for(int j = 0; j < block_height; j++){
+			if(block_shapes[type][j][block_dir][i] == 1 &&
+					block_y+j < height && block_x+i >= 0 && block_y+j >= 0 &&
+					grid[block_x+i][block_y+j+1] != EMPTY){
 				fallen = 1;
 				break;
-			} else if(blocky+j+1 >= height && blockshapes[type][j][blockdir][i] == 1){
+			} else if(block_y+j+1 >= height && block_shapes[type][j][block_dir][i] == 1){
 				fallen = 1;
 				break;
 			}
@@ -154,31 +154,31 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 	}
 
 	if(!fallen && !delay){
-		blocky++;
+		block_y++;
 
 		delay = 4;
 	}
 
 	if(fallen){
 		//End game if blocks reach the top
-		if(blocky == 0){
+		if(block_y == 0){
 			printf("YOU LOSE!\n");
 			return ARCADE;
 		}
 		//Store block in place
-		for(int i = 0; i < bwidth; i++){
-			for(int j = 0; j < bheight; j++){
-				if(blockx+i >= 0 && blocky+j >= 0 && blockshapes[type][j][blockdir][i]){
-					grid[blockx+i][blocky+j] = type;
+		for(int i = 0; i < block_width; i++){
+			for(int j = 0; j < block_height; j++){
+				if(block_x+i >= 0 && block_y+j >= 0 && block_shapes[type][j][block_dir][i]){
+					grid[block_x+i][block_y+j] = type;
 				}
 			}
 		}
 		//Raise heighest block top value
-		if(blocky < rotationtop){
-			rotationtop = blocky;
+		if(block_y < rotation_top){
+			rotation_top = block_y;
 		}
 		//Check for line to erase
-		for(int i = rotationtop; i < height; i++){
+		for(int i = rotation_top; i < height; i++){
 			int line = 0;
 			for(int j = 0; j < width; j++){
 				if(grid[j][i] != EMPTY){
@@ -187,30 +187,30 @@ int tetris(int **grid, SDL_Event event, int t, int width, int height){
 			}
 			if(line == width){
 				for(int j = 0; j < width; j++){
-					for(int k = i; k > rotationtop; k--){
+					for(int k = i; k > rotation_top; k--){
 						grid[j][k] = grid[j][k-1];
 					}
-					grid[j][rotationtop] = EMPTY;
+					grid[j][rotation_top] = EMPTY;
 				}
 				i--;
-				rotationtop++;
+				rotation_top++;
 			}
 		}
 		//Make new block
 		type = rand() % 7;
-		blockdir = rand() % 4;
-		blockx = width/2;
-		blocky = 0;
-		bwidth = dimensions[type];
-		bheight = dimensions[type];
+		block_dir = rand() % 4;
+		block_x = width/2;
+		block_y = 0;
+		block_width = dimensions[type];
+		block_height = dimensions[type];
 
 		fallen = 0;
 	}
 
-	for(int i = 0; i < bwidth; i++){
-		for(int j = 0; j < bheight; j++){
-			if(blockx+i >= 0 && blocky+j >= 0 && blockshapes[type][j][blockdir][i]){
-				grid[blockx+i][blocky+j] = type;
+	for(int i = 0; i < block_width; i++){
+		for(int j = 0; j < block_height; j++){
+			if(block_x+i >= 0 && block_y+j >= 0 && block_shapes[type][j][block_dir][i]){
+				grid[block_x+i][block_y+j] = type;
 			}
 		}
 	}

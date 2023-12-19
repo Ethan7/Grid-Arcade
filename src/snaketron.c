@@ -16,23 +16,23 @@
 #define TRON1 1
 #define TRON2 2
 */
-int tailLen1, tailLen2, dir1, dir2, currentX1, currentY1, currentX2, currentY2;
-int **tronTail1, **tronTail2;
+int tail_length1, tail_length2, dir1, dir2, current_x1, current_y1, current_x2, current_y2;
+int **tron_tail1, **tron_tail2;
 
 int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 	int ret = TRON;
-	int winLen = width*height;
-	int foodcount = sqrt(width*height)/2;
+	int win_length = width*height;
+	int food_count = sqrt(width*height)/2;
 
 	//Setup initial state
 	if(t == 1){
-		tailLen1 = 1;
+		tail_length1 = 1;
 		dir1 = 0;
-		currentX1 = width/3, currentY1 = height/2;
+		current_x1 = width/3, current_y1 = height/2;
 		
-		tailLen2 = 1;
+		tail_length2 = 1;
 		dir2 = 0;
-		currentX2 = width/3*2, currentY2 = height/2;
+		current_x2 = width/3*2, current_y2 = height/2;
 
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
@@ -40,12 +40,12 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 			}
 		}
 
-		grid[currentX1][currentY1] = TRON1;
-		grid[currentX2][currentY2] = TRON2;
+		grid[current_x1][current_y1] = TRON1;
+		grid[current_x2][current_y2] = TRON2;
 
 		srand(time(NULL));
 		
-		for(int i = 0; i < foodcount; i++){
+		for(int i = 0; i < food_count; i++){
 			while(1){
 				int rx = rand() % width;
 				int ry = rand() % height;
@@ -56,60 +56,60 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 			}
 		}
 
-		tronTail1 = (int **) calloc(winLen, sizeof(int *));
-		for(int i = 0; i < winLen; i++){
-			tronTail1[i] = (int *) calloc(2, sizeof(int));
-			tronTail1[i][0] = currentX1;
-			tronTail1[i][1] = currentY1;
+		tron_tail1 = (int **) calloc(win_length, sizeof(int *));
+		for(int i = 0; i < win_length; i++){
+			tron_tail1[i] = (int *) calloc(2, sizeof(int));
+			tron_tail1[i][0] = current_x1;
+			tron_tail1[i][1] = current_y1;
 		}
 
-		tronTail2 = (int **) calloc(winLen, sizeof(int *));
-		for(int i = 0; i < winLen; i++){
-			tronTail2[i] = (int *) calloc(2, sizeof(int));
-			tronTail2[i][0] = currentX2;
-			tronTail2[i][1] = currentY2;
+		tron_tail2 = (int **) calloc(win_length, sizeof(int *));
+		for(int i = 0; i < win_length; i++){
+			tron_tail2[i] = (int *) calloc(2, sizeof(int));
+			tron_tail2[i][0] = current_x2;
+			tron_tail2[i][1] = current_y2;
 		}
 	}
 
 	//Respond to input
 	switch( event.key.keysym.sym ){
 	case SDLK_UP:
-		if(tailLen1 == 1 || tronTail1[tailLen1-2][1] != currentY1-1){
+		if(tail_length1 == 1 || tron_tail1[tail_length1-2][1] != current_y1-1){
 			dir1 = 0;
 		}
 		break;
 	case SDLK_DOWN:
-		if(tailLen1 == 1 || tronTail1[tailLen1-2][1] != currentY1+1){
+		if(tail_length1 == 1 || tron_tail1[tail_length1-2][1] != current_y1+1){
 			dir1 = 1;
 		}
 		break;
 	case SDLK_LEFT:
-		if(tailLen1 == 1 || tronTail1[tailLen1-2][0] != currentX1-1){
+		if(tail_length1 == 1 || tron_tail1[tail_length1-2][0] != current_x1-1){
 			dir1 = 2;
 		}
 		break;
 	case SDLK_RIGHT:
-		if(tailLen1 == 1 || tronTail1[tailLen1-2][0] != currentX1+1){
+		if(tail_length1 == 1 || tron_tail1[tail_length1-2][0] != current_x1+1){
 			dir1 = 3;
 		}
 		break;
 	case SDLK_w:
-		if(tailLen2 == 1 || tronTail2[tailLen2-2][1] != currentY2-1){
+		if(tail_length2 == 1 || tron_tail2[tail_length2-2][1] != current_y2-1){
 			dir2 = 0;
 		}
 		break;
 	case SDLK_s:
-		if(tailLen2 == 1 || tronTail2[tailLen2-2][1] != currentY2+1){
+		if(tail_length2 == 1 || tron_tail2[tail_length2-2][1] != current_y2+1){
 			dir2 = 1;
 		}
 		break;
 	case SDLK_a:
-		if(tailLen2 == 1 || tronTail2[tailLen2-2][0] != currentX2-1){
+		if(tail_length2 == 1 || tron_tail2[tail_length2-2][0] != current_x2-1){
 			dir2 = 2;
 		}
 		break;
 	case SDLK_d:
-		if(tailLen2 == 1 || tronTail2[tailLen2-2][0] != currentX2+1){
+		if(tail_length2 == 1 || tron_tail2[tail_length2-2][0] != current_x2+1){
 			dir2 = 3;
 		}
 		break;
@@ -118,11 +118,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 	//Game Step
 	switch(dir1){
 	case 0:
-		if(currentY1 != 0){
-			currentY1--;
+		if(current_y1 != 0){
+			current_y1--;
 		} else {
 			if(wrap){
-				currentY1 = height-1;
+				current_y1 = height-1;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -130,11 +130,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 1:
-		if(currentY1 != height-1){
-			currentY1++;
+		if(current_y1 != height-1){
+			current_y1++;
 		} else {
 			if(wrap){
-				currentY1 = 0;
+				current_y1 = 0;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -142,11 +142,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 2:
-		if(currentX1 != 0){
-			currentX1--;
+		if(current_x1 != 0){
+			current_x1--;
 		} else {
 			if(wrap){
-				currentX1 = width-1;
+				current_x1 = width-1;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -154,11 +154,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 3:
-		if(currentX1 != width-1){
-			currentX1++;
+		if(current_x1 != width-1){
+			current_x1++;
 		} else {
 			if(wrap){
-				currentX1 = 0;
+				current_x1 = 0;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -169,11 +169,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 	switch(dir2){
 	case 0:
-		if(currentY2 != 0){
-			currentY2--;
+		if(current_y2 != 0){
+			current_y2--;
 		} else {
 			if(wrap){
-				currentY2 = height-1;
+				current_y2 = height-1;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -181,11 +181,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 1:
-		if(currentY2 != height-1){
-			currentY2++;
+		if(current_y2 != height-1){
+			current_y2++;
 		} else {
 			if(wrap){
-				currentY2 = 0;
+				current_y2 = 0;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -193,11 +193,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 2:
-		if(currentX2 != 0){
-			currentX2--;
+		if(current_x2 != 0){
+			current_x2--;
 		} else {
 			if(wrap){
-				currentX2 = width-1;
+				current_x2 = width-1;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -205,11 +205,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 3:
-		if(currentX2 != width-1){
-			currentX2++;
+		if(current_x2 != width-1){
+			current_x2++;
 		} else {
 			if(wrap){
-				currentX2 = 0;
+				current_x2 = 0;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -220,22 +220,22 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 	//Snake Movement
 	if(ret == TRON){
-		if(grid[currentX1][currentY1] == EMPTY){
-			grid[currentX1][currentY1] = TRON1;
-			grid[tronTail1[0][0]][tronTail1[0][1]] = EMPTY;
-			for(int i = 0; i < tailLen1-1; i++){
-				tronTail1[i][0] = tronTail1[i+1][0];
-				tronTail1[i][1] = tronTail1[i+1][1];
+		if(grid[current_x1][current_y1] == EMPTY){
+			grid[current_x1][current_y1] = TRON1;
+			grid[tron_tail1[0][0]][tron_tail1[0][1]] = EMPTY;
+			for(int i = 0; i < tail_length1-1; i++){
+				tron_tail1[i][0] = tron_tail1[i+1][0];
+				tron_tail1[i][1] = tron_tail1[i+1][1];
 			}
-			tronTail1[tailLen1-1][0] = currentX1;
-			tronTail1[tailLen1-1][1] = currentY1;
+			tron_tail1[tail_length1-1][0] = current_x1;
+			tron_tail1[tail_length1-1][1] = current_y1;
 
-		} else if(grid[currentX1][currentY1] == FOOD){
-			tailLen1++;
-			grid[currentX1][currentY1] = TRON1;
+		} else if(grid[current_x1][current_y1] == FOOD){
+			tail_length1++;
+			grid[current_x1][current_y1] = TRON1;
 
-			tronTail1[tailLen1-1][0] = currentX1;
-			tronTail1[tailLen1-1][1] = currentY1;
+			tron_tail1[tail_length1-1][0] = current_x1;
+			tron_tail1[tail_length1-1][1] = current_y1;
 			while(1){
 				int rx = rand() % width;
 				int ry = rand() % height;
@@ -244,27 +244,27 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 					break;
 				}
 			}
-		} else if(grid[currentX1][currentY1] >= TRON1){
+		} else if(grid[current_x1][current_y1] >= TRON1){
 			printf("Player 1 Loses!\n");
 			ret = ARCADE;
 		}
 		
-		if(grid[currentX2][currentY2] == EMPTY){
-			grid[currentX2][currentY2] = TRON2;
-			grid[tronTail2[0][0]][tronTail2[0][1]] = EMPTY;
-			for(int i = 0; i < tailLen2-1; i++){
-				tronTail2[i][0] = tronTail2[i+1][0];
-				tronTail2[i][1] = tronTail2[i+1][1];
+		if(grid[current_x2][current_y2] == EMPTY){
+			grid[current_x2][current_y2] = TRON2;
+			grid[tron_tail2[0][0]][tron_tail2[0][1]] = EMPTY;
+			for(int i = 0; i < tail_length2-1; i++){
+				tron_tail2[i][0] = tron_tail2[i+1][0];
+				tron_tail2[i][1] = tron_tail2[i+1][1];
 			}
-			tronTail2[tailLen2-1][0] = currentX2;
-			tronTail2[tailLen2-1][1] = currentY2;
+			tron_tail2[tail_length2-1][0] = current_x2;
+			tron_tail2[tail_length2-1][1] = current_y2;
 
-		} else if(grid[currentX2][currentY2] == FOOD){
-			tailLen2++;
-			grid[currentX2][currentY2] = TRON2;
+		} else if(grid[current_x2][current_y2] == FOOD){
+			tail_length2++;
+			grid[current_x2][current_y2] = TRON2;
 
-			tronTail2[tailLen2-1][0] = currentX2;
-			tronTail2[tailLen2-1][1] = currentY2;
+			tron_tail2[tail_length2-1][0] = current_x2;
+			tron_tail2[tail_length2-1][1] = current_y2;
 			while(1){
 				int rx = rand() % width;
 				int ry = rand() % height;
@@ -273,7 +273,7 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 					break;
 				}
 			}
-		} else if(grid[currentX2][currentY2] >= TRON1){
+		} else if(grid[current_x2][current_y2] >= TRON1){
 			printf("Player 2 Loses!\n");
 			ret = ARCADE;
 		}
@@ -281,12 +281,12 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 	//Free Dynamic Memory
 	if(ret == ARCADE){
-		for(int i = 0; i < winLen; i++){
-			free(tronTail1[i]);
-			free(tronTail2[i]);
+		for(int i = 0; i < win_length; i++){
+			free(tron_tail1[i]);
+			free(tron_tail2[i]);
 		}
-		free(tronTail1);
-		free(tronTail2);
+		free(tron_tail1);
+		free(tron_tail2);
 	}
 
 	return ret;

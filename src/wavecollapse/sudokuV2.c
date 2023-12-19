@@ -24,19 +24,19 @@
 #define EIGHT 15
 #define NINE 16
 */
-int sudokugrid[9][9];
-int sudokufinal[9][9];
+int sudoku_grid[9][9];
+int sudoku_final[9][9];
 int stopper;
 
 //Guess checker
-int sudokuhelper(int x, int y, int guess){
+int sudoku_helper(int x, int y, int guess){
 	for(int i = 0; i < 9; i++){
-		if(sudokugrid[i][y] == guess && x != i){
+		if(sudoku_grid[i][y] == guess && x != i){
 			return 1;
 		}
 	}
 	for(int i = 0; i < 9; i++){
-		if(sudokugrid[x][i] == guess && y != i){
+		if(sudoku_grid[x][i] == guess && y != i){
 			return 1;
 		}
 	}
@@ -46,7 +46,7 @@ int sudokuhelper(int x, int y, int guess){
 	int y1 = y0+3;
 	for(int i = x0; i < x1; i++){
 		for(int j = y0; j < y1; j++){
-			if(sudokugrid[i][j] == guess && (x != i || y != j)){
+			if(sudoku_grid[i][j] == guess && (x != i || y != j)){
 				return 1;
 			}
 		}
@@ -55,29 +55,29 @@ int sudokuhelper(int x, int y, int guess){
 }
 
 //Solution checker
-int solutionhelper(){
+int solution_helper(){
 	int ret = 0;
 	for(int i = 0; i < 9; i++){
 		for(int j = 0; j < 9; j++){
-			ret += sudokuhelper(i, j, sudokugrid[i][j]);
+			ret += sudoku_helper(i, j, sudoku_grid[i][j]);
 		}
 	}
 	return ret;
 }
 
 //Two functions call each other
-void sudokuwave(int x, int y, int guess, int sudokucollapse[9][9][9], int sudokucount[9][9], int *count);
+void sudoku_wave(int x, int y, int guess, int sudoku_collapse[9][9][9], int sudoku_count[9][9], int *count);
 
 //Wave function collapse helper function
-void sudokufunction(int x, int y, int guess, int sudokucollapse[9][9][9], int sudokucount[9][9], int *count){
-	if(sudokucollapse[x][y][guess] == 0){
-		sudokucollapse[x][y][guess] = 1;
-		sudokucount[x][y]++;
-		if(sudokucount[x][y] == 8){
+void sudoku_function(int x, int y, int guess, int sudoku_collapse[9][9][9], int sudoku_count[9][9], int *count){
+	if(sudoku_collapse[x][y][guess] == 0){
+		sudoku_collapse[x][y][guess] = 1;
+		sudoku_count[x][y]++;
+		if(sudoku_count[x][y] == 8){
 			for(int k = 0; k < 9; k++){
-				if(sudokucollapse[x][y][k] == 0){
-					sudokugrid[x][y] = k;
-					sudokuwave(x, y, k, sudokucollapse, sudokucount, count);
+				if(sudoku_collapse[x][y][k] == 0){
+					sudoku_grid[x][y] = k;
+					sudoku_wave(x, y, k, sudoku_collapse, sudoku_count, count);
 					(*count)++;
 				}
 			}
@@ -86,19 +86,19 @@ void sudokufunction(int x, int y, int guess, int sudokucollapse[9][9][9], int su
 }
 
 //Sudoku wave function collapse along adjacent squares
-void sudokuwave(int x, int y, int guess, int sudokucollapse[9][9][9], int sudokucount[9][9], int *count){
-	sudokucount[x][y] = 9;
+void sudoku_wave(int x, int y, int guess, int sudoku_collapse[9][9][9], int sudoku_count[9][9], int *count){
+	sudoku_count[x][y] = 9;
 	for(int i = 0; i < 9; i++){
-		sudokucollapse[x][y][i] = 1;
+		sudoku_collapse[x][y][i] = 1;
 	}
 	for(int i = 0; i < 9; i++){
 		if(x != i){
-			sudokufunction(i, y, guess, sudokucollapse, sudokucount, count);
+			sudoku_function(i, y, guess, sudoku_collapse, sudoku_count, count);
 		}
 	}
 	for(int i = 0; i < 9; i++){
 		if(y != i){
-			sudokufunction(x, i, guess, sudokucollapse, sudokucount, count);
+			sudoku_function(x, i, guess, sudoku_collapse, sudoku_count, count);
 		}
 	}
 	int x0 = x - (x % 3);
@@ -108,86 +108,86 @@ void sudokuwave(int x, int y, int guess, int sudokucollapse[9][9][9], int sudoku
 	for(int i = x0; i < x1; i++){
 		for(int j = y0; j < y1; j++){
 			if(x != i || y != j){	
-				sudokufunction(i, j, guess, sudokucollapse, sudokucount, count);
+				sudoku_function(i, j, guess, sudoku_collapse, sudoku_count, count);
 			}
 		}
 	}
 }
 
-void uniquecollapse(int sudokucollapse[9][9][9], int sudokucount[9][9], int *count){
-	int guessrow;
-	int guesscol;
-	int guessbox;
-	int rowx = -1;
-	int rowy = -1;
-	int colx = -1;
-	int coly = -1;
-	int boxx = -1;
-	int boxy = -1;
+void unique_collapse(int sudoku_collapse[9][9][9], int sudoku_count[9][9], int *count){
+	int guess_row;
+	int guess_col;
+	int guess_box;
+	int row_x = -1;
+	int row_y = -1;
+	int col_x = -1;
+	int col_y = -1;
+	int box_x = -1;
+	int box_y = -1;
 	for(int k = 0; k < 9; k++){
 		for(int i = 0; i < 9; i++){
-			guessrow = 0;
-			guesscol = 0;
-			guessbox = 0;
+			guess_row = 0;
+			guess_col = 0;
+			guess_box = 0;
 			for(int j = 0; j < 9; j++){
-				if(sudokucollapse[i][j][k] == 0){
-					rowx = i;
-					rowy = j;
-					guessrow++;
+				if(sudoku_collapse[i][j][k] == 0){
+					row_x = i;
+					row_y = j;
+					guess_row++;
 				}
-				if(sudokucollapse[j][i][k] == 0){
-					colx = j;
-					coly = i;
-					guesscol++;
+				if(sudoku_collapse[j][i][k] == 0){
+					col_x = j;
+					col_y = i;
+					guess_col++;
 				}
-				if(sudokucollapse[i*3+j%3][j/3+i-i%3][k] == 0){
-					boxx = i*3+j%3;
-					boxy = j/3+i-i%3;
-					guessbox++;
+				if(sudoku_collapse[i*3+j%3][j/3+i-i%3][k] == 0){
+					box_x = i*3+j%3;
+					box_y = j/3+i-i%3;
+					guess_box++;
 				}
 			}
-			if(guessrow == 1){
-				sudokugrid[rowx][rowy] = k;
-				sudokuwave(rowx, rowy, k, sudokucollapse, sudokucount, count);
+			if(guess_row == 1){
+				sudoku_grid[row_x][row_y] = k;
+				sudoku_wave(row_x, row_y, k, sudoku_collapse, sudoku_count, count);
 				(*count)++;
 			}
-			if(guesscol == 1){
-				sudokugrid[colx][coly] = k;
-				sudokuwave(colx, coly, k, sudokucollapse, sudokucount, count);
+			if(guess_col == 1){
+				sudoku_grid[col_x][col_y] = k;
+				sudoku_wave(col_x, col_y, k, sudoku_collapse, sudoku_count, count);
 				(*count)++;
 			}
-			if(guessbox == 1){
-				sudokugrid[boxx][boxy] = k;
-				sudokuwave(boxx, boxy, k, sudokucollapse, sudokucount, count);
+			if(guess_box == 1){
+				sudoku_grid[box_x][box_y] = k;
+				sudoku_wave(box_x, box_y, k, sudoku_collapse, sudoku_count, count);
 				(*count)++;
 			}
 		}
 	}
 }
 
-//Generate new sudokugrid and display it on the main grid
-void sudokugenerate(int **grid){
-	int sudokucount[9][9];
-	int sudokucollapse[9][9][9];
-	int randpool[81];
+//Generate new sudoku_grid and display it on the main grid
+void sudoku_generate(int **grid){
+	int sudoku_count[9][9];
+	int sudoku_collapse[9][9][9];
+	int rand_pool[81];
 	int stopper;
-	int hintcount;
+	int hint_count;
 	do{
 		stopper = 0;
 		//Clear the grid
 		for(int i = 0; i < 9; i++){
 			for(int j = 0; j < 9; j++){
-				sudokugrid[i][j] = EMPTY;
-				sudokufinal[i][j] = EMPTY;
-				sudokucount[i][j] = 0;
+				sudoku_grid[i][j] = EMPTY;
+				sudoku_final[i][j] = EMPTY;
+				sudoku_count[i][j] = 0;
 				for(int k = 0; k < 9; k++){
-					sudokucollapse[i][j][k] = 0;
+					sudoku_collapse[i][j][k] = 0;
 				}
 			}
 		}
 		//Generate random pool for easier random coords
 		for(int i = 0; i < 82; i++){
-			randpool[i] = i;
+			rand_pool[i] = i;
 		}
 		int x, y, guess, pool_val;
 		int pool_len = 81;
@@ -199,44 +199,44 @@ void sudokugenerate(int **grid){
 					break;
 				}
 				pool_val = rand() % pool_len;
-				x = randpool[pool_val] % 9;
-				y = randpool[pool_val] / 9;
+				x = rand_pool[pool_val] % 9;
+				y = rand_pool[pool_val] / 9;
 				//x = rand() % 9;
 				//y = rand() % 9;
 				guess = rand() % 9;
-			} while(sudokucollapse[x][y][guess] == 1 || sudokuhelper(x, y, guess));
+			} while(sudoku_collapse[x][y][guess] == 1 || sudoku_helper(x, y, guess));
 			if(stopper == 10000){
 				break;
 			}
 			for(int i = pool_val; i < pool_len; i++){
-				randpool[i] = randpool[i+1];
+				rand_pool[i] = rand_pool[i+1];
 			}
 			pool_len--;
-			sudokugrid[x][y] = guess;
-			memcpy(sudokufinal, sudokugrid, sizeof(sudokufinal));
-			hintcount = i;
-			sudokuwave(x, y, guess, sudokucollapse, sudokucount, &i);
-			uniquecollapse(sudokucollapse, sudokucount, &i);
+			sudoku_grid[x][y] = guess;
+			memcpy(sudoku_final, sudoku_grid, sizeof(sudoku_final));
+			hint_count = i;
+			sudoku_wave(x, y, guess, sudoku_collapse, sudoku_count, &i);
+			unique_collapse(sudoku_collapse, sudoku_count, &i);
 		}
-	} while(stopper == 10000 || solutionhelper() || hintcount > 40);
+	} while(stopper == 10000 || solution_helper() || hint_count > 40);
 	//Get the number of hints and display the generated sudoku
 	int hints = 0;
 	for(int i = 0; i < 9; i++){
 		for(int j = 0; j < 9; j++){
-			if(sudokufinal[i][j] > EMPTY){
-				grid[i][j] = sudokufinal[i][j]+ONE;
+			if(sudoku_final[i][j] > EMPTY){
+				grid[i][j] = sudoku_final[i][j]+ONE;
 				hints++;
 			} else {
 				grid[i][j] = CLEAR;
 			}
-			printf("%d", sudokugrid[i][j]);
+			printf("%d", sudoku_grid[i][j]);
 		}
 		printf("\n");
 	}
 	printf("number of hints: %d\n", hints);
 }
 
-int sudoku(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){	
+int sudoku(int **grid, SDL_Event event, int t, int cellsize, int width, int height){	
 	int ret = SUDOKU;
 
 	if(t == 1){
@@ -244,36 +244,36 @@ int sudoku(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, in
 		srand(time(NULL));
 		
 		//Generate Sudoku
-		sudokugenerate(grid);
+		sudoku_generate(grid);
 	}
 
 	//Respond to user input
-	if(eventbutton.type == SDL_MOUSEBUTTONUP){
-		int buttonx = eventbutton.button.x / cellsize;
-		int buttony = eventbutton.button.y / cellsize;
-		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < 9 && buttony < 9 && buttonx > -1 && buttony > -1){
+	if(event.type == SDL_MOUSEBUTTONUP){
+		int button_x = event.button.x / cellsize;
+		int button_y = event.button.y / cellsize;
+		if(event.button.button == SDL_BUTTON_LEFT && button_x < 9 && button_y < 9 && button_x > -1 && button_y > -1){
 			//Add to current grid number
-			if(grid[buttonx][buttony] == CLEAR){
-				grid[buttonx][buttony] = ONE;
-			} else if(grid[buttonx][buttony] > CLEAR && grid[buttonx][buttony] < NINE && sudokufinal[buttonx][buttony] == EMPTY){
-				grid[buttonx][buttony]++;
-			} else if(grid[buttonx][buttony] == NINE && sudokufinal[buttonx][buttony] == EMPTY){
-				grid[buttonx][buttony] = CLEAR;
+			if(grid[button_x][button_y] == CLEAR){
+				grid[button_x][button_y] = ONE;
+			} else if(grid[button_x][button_y] > CLEAR && grid[button_x][button_y] < NINE && sudoku_final[button_x][button_y] == EMPTY){
+				grid[button_x][button_y]++;
+			} else if(grid[button_x][button_y] == NINE && sudoku_final[button_x][button_y] == EMPTY){
+				grid[button_x][button_y] = CLEAR;
 			}
 		}
-	} else if(eventbutton.type == SDL_KEYDOWN){
+	} else if(event.type == SDL_KEYDOWN){
 		int solved = 1;
-		switch( eventbutton.key.keysym.sym ){
+		switch( event.key.keysym.sym ){
 		case SDLK_r:
 			//Generate new Sudoku
-			sudokugenerate(grid);
+			sudoku_generate(grid);
 			break;
 		case SDLK_RETURN:
 			//Check if sudoku has been solved
 			solved = 1;
 			for(int i = 0; i < 9; i++){
 				for(int j = 0; j < 9; j++){
-					if(grid[i][j] == CLEAR || sudokuhelper(i, j, grid[i][j]-ONE) == 0){
+					if(grid[i][j] == CLEAR || sudoku_helper(i, j, grid[i][j]-ONE) == 0){
 						solved = 0;
 					}
 				}

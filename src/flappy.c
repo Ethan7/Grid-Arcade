@@ -15,35 +15,35 @@
 
 #define HOLESIZE 5
 */
-int flappyy;
+int flappy_y;
 int flappy(int **grid, SDL_Event event, int t, int width, int height){
 	int spacing = height/2;
 
 	if(t == 1){
-		flappyy = height/2;
+		flappy_y = height/2;
 	}
 
 	//Apply gravity to bird
-	grid[1][flappyy] = EMPTY;
-	flappyy++;
-	if(flappyy > height-1 || grid[1][flappyy] == OBSTACLE){
+	grid[1][flappy_y] = EMPTY;
+	flappy_y++;
+	if(flappy_y > height-1 || grid[1][flappy_y] == OBSTACLE){
 		printf("YOUR SCORE: %d\n", t);
 		return ARCADE;
 	} else {
-		grid[1][flappyy] = BIRD;
+		grid[1][flappy_y] = BIRD;
 	}
 
 	//Respond to user input
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
 		case SDLK_UP:
-			grid[1][flappyy] = EMPTY;
-			flappyy -= 2;
-			if(grid[1][flappyy] == OBSTACLE){
+			grid[1][flappy_y] = EMPTY;
+			flappy_y -= 2;
+			if(grid[1][flappy_y] == OBSTACLE){
 				printf("YOUR SCORE: %d\n", t);
 				return ARCADE;
 			} else {
-				grid[1][flappyy] = BIRD;
+				grid[1][flappy_y] = BIRD;
 			}
 			break;
 		}
@@ -51,9 +51,9 @@ int flappy(int **grid, SDL_Event event, int t, int width, int height){
 
 	//Place new columns
 	if(t % spacing == 0){
-		int holeposition = rand() % (height-HOLESIZE);
+		int hole_position = rand() % (height-HOLESIZE);
 		for(int j = 0; j < height; j++){
-			if(j == holeposition){
+			if(j == hole_position){
 				j += HOLESIZE;
 			}
 			grid[width-1][j] = OBSTACLE;
@@ -67,7 +67,7 @@ int flappy(int **grid, SDL_Event event, int t, int width, int height){
 				grid[i][j] = EMPTY;
 				if(i > 0){
 					grid[i-1][j] = OBSTACLE;
-					if(i-1 == 1 && j == flappyy){
+					if(i-1 == 1 && j == flappy_y){
 						printf("YOUR SCORE: %d\n", t);
 						return ARCADE;
 					}

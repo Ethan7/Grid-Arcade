@@ -13,56 +13,56 @@
 #define WHITE 0
 #define ANT 1
 */
-int antx, anty, antdir, standin;
+int ant_x, ant_y, ant_dir, stand_in;
 int langston(int **grid, int t, int width, int height){
 
 	if(t == 1){
-		antdir = 0;
-		antx = width/2;
-		anty = height/2;
-		standin = grid[antx][anty];
+		ant_dir = 0;
+		ant_x = width/2;
+		ant_y = height/2;
+		stand_in = grid[ant_x][ant_y];
 	}
-	grid[antx][anty] = standin;
+	grid[ant_x][ant_y] = stand_in;
 
-	if(grid[antx][anty] == WHITE){
-		if(antdir == 3){
-			antdir = 0;
+	if(grid[ant_x][ant_y] == WHITE){
+		if(ant_dir == 3){
+			ant_dir = 0;
 		} else {
-			antdir++;
+			ant_dir++;
 		}
-		grid[antx][anty] = BLACK;
-		if(antdir == 0 && anty > 0){
-			anty--;
-		} else if(antdir == 1 && antx < width-1){
-			antx++;
-		} else if(antdir == 2 && anty < height-1){
-			anty++;
-		} else if(antdir == 3 && antx > 0){
-			antx--;
+		grid[ant_x][ant_y] = BLACK;
+		if(ant_dir == 0 && ant_y > 0){
+			ant_y--;
+		} else if(ant_dir == 1 && ant_x < width-1){
+			ant_x++;
+		} else if(ant_dir == 2 && ant_y < height-1){
+			ant_y++;
+		} else if(ant_dir == 3 && ant_x > 0){
+			ant_x--;
 		} else {
 			return ARCADE;
 		}
-	} else if(grid[antx][anty] == BLACK){
-		if(antdir == 0){
-			antdir = 3;
+	} else if(grid[ant_x][ant_y] == BLACK){
+		if(ant_dir == 0){
+			ant_dir = 3;
 		} else {
-			antdir--;
+			ant_dir--;
 		}
-		grid[antx][anty] = WHITE;
-		if(antdir == 0 && anty > 0){
-			anty--;
-		} else if(antdir == 1 && antx < width-1){
-			antx++;
-		} else if(antdir == 2 && anty < height-1){
-			anty++;
-		} else if(antdir == 3 && antx > 0){
-			antx--;
+		grid[ant_x][ant_y] = WHITE;
+		if(ant_dir == 0 && ant_y > 0){
+			ant_y--;
+		} else if(ant_dir == 1 && ant_x < width-1){
+			ant_x++;
+		} else if(ant_dir == 2 && ant_y < height-1){
+			ant_y++;
+		} else if(ant_dir == 3 && ant_x > 0){
+			ant_x--;
 		} else {
 			return ARCADE;
 		}
 	}
 
-	standin = grid[antx][anty];
-	grid[antx][anty] = ANT;
+	stand_in = grid[ant_x][ant_y];
+	grid[ant_x][ant_y] = ANT;
 	return LANGSTON;
 }

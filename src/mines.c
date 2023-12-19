@@ -26,131 +26,131 @@
 #define EIGHT 15
 */
 //Recursive Flood-fill algorithm
-void sweep(int buttonx, int buttony, int **minegrid, int **grid, int width, int height){
+void sweep(int button_x, int button_y, int **mine_grid, int **grid, int width, int height){
 	int mines = 0;
-	if(buttonx > 0){
-		if(buttony > 0 && minegrid[buttonx-1][buttony-1] == MINE){
+	if(button_x > 0){
+		if(button_y > 0 && mine_grid[button_x-1][button_y-1] == MINE){
 			mines++;
 		}
-		if(buttony < height-1 && minegrid[buttonx-1][buttony+1] == MINE){
+		if(button_y < height-1 && mine_grid[button_x-1][button_y+1] == MINE){
 			mines++;
 		}
-		if(minegrid[buttonx-1][buttony] == MINE){
-			mines++;
-		}
-	}
-	if(buttonx < width-1){
-		if(buttony > 0 && minegrid[buttonx+1][buttony-1] == MINE){
-			mines++;
-		}
-		if(buttony < height-1 && minegrid[buttonx+1][buttony+1] == MINE){
-			mines++;
-		}
-		if(minegrid[buttonx+1][buttony] == MINE){
+		if(mine_grid[button_x-1][button_y] == MINE){
 			mines++;
 		}
 	}
-	if(buttony > 0 && minegrid[buttonx][buttony-1] == MINE){
+	if(button_x < width-1){
+		if(button_y > 0 && mine_grid[button_x+1][button_y-1] == MINE){
+			mines++;
+		}
+		if(button_y < height-1 && mine_grid[button_x+1][button_y+1] == MINE){
+			mines++;
+		}
+		if(mine_grid[button_x+1][button_y] == MINE){
+			mines++;
+		}
+	}
+	if(button_y > 0 && mine_grid[button_x][button_y-1] == MINE){
 		mines++;
 	}
-	if(buttony < height-1 && minegrid[buttonx][buttony+1] == MINE){
+	if(button_y < height-1 && mine_grid[button_x][button_y+1] == MINE){
 		mines++;
 	}
 	if(mines == 0){
-		grid[buttonx][buttony] = CLEAR;
-		if(buttonx > 0){
-			if(buttony > 0 && grid[buttonx-1][buttony-1] == EMPTY){
-				sweep(buttonx-1, buttony-1, minegrid, grid, width, height);
+		grid[button_x][button_y] = CLEAR;
+		if(button_x > 0){
+			if(button_y > 0 && grid[button_x-1][button_y-1] == EMPTY){
+				sweep(button_x-1, button_y-1, mine_grid, grid, width, height);
 			}
-			if(buttony < height-1 && grid[buttonx-1][buttony+1] == EMPTY){
-				sweep(buttonx-1, buttony+1, minegrid, grid, width, height);
+			if(button_y < height-1 && grid[button_x-1][button_y+1] == EMPTY){
+				sweep(button_x-1, button_y+1, mine_grid, grid, width, height);
 			}
-			if(grid[buttonx-1][buttony] == EMPTY){
-				sweep(buttonx-1, buttony, minegrid, grid, width, height);
-			}
-		}
-		if(buttonx < width-1){
-			if(buttony > 0 && grid[buttonx+1][buttony-1] == EMPTY){
-				sweep(buttonx+1, buttony-1, minegrid, grid, width, height);
-			}
-			if(buttony < height-1 && grid[buttonx+1][buttony+1] == EMPTY){
-				sweep(buttonx+1, buttony+1, minegrid, grid, width, height);
-			}
-			if(grid[buttonx+1][buttony] == EMPTY){
-				sweep(buttonx+1, buttony, minegrid, grid, width, height);
+			if(grid[button_x-1][button_y] == EMPTY){
+				sweep(button_x-1, button_y, mine_grid, grid, width, height);
 			}
 		}
-		if(buttony > 0 && grid[buttonx][buttony-1] == EMPTY){
-			sweep(buttonx, buttony-1, minegrid, grid, width, height);
+		if(button_x < width-1){
+			if(button_y > 0 && grid[button_x+1][button_y-1] == EMPTY){
+				sweep(button_x+1, button_y-1, mine_grid, grid, width, height);
+			}
+			if(button_y < height-1 && grid[button_x+1][button_y+1] == EMPTY){
+				sweep(button_x+1, button_y+1, mine_grid, grid, width, height);
+			}
+			if(grid[button_x+1][button_y] == EMPTY){
+				sweep(button_x+1, button_y, mine_grid, grid, width, height);
+			}
 		}
-		if(buttony < height-1 && grid[buttonx][buttony+1] == EMPTY){
-			sweep(buttonx, buttony+1, minegrid, grid, width, height);
+		if(button_y > 0 && grid[button_x][button_y-1] == EMPTY){
+			sweep(button_x, button_y-1, mine_grid, grid, width, height);
+		}
+		if(button_y < height-1 && grid[button_x][button_y+1] == EMPTY){
+			sweep(button_x, button_y+1, mine_grid, grid, width, height);
 		}
 	} else {
-		grid[buttonx][buttony] = 7+mines;
+		grid[button_x][button_y] = 7+mines;
 	}
 }
 
-int **minegrid;
+int **mine_grid;
 int started;
-int mines(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
+int mines(int **grid, SDL_Event event, int t, int cellsize, int width, int height){
 	int ret = MINES;
 
 	if(t == 1){
 		started = 0;
 		srand(time(NULL));
 		//Place all mines
-		minegrid = (int **) calloc(width, sizeof(int *));
+		mine_grid = (int **) calloc(width, sizeof(int *));
 		for(int i = 0; i < width; i++){
-			minegrid[i] = (int *) calloc(height, sizeof(int));
+			mine_grid[i] = (int *) calloc(height, sizeof(int));
 			for(int j = 0; j < height; j++){
 				if(rand() % 5 == 0){
-					minegrid[i][j] = MINE;
+					mine_grid[i][j] = MINE;
 				} else {
-					minegrid[i][j] = CLEAR;
+					mine_grid[i][j] = CLEAR;
 				}
 			}
 		}
 	}
 
 	//Respond to user input
-	if(eventbutton.type == SDL_MOUSEBUTTONUP){
-		int buttonx = eventbutton.button.x / cellsize;
-		int buttony = eventbutton.button.y / cellsize;
-		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1){
+	if(event.type == SDL_MOUSEBUTTONUP){
+		int button_x = event.button.x / cellsize;
+		int button_y = event.button.y / cellsize;
+		if(event.button.button == SDL_BUTTON_LEFT && button_x < width && button_y < height && button_x > -1 && button_y > -1){
 			if(started == 0){
 				//Clear out 3x3 area around first click to ensure you have a jumping off point
 				started = 1;
-				minegrid[buttonx][buttony] = CLEAR;
-				if(buttonx > 0){
-					if(buttony > 0){
-						minegrid[buttonx-1][buttony-1] = CLEAR;
+				mine_grid[button_x][button_y] = CLEAR;
+				if(button_x > 0){
+					if(button_y > 0){
+						mine_grid[button_x-1][button_y-1] = CLEAR;
 					}
-					if(buttony < height-1){
-						minegrid[buttonx-1][buttony+1] = CLEAR;
+					if(button_y < height-1){
+						mine_grid[button_x-1][button_y+1] = CLEAR;
 					}
-					minegrid[buttonx-1][buttony] = CLEAR;
+					mine_grid[button_x-1][button_y] = CLEAR;
 				}
-				if(buttonx < width-1){
-					if(buttony > 0){
-						minegrid[buttonx+1][buttony-1] = CLEAR;
+				if(button_x < width-1){
+					if(button_y > 0){
+						mine_grid[button_x+1][button_y-1] = CLEAR;
 					}
-					if(buttony < height-1){
-						minegrid[buttonx+1][buttony+1] = CLEAR;
+					if(button_y < height-1){
+						mine_grid[button_x+1][button_y+1] = CLEAR;
 					}
-					minegrid[buttonx+1][buttony] = CLEAR;
+					mine_grid[button_x+1][button_y] = CLEAR;
 				}
-				if(buttony > 0){
-					minegrid[buttonx][buttony-1] = CLEAR;
+				if(button_y > 0){
+					mine_grid[button_x][button_y-1] = CLEAR;
 				}
-				if(buttony < height-1){
-					minegrid[buttonx][buttony+1] = CLEAR;
+				if(button_y < height-1){
+					mine_grid[button_x][button_y+1] = CLEAR;
 				}
 			}
-			if(minegrid[buttonx][buttony] == MINE){
+			if(mine_grid[button_x][button_y] == MINE){
 				for(int i = 0; i < width; i++){
 					for(int j = 0; j < height; j++){
-						if(minegrid[i][j] == MINE){
+						if(mine_grid[i][j] == MINE){
 							grid[i][j] = MINE;
 						}
 					}
@@ -158,27 +158,27 @@ int mines(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
 			} else {
-				sweep(buttonx, buttony, minegrid, grid, width, height);
+				sweep(button_x, button_y, mine_grid, grid, width, height);
 				//Check if all mines have been found
-				int winflag = 1;
+				int win_flag = 1;
 				for(int i = 0; i < width; i++){
 					for(int j = 0; j < height; j++){
-						if((grid[i][j] == EMPTY || grid[i][j] == FLAG) && minegrid[i][j] == CLEAR){
-							winflag = 0;
+						if((grid[i][j] == EMPTY || grid[i][j] == FLAG) && mine_grid[i][j] == CLEAR){
+							win_flag = 0;
 						}
 					}
 				}
-				if(winflag == 1){
+				if(win_flag == 1){
 					printf("YOU WIN!\n");
 					ret =  ARCADE;
 				}
 			}
-		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1){
+		} else if(event.button.button == SDL_BUTTON_RIGHT && button_x < width && button_y < height && button_x > -1 && button_y > -1){
 			//Place or remove flag
-			if(grid[buttonx][buttony] == EMPTY){
-				grid[buttonx][buttony] = FLAG;
-			} else if(grid[buttonx][buttony] == FLAG){
-				grid[buttonx][buttony] = EMPTY;
+			if(grid[button_x][button_y] == EMPTY){
+				grid[button_x][button_y] = FLAG;
+			} else if(grid[button_x][button_y] == FLAG){
+				grid[button_x][button_y] = EMPTY;
 			}
 		}
 	}
@@ -186,9 +186,9 @@ int mines(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int
 	//Free Dynamic Memory
 	if(ret == ARCADE){
 		for(int i = 0; i < width; i++){
-			free(minegrid[i]);
+			free(mine_grid[i]);
 		}
-		free(minegrid);
+		free(mine_grid);
 	}
 
 	return ret;

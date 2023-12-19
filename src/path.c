@@ -20,29 +20,29 @@
 */
 struct node{
 	int stored;
-	int gCost, hCost;
+	int g_cost, h_cost;
 	int x, y;
 	struct node *parent;
 } *open, *closed;
 
-int *priorityq;
-int qLen;
-int startX = 0, startY = 0, //chance = 3, 
-endX = 19, endY = 19, openLen = 0, closedLen = 0;
+int *priority_queue;
+int queue_length;
+int start_x = 0, start_y = 0, //chance = 3, 
+end_x = 19, end_y = 19, open_length = 0, closed_length = 0;
 
 void enqueue(int index){
-	priorityq[qLen] = index;
-    qLen++;
+	priority_queue[queue_length] = index;
+    queue_length++;
 }
 
 int peek(){
-    int highestPriority = 10000;
+    int highest_priority = 10000;
     int ind = -1;
 
-    for (int i = 0; i <= qLen; i++) {
-		int priority = open[priorityq[i]].gCost+open[priorityq[i]].hCost;
-        if (highestPriority > priority) {
-            highestPriority = priority;
+    for (int i = 0; i <= queue_length; i++) {
+		int priority = open[priority_queue[i]].g_cost+open[priority_queue[i]].h_cost;
+        if (highest_priority > priority) {
+            highest_priority = priority;
             ind = i;
         }
     }
@@ -52,18 +52,18 @@ int peek(){
 
 int dequeue(){
     int ind = peek();
-	int ret = priorityq[ind];
-    for (int i = ind; i < qLen-1; i++) {
-        priorityq[i] = priorityq[i + 1];
+	int ret = priority_queue[ind];
+    for (int i = ind; i < queue_length-1; i++) {
+        priority_queue[i] = priority_queue[i + 1];
     }
-    qLen--;
+    queue_length--;
 
 	return ret;
 }
 
-void neighborFunction(int neighborx, int neighbory, int neighborCost, struct node *current, int height){
+void neighbor_function(int neighbor_x, int neighbor_y, int neighbor_cost, struct node *current, int height){
 	struct node *neighbor;
-	int index = neighborx * height + neighbory;
+	int index = neighbor_x * height + neighbor_y;
 	if(closed[index].stored){
 		return;
 	}
@@ -74,18 +74,18 @@ void neighborFunction(int neighborx, int neighbory, int neighborCost, struct nod
 	}
 	if(b){
 		open[index].parent = current;
-		open[index].x = neighborx;
-		open[index].y = neighbory;
-		open[index].gCost = neighborCost;
-		open[index].hCost = (abs(neighborx - endX) * 10) + 
-						(abs(neighbory - endY) * 10);
+		open[index].x = neighbor_x;
+		open[index].y = neighbor_y;
+		open[index].g_cost = neighbor_cost;
+		open[index].h_cost = (abs(neighbor_x - end_x) * 10) + 
+						(abs(neighbor_y - end_y) * 10);
 		open[index].stored = 1;
 		enqueue(index);
-		openLen++;
-	} else if(neighborCost >= neighbor->gCost){
+		open_length++;
+	} else if(neighbor_cost >= neighbor->g_cost){
 		return;
 	} else {
-		neighbor->gCost = neighborCost;
+		neighbor->g_cost = neighbor_cost;
 		neighbor->parent = current;
 	}
 }
@@ -96,10 +96,10 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 	if(t == 1){
 		//srand(time(NULL)); //Generate random numbers
 
-		startX = 0;
-		startY = 0;
-		endX = width-1;
-		endY = height-1;
+		start_x = 0;
+		start_y = 0;
+		end_x = width-1;
+		end_y = height-1;
 
 		//for(int i = 0; i < width; i++){
 		//	for(int n = 0; n < height; n++){
@@ -111,32 +111,32 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 		//	}
 		//}
 
-		closedLen = 0;
+		closed_length = 0;
 		closed = (struct node *) calloc(width*height, sizeof(struct node));
 
-		openLen = 1;
-		int index = startX*height+startY;
+		open_length = 1;
+		int index = start_x*height+start_y;
 		open = (struct node *) calloc(width*height, sizeof(struct node));
 
 		open[index].parent = NULL;
-		open[index].x = startX;
-		open[index].y = startY;
-		open[index].gCost = 0;
-		open[index].hCost = (abs(startX - endX) * 10) + 
-					(abs(startY - endY) * 10);
+		open[index].x = start_x;
+		open[index].y = start_y;
+		open[index].g_cost = 0;
+		open[index].h_cost = (abs(start_x - end_x) * 10) + 
+					(abs(start_y - end_y) * 10);
 		open[index].stored = 1;
 
-		priorityq = (int *) calloc(width*height, sizeof(int));
+		priority_queue = (int *) calloc(width*height, sizeof(int));
 		enqueue(index);
 	}
 
 	//Make sure not to replace walls or the final path
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
-			if(i == startX && j == startY){
+			if(i == start_x && j == start_y){
 				//Place Start
 				grid[i][j] = EMPTY;
-			} else if (i == endX && j == endY){
+			} else if (i == end_x && j == end_y){
 				//Place End
 				grid[i][j] = EMPTY;
 			} else if(closed[i*height+j].stored){
@@ -150,67 +150,67 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 	}
 
 	int current = dequeue();
-	if(open[current].x == endX && open[current].y == endY){
-		struct node *currentNode = &(open[current]);
-		while(currentNode){
-			grid[currentNode->x][currentNode->y] = FINAL;
-			currentNode = currentNode->parent;
+	if(open[current].x == end_x && open[current].y == end_y){
+		struct node *current_node = &(open[current]);
+		while(current_node){
+			grid[current_node->x][current_node->y] = FINAL;
+			current_node = current_node->parent;
 		}
 		ret = ARCADE;
 	}
 
 	//Add current to closed set
-	int closedIndex = open[current].x * height + open[current].y;
-	closed[closedIndex] = open[current];
-	int closedx = closed[closedIndex].x;
-	int closedy = closed[closedIndex].y;
-	int closedcost = closed[closedIndex].gCost;
-	struct node *closedNew = &(closed[closedIndex]);
-	closedLen++;
+	int closed_index = open[current].x * height + open[current].y;
+	closed[closed_index] = open[current];
+	int closed_x = closed[closed_index].x;
+	int closed_y = closed[closed_index].y;
+	int closed_cost = closed[closed_index].g_cost;
+	struct node *closedNew = &(closed[closed_index]);
+	closed_length++;
 
 	open[current].stored = 0;
-	openLen--;
+	open_length--;
 
 	//for upper neighbor
-	if(closedy > 0 && grid[closedx][closedy-1] != WALL){
-		neighborFunction(closedx, closedy-1, closedcost+10, closedNew, height);
+	if(closed_y > 0 && grid[closed_x][closed_y-1] != WALL){
+		neighbor_function(closed_x, closed_y-1, closed_cost+10, closedNew, height);
 	}
 	//for lower neighbor
-	if(closedy < height-1 && grid[closedx][closedy+1] != WALL){
-		neighborFunction(closedx, closedy+1, closedcost+10, closedNew, height);
+	if(closed_y < height-1 && grid[closed_x][closed_y+1] != WALL){
+		neighbor_function(closed_x, closed_y+1, closed_cost+10, closedNew, height);
 	}
 	//for left neighbor
-	if(closedx > 0 && grid[closedx-1][closedy] != WALL){
-		neighborFunction(closedx-1, closedy, closedcost+10, closedNew, height);
+	if(closed_x > 0 && grid[closed_x-1][closed_y] != WALL){
+		neighbor_function(closed_x-1, closed_y, closed_cost+10, closedNew, height);
 	}
 	//for right neighbor
-	if(closedx < width-1 && grid[closedx+1][closedy] != WALL){
-		neighborFunction(closedx+1, closedy, closedcost+10, closedNew, height);
+	if(closed_x < width-1 && grid[closed_x+1][closed_y] != WALL){
+		neighbor_function(closed_x+1, closed_y, closed_cost+10, closedNew, height);
 	}
 	//for upper left neighbor
-	if(closedy > 0 && closedx > 0 && grid[closedx-1][closedy-1] != WALL){
-		neighborFunction(closedx-1, closedy-1, closedcost+14, closedNew, height);
+	if(closed_y > 0 && closed_x > 0 && grid[closed_x-1][closed_y-1] != WALL){
+		neighbor_function(closed_x-1, closed_y-1, closed_cost+14, closedNew, height);
 	}
 	//for upper right neighbor
-	if(closedy > 0 && closedx < width-1 && grid[closedx+1][closedy-1] != WALL){
-		neighborFunction(closedx+1, closedy-1, closedcost+14, closedNew, height);
+	if(closed_y > 0 && closed_x < width-1 && grid[closed_x+1][closed_y-1] != WALL){
+		neighbor_function(closed_x+1, closed_y-1, closed_cost+14, closedNew, height);
 	}
 	//for lower left neighbor
-	if(closedy < height-1 && closedx > 0 && grid[closedx-1][closedy+1] != WALL){
-		neighborFunction(closedx-1, closedy+1, closedcost+14, closedNew, height);
+	if(closed_y < height-1 && closed_x > 0 && grid[closed_x-1][closed_y+1] != WALL){
+		neighbor_function(closed_x-1, closed_y+1, closed_cost+14, closedNew, height);
 	}
 	//for lower right neighbor
-	if(closedy < height-1 && closedx < width-1 && grid[closedx+1][closedy+1] != WALL){
-		neighborFunction(closedx+1, closedy+1, closedcost+14, closedNew, height);
+	if(closed_y < height-1 && closed_x < width-1 && grid[closed_x+1][closed_y+1] != WALL){
+		neighbor_function(closed_x+1, closed_y+1, closed_cost+14, closedNew, height);
 	}
 
 	//Fill Display
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
-			if(i == startX && j == startY){
+			if(i == start_x && j == start_y){
 				//Place Start
 				grid[i][j] = START;
-			} else if (i == endX && j == endY){
+			} else if (i == end_x && j == end_y){
 				//Place End
 				grid[i][j] = END;
 			} else if(grid[i][j] != FINAL && closed[i*height+j].stored){
@@ -223,7 +223,7 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 		}
 	}
 
-	if(openLen == 0){
+	if(open_length == 0){
 		ret = ARCADE;
 	}
 
@@ -231,7 +231,7 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 	if(ret == ARCADE){
 		free(open);
 		free(closed);
-		free(priorityq);
+		free(priority_queue);
 	}
 
 	return ret;

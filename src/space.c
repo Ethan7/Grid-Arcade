@@ -19,66 +19,66 @@
 
 #define LAG 8
 */
-int invadersx = 0, invadersy = 0, invcount = 0, playerx = 0, playery = 0, enemylag = 0, househealth = 0;
-int *invfire;
+int invaders_x = 0, invaders_y = 0, invader_count = 0, player_x = 0, player_y = 0, enemy_lag = 0, house_health = 0;
+int *invader_fire;
 int space(int **grid, SDL_Event event, int t, int width, int height){
 	if(t == 1){
-		invcount = 0;
-		invadersx = 0;
-		invadersy = 0;
+		invader_count = 0;
+		invaders_x = 0;
+		invaders_y = 0;
 
 		for(int j = 2; j < 7; j++){
 			for(int i = 2; i < width-2; i++){
 				if(i % 2 == 0 && j % 2 == 0){
 					grid[i][j] = ENEMY;
-					invcount++;
-					if(j > invadersy){
-						invadersy = j;
+					invader_count++;
+					if(j > invaders_y){
+						invaders_y = j;
 					}
 				}
 			}
 		}
-		househealth = 0;
+		house_health = 0;
 		for(int i = 2; i < width-2; i++){
 			if(i % 2 == 0){
 				grid[i][height-2] = HOUSE;
-				househealth++;
+				house_health++;
 			}
 		}
-		playerx = width/2;
-		playery = height-1;
-		enemylag = 0;
+		player_x = width/2;
+		player_y = height-1;
+		enemy_lag = 0;
 
-		invfire = (int *) calloc(width, sizeof(int));
+		invader_fire = (int *) calloc(width, sizeof(int));
 		for(int i = 0; i < width; i++){
-			invfire[i] = -1;
+			invader_fire[i] = -1;
 		}
 	}
 	//Control player
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
 		case SDLK_LEFT:
-			if(playerx > 0){
-				grid[playerx][playery] = EMPTY;
-				playerx--;
+			if(player_x > 0){
+				grid[player_x][player_y] = EMPTY;
+				player_x--;
 			}
 			break;
 		case SDLK_RIGHT:
-			if(playerx < width-1){
-				grid[playerx][playery] = EMPTY;
-				playerx++;
+			if(player_x < width-1){
+				grid[player_x][player_y] = EMPTY;
+				player_x++;
 			}
 			break;
 		case SDLK_UP:
-			if(grid[playerx][playery-1] == HOUSE){
-				househealth--;
+			if(grid[player_x][player_y-1] == HOUSE){
+				house_health--;
 			}
-			grid[playerx][playery-1] = PBULLET;
+			grid[player_x][player_y-1] = PBULLET;
 			break;
 		}
 	}
 
-	grid[playerx][playery] = PLAYER;
+	grid[player_x][player_y] = PLAYER;
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
 			//Move enemy bullets
@@ -87,7 +87,7 @@ int space(int **grid, SDL_Event event, int t, int width, int height){
 			} else if(grid[i][j] == EBULLET && grid[i][j+1] == PLAYER){
 				//Check whether you've died and lost
 				printf("YOU LOSE!\n");
-				free(invfire);
+				free(invader_fire);
 				return ARCADE;
 			} else if(grid[i][j] == EBULLET && grid[i][j+1] == PBULLET){
 				grid[i][j] = EMPTY;
@@ -95,7 +95,7 @@ int space(int **grid, SDL_Event event, int t, int width, int height){
 			} else if(grid[i][j] == EBULLET && grid[i][j+1] == HOUSE){
 				grid[i][j] = EMPTY;
 				grid[i][j+1] = EMPTY;
-				househealth--;
+				house_health--;
 			} else if(grid[i][j] == EBULLET){
 				grid[i][j] = EMPTY;
 				grid[i][j+1] = MOVED;
@@ -106,7 +106,7 @@ int space(int **grid, SDL_Event event, int t, int width, int height){
 			} else if(grid[i][j] == PBULLET && grid[i][j-1] == ENEMY){
 				grid[i][j] = EMPTY;
 				grid[i][j-1] = EMPTY;
-				invcount--;
+				invader_count--;
 			} else if(grid[i][j] == PBULLET && grid[i][j-1] == EBULLET){
 				grid[i][j] = EMPTY;
 				grid[i][j-1] = EMPTY;
@@ -123,22 +123,22 @@ int space(int **grid, SDL_Event event, int t, int width, int height){
 			}
 		}
 	}
-	if(enemylag % LAG == 0){
-		for(int j = invadersy % 2; j < height; j+=2){
-			for(int i = invadersx; i < width; i+=2){
+	if(enemy_lag % LAG == 0){
+		for(int j = invaders_y % 2; j < height; j+=2){
+			for(int i = invaders_x; i < width; i+=2){
 				//Move enemy
 				if(grid[i][j] == ENEMY){
-					invfire[i] = j;
-					if(invadersx == 2 && invadersy % 2 == 0){
+					invader_fire[i] = j;
+					if(invaders_x == 2 && invaders_y % 2 == 0){
 						grid[i][j] = EMPTY;
 						grid[i][j+1] = ENEMY;
-					} else if(invadersx == 0 && invadersy % 2 == 1){
+					} else if(invaders_x == 0 && invaders_y % 2 == 1){
 						grid[i][j] = EMPTY;
 						grid[i][j+1] = ENEMY;
-					} else if(invadersy % 2 == 0){
+					} else if(invaders_y % 2 == 0){
 						grid[i][j] = EMPTY;
 						grid[i+1][j] = ENEMY;
-					} else if(invadersy % 2 == 1){
+					} else if(invaders_y % 2 == 1){
 						grid[i][j] = EMPTY;
 						grid[i-1][j] = ENEMY;
 					}
@@ -146,45 +146,45 @@ int space(int **grid, SDL_Event event, int t, int width, int height){
 			}
 		}
 		//Move enemy position markers
-		if(invadersy == height-1){
+		if(invaders_y == height-1){
 			printf("YOU LOSE!\n");
-			free(invfire);
+			free(invader_fire);
 			return ARCADE;
-		} else if(invadersx == 2 && invadersy % 2 == 0){
-			invadersy++;
-		} else if(invadersx == 0 && invadersy % 2 == 1){
-			invadersy++;
-		} else if(invadersy % 2 == 0){
-			invadersx++;
-		} else if(invadersy % 2 == 1){
-			invadersx--;
+		} else if(invaders_x == 2 && invaders_y % 2 == 0){
+			invaders_y++;
+		} else if(invaders_x == 0 && invaders_y % 2 == 1){
+			invaders_y++;
+		} else if(invaders_y % 2 == 0){
+			invaders_x++;
+		} else if(invaders_y % 2 == 1){
+			invaders_x--;
 		}
 		//Launch enemy bullet
 		int fire = 0;
 		do{
 			fire = rand() % width;
-		} while(invfire[fire] == -1 && invcount > 0);
-		if(grid[fire][invfire[fire]+1] == ENEMY){
-			grid[fire][invfire[fire]+2] = EBULLET;
+		} while(invader_fire[fire] == -1 && invader_count > 0);
+		if(grid[fire][invader_fire[fire]+1] == ENEMY){
+			grid[fire][invader_fire[fire]+2] = EBULLET;
 		} else {
-			grid[fire][invfire[fire]+1] = EBULLET;
+			grid[fire][invader_fire[fire]+1] = EBULLET;
 		}
 		//Clear firing line
 		for(int i = 0; i < width; i++){
-			invfire[i] = -1;
+			invader_fire[i] = -1;
 		}
 	}
-	enemylag++;
+	enemy_lag++;
 	//Check if all your houses have been destroyed
-	if(househealth == 0){
+	if(house_health == 0){
 		printf("YOU LOSE!\n");
-		free(invfire);
+		free(invader_fire);
 		return ARCADE;
 	}
 	//Check whether you've killed the enemy and won
-	if(invcount == 0){
+	if(invader_count == 0){
 		printf("YOU WIN!\n");
-		free(invfire);
+		free(invader_fire);
 		return ARCADE;
 	}
 	return SPACE;

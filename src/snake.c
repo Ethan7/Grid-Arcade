@@ -15,19 +15,19 @@
 #define FOOD 0
 #define SNAKE 1
 */
-int tailLen, dir, snakeX, snakeY;
-int **snakeTail;
+int tail_length, dir, snake_x, snake_y;
+int **snake_tail;
 
 int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 	int ret = SNAKE;
-	int winLen = (width*height) >> (2-wrap);
-	int foodcount = sqrt(width*height)/2;
+	int win_length = (width*height) >> (2-wrap);
+	int food_count = sqrt(width*height)/2;
 
 	//Setup initial state
 	if(t == 1){
-		tailLen = 1;
+		tail_length = 1;
 		dir = 0;
-		snakeX = width/2, snakeY = height/2;
+		snake_x = width/2, snake_y = height/2;
 
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
@@ -35,11 +35,11 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 			}
 		}
 
-		grid[snakeX][snakeY] = SNAKE;
+		grid[snake_x][snake_y] = SNAKE;
 
 		srand(time(NULL));
 		
-		for(int i = 0; i < foodcount; i++){
+		for(int i = 0; i < food_count; i++){
 			while(1){
 				int rx = rand() % width;
 				int ry = rand() % height;
@@ -50,33 +50,33 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 			}
 		}
 
-		snakeTail = (int **) calloc(winLen, sizeof(int *));
-		for(int i = 0; i < winLen; i++){
-			snakeTail[i] = (int *) calloc(2, sizeof(int));
-			snakeTail[i][0] = snakeX;
-			snakeTail[i][1] = snakeY;
+		snake_tail = (int **) calloc(win_length, sizeof(int *));
+		for(int i = 0; i < win_length; i++){
+			snake_tail[i] = (int *) calloc(2, sizeof(int));
+			snake_tail[i][0] = snake_x;
+			snake_tail[i][1] = snake_y;
 		}
 	}
 
 	//Respond to input
 	switch( event.key.keysym.sym ){
 	case SDLK_UP:
-		if(tailLen == 1 || snakeTail[tailLen-2][1] != snakeY-1){
+		if(tail_length == 1 || snake_tail[tail_length-2][1] != snake_y-1){
 			dir = 0;
 		}
 		break;
 	case SDLK_DOWN:
-		if(tailLen == 1 || snakeTail[tailLen-2][1] != snakeY+1){
+		if(tail_length == 1 || snake_tail[tail_length-2][1] != snake_y+1){
 			dir = 1;
 		}
 		break;
 	case SDLK_LEFT:
-		if(tailLen == 1 || snakeTail[tailLen-2][0] != snakeX-1){
+		if(tail_length == 1 || snake_tail[tail_length-2][0] != snake_x-1){
 			dir = 2;
 		}
 		break;
 	case SDLK_RIGHT:
-		if(tailLen == 1 || snakeTail[tailLen-2][0] != snakeX+1){
+		if(tail_length == 1 || snake_tail[tail_length-2][0] != snake_x+1){
 			dir = 3;
 		}
 		break;
@@ -85,11 +85,11 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 	//Game Step
 	switch(dir){
 	case 0:
-		if(snakeY != 0){
-			snakeY--;
+		if(snake_y != 0){
+			snake_y--;
 		} else {
 			if(wrap){
-				snakeY = height-1;
+				snake_y = height-1;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -97,11 +97,11 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 1:
-		if(snakeY != height-1){
-			snakeY++;
+		if(snake_y != height-1){
+			snake_y++;
 		} else {
 			if(wrap){
-				snakeY = 0;
+				snake_y = 0;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -109,11 +109,11 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 2:
-		if(snakeX != 0){
-			snakeX--;
+		if(snake_x != 0){
+			snake_x--;
 		} else {
 			if(wrap){
-				snakeX = width-1;
+				snake_x = width-1;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -121,11 +121,11 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 		}
 		break;
 	case 3:
-		if(snakeX != width-1){
-			snakeX++;
+		if(snake_x != width-1){
+			snake_x++;
 		} else {
 			if(wrap){
-				snakeX = 0;
+				snake_x = 0;
 			} else {
 				printf("YOU LOSE!\n");
 				ret = ARCADE;
@@ -136,22 +136,22 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 	//Snake Movement
 	if(ret == SNAKE){
-		if(grid[snakeX][snakeY] == EMPTY){
-			grid[snakeX][snakeY] = SNAKE;
-			grid[snakeTail[0][0]][snakeTail[0][1]] = EMPTY;
-			for(int i = 0; i < tailLen-1; i++){
-				snakeTail[i][0] = snakeTail[i+1][0];
-				snakeTail[i][1] = snakeTail[i+1][1];
+		if(grid[snake_x][snake_y] == EMPTY){
+			grid[snake_x][snake_y] = SNAKE;
+			grid[snake_tail[0][0]][snake_tail[0][1]] = EMPTY;
+			for(int i = 0; i < tail_length-1; i++){
+				snake_tail[i][0] = snake_tail[i+1][0];
+				snake_tail[i][1] = snake_tail[i+1][1];
 			}
-			snakeTail[tailLen-1][0] = snakeX;
-			snakeTail[tailLen-1][1] = snakeY;
+			snake_tail[tail_length-1][0] = snake_x;
+			snake_tail[tail_length-1][1] = snake_y;
 
-		} else if(grid[snakeX][snakeY] == FOOD){
-			tailLen++;
-			grid[snakeX][snakeY] = SNAKE;
+		} else if(grid[snake_x][snake_y] == FOOD){
+			tail_length++;
+			grid[snake_x][snake_y] = SNAKE;
 
-			snakeTail[tailLen-1][0] = snakeX;
-			snakeTail[tailLen-1][1] = snakeY;
+			snake_tail[tail_length-1][0] = snake_x;
+			snake_tail[tail_length-1][1] = snake_y;
 			while(1){
 				int rx = rand() % width;
 				int ry = rand() % height;
@@ -160,13 +160,13 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 					break;
 				}
 			}
-		} else if(grid[snakeX][snakeY] == SNAKE){
+		} else if(grid[snake_x][snake_y] == SNAKE){
 			printf("YOU LOSE!\n");
 			ret = ARCADE;
 		}
 
 		//Win Condition
-		if(tailLen == winLen){
+		if(tail_length == win_length){
 			printf("YOU WIN!\n");
 			printf("Time to beat: %d\n", t);
 			ret = ARCADE;
@@ -175,10 +175,10 @@ int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 	//Free Dynamic Memory
 	if(ret == ARCADE){
-		for(int i = 0; i < winLen; i++){
-			free(snakeTail[i]);
+		for(int i = 0; i < win_length; i++){
+			free(snake_tail[i]);
 		}
-		free(snakeTail);
+		free(snake_tail);
 	}
 
 	return ret;

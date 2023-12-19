@@ -17,52 +17,52 @@
 #define P2SHIP 3
 #define P2SHIPATTACKED 5
 */
-int **undergrid1, **undergrid2;
+int **under_grid1, **under_grid2;
 int cannonballs1, cannonballs2;
-int shipcount;
+int ship_count;
 int phase;
-int shipsplaced;
+int ships_placed;
 int direction;
-void phase1(int width, int height, int newship, int **grid, int **undergrid, int newphase, int x, int y, int dir){
+void phase1(int width, int height, int new_ship, int **grid, int **under_grid, int new_phase, int x, int y, int dir){
 	//Place all the ships
-	int shipsize = shipsplaced / 2 + 2; //Place increasingly larger ships
-	for(int j = 0; j < shipsize; j++){
+	int ship_size = ships_placed / 2 + 2; //Place increasingly larger ships
+	for(int j = 0; j < ship_size; j++){
 		if(j > 0){
 			if(dir == 0 && x + j >= width){
 				break;
 			} else if(dir == 1 && y + j >= height){
 				break;
-			} else if(dir == 0 && undergrid[x+j][y] == newship){
+			} else if(dir == 0 && under_grid[x+j][y] == new_ship){
 				break;
-			} else if(dir == 1 && undergrid[x][y+j] == newship){
+			} else if(dir == 1 && under_grid[x][y+j] == new_ship){
 				break;
 			}
-		} else if(undergrid[x][y] == newship){
+		} else if(under_grid[x][y] == new_ship){
 			break;
 		}
 		//Place current ship
-		if(j == shipsize-1){
-			for(int k = 0; k < shipsize; k++){
+		if(j == ship_size-1){
+			for(int k = 0; k < ship_size; k++){
 				if(dir == 0){
-					undergrid[x+k][y] = newship;
-					grid[x+k][y] = newship;
+					under_grid[x+k][y] = new_ship;
+					grid[x+k][y] = new_ship;
 				} else {
-					undergrid[x][y+k] = newship;
-					grid[x][y+k] = newship;
+					under_grid[x][y+k] = new_ship;
+					grid[x][y+k] = new_ship;
 				}
 			}
-			shipsplaced++;
+			ships_placed++;
 		}
 	}
-	if(shipsplaced == shipcount){
-		shipsplaced = 0;
+	if(ships_placed == ship_count){
+		ships_placed = 0;
 		for(int i = 0; i < width; i++){
 			for (int j = 0; j < height; j++){
 				grid[i][j] = EMPTY;
 			}
 		}
-		phase = newphase; //When all player 1 ships placed switch to player 2
-		if(newphase == 1){
+		phase = new_phase; //When all player 1 ships placed switch to player 2
+		if(new_phase == 1){
 			printf("It is now Player 2's turn to place ships.\n");
 		} else {
 			printf("It is now Player 1's turn to attack ships.\n");
@@ -73,56 +73,56 @@ void phase1(int width, int height, int newship, int **grid, int **undergrid, int
 int phase2(int **grid, int x, int y, int width, int height, int player){
 	//A bunch of extra lines to shrink the definition and implementation off the function
 	int *cannonballs;
-	int **undergrid;
-	int **enemyundergrid;
-	int newphase;
-	int newship;
-	int newshipattacked;
-	int enemyattacked;
+	int **under_grid;
+	int **enemy_under_grid;
+	int new_phase;
+	int new_ship;
+	int new_shipattacked;
+	int enemy_attacked;
 	if(player == 1){
 		cannonballs = &cannonballs1;
-		undergrid = undergrid2;
-		enemyundergrid = undergrid1;
-		newphase = 3;
-		newship = P2SHIP;
-		newshipattacked = P2SHIPATTACKED;
-		enemyattacked = P1SHIPATTACKED;
+		under_grid = under_grid2;
+		enemy_under_grid = under_grid1;
+		new_phase = 3;
+		new_ship = P2SHIP;
+		new_shipattacked = P2SHIPATTACKED;
+		enemy_attacked = P1SHIPATTACKED;
 	} else {
 		cannonballs = &cannonballs2;
-		undergrid = undergrid1;
-		enemyundergrid = undergrid2;
-		newphase = 2;
-		newship = P1SHIP;
-		newshipattacked = P1SHIPATTACKED;
-		enemyattacked = P2SHIPATTACKED;
+		under_grid = under_grid1;
+		enemy_under_grid = under_grid2;
+		new_phase = 2;
+		new_ship = P1SHIP;
+		new_shipattacked = P1SHIPATTACKED;
+		enemy_attacked = P2SHIPATTACKED;
 	}
 	(*cannonballs)--;
-	if(undergrid[x][y] > CLEAR){
-		undergrid[x][y] = newshipattacked;
+	if(under_grid[x][y] > CLEAR){
+		under_grid[x][y] = new_shipattacked;
 		printf("Player %d HIT! %d cannonballs left.\n", player, *cannonballs);
 	} else {
-		undergrid[x][y] = CLEAR;
+		under_grid[x][y] = CLEAR;
 		printf("Player %d MISS! %d cannonballs left.\n", player, *cannonballs);
 	}
 	//check if all ships have been found
-	int winflag = 1;
+	int win_flag = 1;
 	for(int i = 0; i < width; i++){
 		for(int j = 0; j < height; j++){
-			if(undergrid[i][j] == newship){
-				winflag = 0;
+			if(under_grid[i][j] == new_ship){
+				win_flag = 0;
 			}
 		}
 	}
-	if(winflag == 1){
+	if(win_flag == 1){
 		printf("PLAYER %d WINS!\n", player);
 		return 1;
 	}
-	phase = newphase; //Switch to player 2's turn
+	phase = new_phase; //Switch to player 2's turn
 	//Display the attacked squares of next player
 	for(int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
-			if(enemyundergrid[i][j] == CLEAR || enemyundergrid[i][j] == enemyattacked){
-				grid[i][j] = enemyundergrid[i][j];
+			if(enemy_under_grid[i][j] == CLEAR || enemy_under_grid[i][j] == enemy_attacked){
+				grid[i][j] = enemy_under_grid[i][j];
 			} else {
 				grid[i][j] = EMPTY;
 			}
@@ -131,40 +131,40 @@ int phase2(int **grid, int x, int y, int width, int height, int player){
 	return 0;
 }
 
-int battle2(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, int height){
+int battle2(int **grid, SDL_Event event, int t, int cellsize, int width, int height){
 	int ret = BATTLE2;
 
 	if(t == 1){
 		cannonballs1 = width*height/3; //Only enough cannonballs to test 1/3 of the spaces
 		cannonballs2 = width*height/3;
-		//Allocate undergrids
-		undergrid1 = (int **) calloc(width, sizeof(int *));
-		undergrid2 = (int **) calloc(width, sizeof(int *));
+		//Allocate under_grids
+		under_grid1 = (int **) calloc(width, sizeof(int *));
+		under_grid2 = (int **) calloc(width, sizeof(int *));
 		for(int i = 0; i < width; i++){
-			undergrid1[i] = (int *) calloc(height, sizeof(int));
-			undergrid2[i] = (int *) calloc(height, sizeof(int));
+			under_grid1[i] = (int *) calloc(height, sizeof(int));
+			under_grid2[i] = (int *) calloc(height, sizeof(int));
 			for(int j = 0; j < height; j++){
-				undergrid1[i][j] = EMPTY;
-				undergrid2[i][j] = EMPTY;
+				under_grid1[i][j] = EMPTY;
+				under_grid2[i][j] = EMPTY;
 			}
 		}
-		shipcount = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
+		ship_count = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
 		phase = 0;
-		shipsplaced = 0;
+		ships_placed = 0;
 		direction = 0;
 	}
 
 	//Respond to user input
-	if(eventbutton.type == SDL_MOUSEBUTTONUP){
-		int buttonx = eventbutton.button.x / cellsize;
-		int buttony = eventbutton.button.y / cellsize;
-		if(eventbutton.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1 && grid[buttonx][buttony] == EMPTY){
+	if(event.type == SDL_MOUSEBUTTONUP){
+		int buttonx = event.button.x / cellsize;
+		int buttony = event.button.y / cellsize;
+		if(event.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1 && grid[buttonx][buttony] == EMPTY){
 			switch(phase){
 			case 0:
-				phase1(width, height, P1SHIP, grid, undergrid1, 1, buttonx, buttony, direction);
+				phase1(width, height, P1SHIP, grid, under_grid1, 1, buttonx, buttony, direction);
 				break;
 			case 1:
-				phase1(width, height, P2SHIP, grid, undergrid2, 2, buttonx, buttony, direction);
+				phase1(width, height, P2SHIP, grid, under_grid2, 2, buttonx, buttony, direction);
 				break;
 			case 2:
 				if(phase2(grid, buttonx, buttony, width, height, 1) == 1){
@@ -181,36 +181,36 @@ int battle2(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, i
 				if(cannonballs1 > 0){
 					printf("It is now Player 1's turn to attack ships.\n");
 				} else {
-					int p1points = 0;
-					int p2points = 0;
+					int p1_points = 0;
+					int p2_points = 0;
 					for(int i = 0; i < width; i++){
 						for(int j = 0; j < height; j++){
-							if(undergrid1[i][j] > CLEAR){
-								grid[i][j] = undergrid1[i][j];
-								if(undergrid1[i][j] == P1SHIPATTACKED){
-									p2points++;
+							if(under_grid1[i][j] > CLEAR){
+								grid[i][j] = under_grid1[i][j];
+								if(under_grid1[i][j] == P1SHIPATTACKED){
+									p2_points++;
 								}
 							}
-							if(undergrid2[i][j] > CLEAR){
-								grid[i][j] = undergrid2[i][j];
-								if(undergrid2[i][j] == P2SHIPATTACKED){
-									p1points++;
+							if(under_grid2[i][j] > CLEAR){
+								grid[i][j] = under_grid2[i][j];
+								if(under_grid2[i][j] == P2SHIPATTACKED){
+									p1_points++;
 								}
 							}
 						}
 					}
-					if(p1points > p2points){
-						printf("Score: %d-%d Player 1 Wins!\n", p1points, p2points);
-					} else if(p1points < p2points){
-						printf("Score: %d-%d Player 2 Wins!\n", p1points, p2points);
+					if(p1_points > p2_points){
+						printf("Score: %d-%d Player 1 Wins!\n", p1_points, p2_points);
+					} else if(p1_points < p2_points){
+						printf("Score: %d-%d Player 2 Wins!\n", p1_points, p2_points);
 					} else {
-						printf("Score: %d-%d It's a tie!\n", p1points, p2points);
+						printf("Score: %d-%d It's a tie!\n", p1_points, p2_points);
 					}
 					ret = ARCADE;
 				}
 				break;
 			}
-		} else if(eventbutton.button.button == SDL_BUTTON_RIGHT){
+		} else if(event.button.button == SDL_BUTTON_RIGHT){
 			direction = 1 - direction;
 		}
 	}
@@ -218,11 +218,11 @@ int battle2(int **grid, SDL_Event eventbutton, int t, int cellsize, int width, i
 	//Free Dynamic Memory
 	if(ret == ARCADE){
 		for(int i = 0; i < width; i++){
-			free(undergrid1[i]);
-			free(undergrid2[i]);
+			free(under_grid1[i]);
+			free(under_grid2[i]);
 		}
-		free(undergrid1);
-		free(undergrid2);
+		free(under_grid1);
+		free(under_grid2);
 	}
 
 	return ret;

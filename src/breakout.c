@@ -19,19 +19,19 @@
 #define BLUE 3
 #define YELLOW 4
 */
-int paddlelen, paddlex, bx, by, bxv, byv, pmomentum, pmomentumlife, lives, blocks;
+int paddle_length, paddle_x, bx, by, bxv, byv, p_momentum, p_momentum_life, lives, blocks;
 int breakout(int **grid, SDL_Event event, int t, int width, int height){
-	int speedLimit = 4;
+	int speed_limit = 4;
 
 	if(t == 1){
-		paddlelen = width/5;
-		paddlex = 4*width/10;
+		paddle_length = width/5;
+		paddle_x = 4*width/10;
 		bx = width/2;
 		by = height/2;
 		bxv = 0;
 		byv = 1;
-		pmomentum = 0;
-		pmomentumlife = 0;
+		p_momentum = 0;
+		p_momentum_life = 0;
 		lives = 3;
 		blocks = 0;
 		for(int i = 0; i < width; i++){
@@ -53,32 +53,32 @@ int breakout(int **grid, SDL_Event event, int t, int width, int height){
 	}
 
 	//Erase old Ball and Paddle positions
-	for(int i = 0; i < paddlelen; i++){
-		grid[paddlex+i][height-1] = EMPTY;
+	for(int i = 0; i < paddle_length; i++){
+		grid[paddle_x+i][height-1] = EMPTY;
 	}
 	grid[bx][by] = EMPTY;
 
 	//Retain the paddle's momentum for 3 frames
-	if(pmomentumlife == 0){
-		pmomentum = 0;
+	if(p_momentum_life == 0){
+		p_momentum = 0;
 	} else {
-		pmomentumlife--;
+		p_momentum_life--;
 	}
 	//Respond to user input
 	if(event.type == SDL_KEYDOWN){
 		switch( event.key.keysym.sym ){
 		case SDLK_LEFT:
-			if(paddlex > 0){
-				paddlex--;
-				pmomentum = -1;
-				pmomentumlife = 3;
+			if(paddle_x > 0){
+				paddle_x--;
+				p_momentum = -1;
+				p_momentum_life = 3;
 			}
 			break;
 		case SDLK_RIGHT:
-			if(paddlex < width-1-paddlelen){
-				paddlex++;
-				pmomentum = 1;
-				pmomentumlife = 3;
+			if(paddle_x < width-1-paddle_length){
+				paddle_x++;
+				p_momentum = 1;
+				p_momentum_life = 3;
 			}
 			break;
 		}
@@ -147,32 +147,32 @@ int breakout(int **grid, SDL_Event event, int t, int width, int height){
 		lives--;
 		byv *= -1;
 		printf("Lives Remaining: %d\n", lives);
-	} else if(bx < paddlex+paddlelen && bx+1 > paddlex && by+1 > height-1-byv && byv > 0){
+	} else if(bx < paddle_x+paddle_length && bx+1 > paddle_x && by+1 > height-1-byv && byv > 0){
 		//Ball bounces off of paddle
-		bxv += pmomentum;
+		bxv += p_momentum;
 		byv *= -1;
-		if(bxv > speedLimit){
-			bxv = speedLimit;
-		} else if(bxv < -speedLimit){
-			bxv = -speedLimit;
+		if(bxv > speed_limit){
+			bxv = speed_limit;
+		} else if(bxv < -speed_limit){
+			bxv = -speed_limit;
 		}
-	} else if(bx < paddlex+paddlelen && bx+2 > paddlex && by+1 > height-1-byv && byv > 0 && bxv > 0){
+	} else if(bx < paddle_x+paddle_length && bx+2 > paddle_x && by+1 > height-1-byv && byv > 0 && bxv > 0){
 		//Edge case diagonal ball at corner of paddle left
-		bxv += pmomentum;
+		bxv += p_momentum;
 		byv *= -1;
-		if(bxv > speedLimit){
-			bxv = speedLimit;
-		} else if(bxv < -speedLimit){
-			bxv = -speedLimit;
+		if(bxv > speed_limit){
+			bxv = speed_limit;
+		} else if(bxv < -speed_limit){
+			bxv = -speed_limit;
 		}
-	} else if(bx < paddlex+paddlelen+1 && bx+1 > paddlex && by+1 > height-1-byv && byv > 0 && bxv < 0){
+	} else if(bx < paddle_x+paddle_length+1 && bx+1 > paddle_x && by+1 > height-1-byv && byv > 0 && bxv < 0){
 		//Edge case diagonal ball at corner of paddle right
-		bxv += pmomentum;
+		bxv += p_momentum;
 		byv *= -1;
-		if(bxv > speedLimit){
-			bxv = speedLimit;
-		} else if(bxv < -speedLimit){
-			bxv = -speedLimit;
+		if(bxv > speed_limit){
+			bxv = speed_limit;
+		} else if(bxv < -speed_limit){
+			bxv = -speed_limit;
 		}
 	} else if(by == 0 && byv < 0){
 		byv *= -1;
@@ -189,8 +189,8 @@ int breakout(int **grid, SDL_Event event, int t, int width, int height){
 	}
 
 	//Draw Ball and Paddle
-	for(int i = 0; i < paddlelen; i++){
-		grid[paddlex+i][height-1] = PADDLE;
+	for(int i = 0; i < paddle_length; i++){
+		grid[paddle_x+i][height-1] = PADDLE;
 	}
 	grid[bx][by] = BALL;
 
