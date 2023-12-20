@@ -105,7 +105,7 @@ void clear(int **grid, int width, int height){
 
 enum GAMEMODE arcade(SDL_Event event, int width, int height, enum GAMEMODE *setup_game){
 	if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
-		int index = ((event.button.y / (height/((ROWS/2)+2))) * 2) - 2 + (event.button.x / (width/2));
+		const int index = ((event.button.y / (height/((ROWS/2)+2))) * 2) - 2 + (event.button.x / (width/2));
 		switch(index){
 		case 2:
 		case 4:
@@ -336,8 +336,8 @@ int main(int argc, char **argv){
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 		} else {
 			//Initialize PNG loading 
-			int imgFlags = IMG_INIT_PNG;
-			if( !( IMG_Init( imgFlags ) & imgFlags ) ) {
+			int img_flags = IMG_INIT_PNG;
+			if( !( IMG_Init( img_flags ) & img_flags ) ) {
 				printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
 			}
 		}
@@ -386,12 +386,14 @@ int main(int argc, char **argv){
 	int speed = 256; //Speed for the gameplay loop
 	enum GAMEMODE game = ARCADE; //Current game within the arcade
 	enum GAMEMODE setup_game = CONWAY; //Game which is currently being setup
-	int wentry = width; //Width setting
-	int hentry = height; //Height setting
-	int centry = cellsize; //Cellsize setting
+	int w_entry = width; //Width setting
+	int h_entry = height; //Height setting
+	int c_entry = cellsize; //Cellsize setting
 	int placemarker = 0; //Placemarker for which digit of which setting you're changing
 	int delay = 0; //Allows certain games and projects to display output one last time
-	SDL_Event button_held;
+	SDL_Event button_held; //keeps track of updated mouse position + mouse buttons + return
+	SDL_Event left_right_button; //stores mouse buttons + return and r keys
+	SDL_Event direction; //stores direction + return keys
 	button_held.type = SDL_USEREVENT;
 
 	//Gameplay Loop
@@ -400,9 +402,7 @@ int main(int argc, char **argv){
 		t++;
 
 		//Input Step
-		SDL_Event left_right_button; //stores mouse buttons + return and r keys
 		left_right_button.type = SDL_USEREVENT;
-		SDL_Event direction; //stores direction + return keys
 		direction.type = SDL_USEREVENT;
 
 		while(SDL_PollEvent( &event ) != 0 || paused){
@@ -649,7 +649,7 @@ int main(int argc, char **argv){
 			}
 			break;
 		case SETTINGS:
-			if((game = settings(left_right_button, full_height, &placemarker, &wentry, &hentry, &centry)) != SETTINGS){
+			if((game = settings(left_right_button, full_height, &placemarker, &w_entry, &h_entry, &c_entry)) != SETTINGS){
 				if(game == SETTINGS2){
 					for(int i = 0; i < width; i++){
 						free(grid[i]);
@@ -660,9 +660,9 @@ int main(int argc, char **argv){
 
 					SDL_SetWindowFullscreen(window, 0);
 					
-					cellsize = centry;
-					width = wentry;
-					height = hentry;
+					cellsize = c_entry;
+					width = w_entry;
+					height = h_entry;
 					full_width = width * cellsize;
 					full_height = height * cellsize;
 					
@@ -710,9 +710,9 @@ int main(int argc, char **argv){
 					clear(last_grid, width, height);
 					game = ARCADE;
 				}
-				centry = cellsize;
-				wentry = width;
-				hentry = height;
+				c_entry = cellsize;
+				w_entry = width;
+				h_entry = height;
 				t = 0;
 			}
 			break;
@@ -803,13 +803,13 @@ int main(int argc, char **argv){
 			img_rect.w = full_width*0.1;
 			img_rect.x = full_width*0.6;
 			img_rect.y = 2*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[wentry/100 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[w_entry/100 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.7;
 			img_rect.y = 2*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[wentry/10 % 10 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[w_entry/10 % 10 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.8;
 			img_rect.y = 2*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[wentry % 10 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[w_entry % 10 + 8], NULL, screen_surface, &img_rect);
 			img_rect.w = full_width*0.4;
 			img_rect.x = full_width*0.2;
 			img_rect.y = 3*(full_height/SROWS);
@@ -817,13 +817,13 @@ int main(int argc, char **argv){
 			img_rect.w = full_width*0.1;
 			img_rect.x = full_width*0.6;
 			img_rect.y = 3*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[hentry/100 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[h_entry/100 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.7;
 			img_rect.y = 3*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[hentry/10 % 10 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[h_entry/10 % 10 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.8;
 			img_rect.y = 3*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[hentry % 10 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[h_entry % 10 + 8], NULL, screen_surface, &img_rect);
 			img_rect.w = full_width*0.4;
 			img_rect.x = full_width*0.2;
 			img_rect.y = 4*(full_height/SROWS);
@@ -831,13 +831,13 @@ int main(int argc, char **argv){
 			img_rect.w = full_width*0.1;
 			img_rect.x = full_width*0.6;
 			img_rect.y = 4*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[centry/100 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[c_entry/100 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.7;
 			img_rect.y = 4*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[centry/10 % 10 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[c_entry/10 % 10 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.8;
 			img_rect.y = 4*(full_height/SROWS);
-			SDL_BlitScaled(texture_img[centry % 10 + 8], NULL, screen_surface, &img_rect);
+			SDL_BlitScaled(texture_img[c_entry % 10 + 8], NULL, screen_surface, &img_rect);
 			img_rect.x = full_width*0.2;
 			img_rect.w = full_width*0.7;
 			img_rect.y = 6*(full_height/SROWS);

@@ -28,17 +28,18 @@ int battle1(int **grid, SDL_Event event, int t, int cellsize, int width, int hei
 		for(int i = 0; i < width; i++){
 			ship_grid[i] = (int *) calloc(height, sizeof(int));
 		}
-		int ship_count = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
+		const int ship_count = sqrt(width*height)/2; //Shipcount based on gridsize, the more ships the bigger they get
+		int x, y, dir;
 		//Place all the ships
 		for(int i = 0; i < ship_count; i++){
-			int ship_size = i / 2 + 2; //Place increasingly larger ships
+			const int ship_size = i / 2 + 2; //Place increasingly larger ships
 			int ship_unplaced = 1;
 			//Loop until the current ship has been placed without overlapping other ships or running offscreen
 			while(ship_unplaced){
 				//Choose random ship position and direction
-				int x = rand() % width;
-				int y = rand() % height;
-				int dir = rand() % 2;
+				x = rand() % width;
+				y = rand() % height;
+				dir = rand() % 2;
 				for(int j = 0; j < ship_size; j++){
 					if(j > 0){
 						if(dir == 0 && x + j >= width){

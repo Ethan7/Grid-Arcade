@@ -20,8 +20,8 @@ int **snake_tail;
 
 int snake(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 	int ret = SNAKE;
-	int win_length = (width*height) >> (2-wrap);
-	int food_count = sqrt(width*height)/2;
+	const int win_length = (width*height) >> (2-wrap);
+	const int food_count = sqrt(width*height)/2;
 
 	//Setup initial state
 	if(t == 1){

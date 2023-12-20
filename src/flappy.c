@@ -17,7 +17,7 @@
 */
 int flappy_y;
 int flappy(int **grid, SDL_Event event, int t, int width, int height){
-	int spacing = height/2;
+	const int spacing = height/2;
 
 	if(t == 1){
 		flappy_y = height/2;

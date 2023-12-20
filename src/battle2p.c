@@ -25,7 +25,7 @@ int ships_placed;
 int direction;
 void phase1(int width, int height, int new_ship, int **grid, int **under_grid, int new_phase, int x, int y, int dir){
 	//Place all the ships
-	int ship_size = ships_placed / 2 + 2; //Place increasingly larger ships
+	const int ship_size = ships_placed / 2 + 2; //Place increasingly larger ships
 	for(int j = 0; j < ship_size; j++){
 		if(j > 0){
 			if(dir == 0 && x + j >= width){

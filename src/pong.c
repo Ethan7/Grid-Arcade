@@ -16,7 +16,7 @@
 */
 int paddle1_length, p1y, paddle2_length, p2y, ball_x, ball_y, ball_xv, ball_yv, p1_momentum, p2_momentum;
 int pong(int **grid, SDL_Event event, int t, int width, int height){
-	int speed_limit = 4;
+	const int speed_limit = 4;
 
 	if(t == 1){
 		paddle1_length = 4;

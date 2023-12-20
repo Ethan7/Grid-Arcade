@@ -29,7 +29,7 @@ int move_grid[8][8];
 
 //Deternube if after the given move your king is left exposed
 int king_at_risk(int **grid, int before_x, int before_y, int after_x, int after_y, int p_turn){
-	int placemarker = grid[after_x][after_y];
+	const int placemarker = grid[after_x][after_y];
 	grid[after_x][after_y] = grid[before_x][before_y];
 	grid[before_x][before_y] = EMPTY;
 	int king_x = 0;

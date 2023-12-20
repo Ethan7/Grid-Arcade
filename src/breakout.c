@@ -21,7 +21,7 @@
 */
 int paddle_length, paddle_x, bx, by, bxv, byv, p_momentum, p_momentum_life, lives, blocks;
 int breakout(int **grid, SDL_Event event, int t, int width, int height){
-	int speed_limit = 4;
+	const int speed_limit = 4;
 
 	if(t == 1){
 		paddle_length = width/5;

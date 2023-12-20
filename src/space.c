@@ -101,7 +101,7 @@ int space(int **grid, SDL_Event event, int t, int width, int height){
 				grid[i][j+1] = MOVED;
 			}
 			//Move player bullets
-			if(grid[i][j] == PBULLET && grid[i][j-1] == 0){
+			if(grid[i][j] == PBULLET && grid[i][j-1] == HOUSE){
 				grid[i][j] = EMPTY;
 			} else if(grid[i][j] == PBULLET && grid[i][j-1] == ENEMY){
 				grid[i][j] = EMPTY;

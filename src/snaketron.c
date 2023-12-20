@@ -21,8 +21,8 @@ int **tron_tail1, **tron_tail2;
 
 int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 	int ret = TRON;
-	int win_length = width*height;
-	int food_count = sqrt(width*height)/2;
+	const int win_length = width*height;
+	const int food_count = sqrt(width*height)/2;
 
 	//Setup initial state
 	if(t == 1){
@@ -45,10 +45,11 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 		srand(time(NULL));
 		
+		int rx, ry;
 		for(int i = 0; i < food_count; i++){
 			while(1){
-				int rx = rand() % width;
-				int ry = rand() % height;
+				rx = rand() % width;
+				ry = rand() % height;
 				if(grid[rx][ry] == EMPTY){
 					grid[rx][ry] = FOOD;
 					break;
@@ -236,9 +237,10 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 			tron_tail1[tail_length1-1][0] = current_x1;
 			tron_tail1[tail_length1-1][1] = current_y1;
+			int rx, ry;
 			while(1){
-				int rx = rand() % width;
-				int ry = rand() % height;
+				rx = rand() % width;
+				ry = rand() % height;
 				if(grid[rx][ry] == EMPTY){
 					grid[rx][ry] = FOOD;
 					break;
@@ -265,9 +267,10 @@ int tron(int **grid, SDL_Event event, int t, int width, int height, int wrap){
 
 			tron_tail2[tail_length2-1][0] = current_x2;
 			tron_tail2[tail_length2-1][1] = current_y2;
+			int rx, ry;
 			while(1){
-				int rx = rand() % width;
-				int ry = rand() % height;
+				rx = rand() % width;
+				ry = rand() % height;
 				if(grid[rx][ry] == EMPTY){
 					grid[rx][ry] = FOOD;
 					break;

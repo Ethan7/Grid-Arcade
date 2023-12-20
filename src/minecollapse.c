@@ -131,12 +131,11 @@ int miner_x, miner_y, bomb_count, bomb_reload, cave_y;
 int **under_grid, **post_grid, **offset_grid, **main_grid;
 int collapse(int **grid, SDL_Event event, int t, int width, int height){
 	int ret = COLLAPSE;
-	int cave_length = 500;
-	int bomb_timer = BTIMER;
-	int win_x = 1;
-	int win_y = 0;
-	int explode_size = 3;
-	int cart_explode_size = 2;
+	const int cave_length = 500; //length of cave front to back
+	const int win_x = 1; //win position in cave
+	const int win_y = 0;
+	const int explode_size = 3; //size of player bomb explosion
+	const int cart_explode_size = 2; //size of cart explosion
 	int lost = 0;
 	//int minerXoffset, minerYoffset;
 
@@ -232,7 +231,7 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 			break;
 		case SDLK_RETURN:
 			if(bomb_count > 0){
-				under_grid[miner_x][miner_y] = bomb_timer;
+				under_grid[miner_x][miner_y] = BTIMER;
 				bomb_count--;
 			}
 			break;
@@ -269,7 +268,7 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 
 	//Place a random minecart on tracks every 100 frames
 	if(rand() % 10 == 0){
-		int randdir = rand() % 4;
+		const int randdir = rand() % 4;
 		int randx = 0;
 		int randy = 0;
 		int iter = 0;

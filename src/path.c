@@ -27,8 +27,8 @@ struct node{
 
 int *priority_queue;
 int queue_length;
-int start_x = 0, start_y = 0, //chance = 3, 
-end_x = 19, end_y = 19, open_length = 0, closed_length = 0;
+const int start_x = 0, start_y = 0; //chance = 3, 
+int end_x = 19, end_y = 19, open_length = 0, closed_length = 0;
 
 void enqueue(int index){
 	priority_queue[queue_length] = index;
@@ -51,8 +51,8 @@ int peek(){
 }
 
 int dequeue(){
-    int ind = peek();
-	int ret = priority_queue[ind];
+    const int ind = peek();
+	const int ret = priority_queue[ind];
     for (int i = ind; i < queue_length-1; i++) {
         priority_queue[i] = priority_queue[i + 1];
     }
@@ -63,7 +63,7 @@ int dequeue(){
 
 void neighbor_function(int neighbor_x, int neighbor_y, int neighbor_cost, struct node *current, int height){
 	struct node *neighbor;
-	int index = neighbor_x * height + neighbor_y;
+	const int index = neighbor_x * height + neighbor_y;
 	if(closed[index].stored){
 		return;
 	}
@@ -96,8 +96,8 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 	if(t == 1){
 		//srand(time(NULL)); //Generate random numbers
 
-		start_x = 0;
-		start_y = 0;
+		//start_x = 0;
+		//start_y = 0;
 		end_x = width-1;
 		end_y = height-1;
 
@@ -115,7 +115,7 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 		closed = (struct node *) calloc(width*height, sizeof(struct node));
 
 		open_length = 1;
-		int index = start_x*height+start_y;
+		const int index = start_x*height+start_y;
 		open = (struct node *) calloc(width*height, sizeof(struct node));
 
 		open[index].parent = NULL;
@@ -160,11 +160,11 @@ int path(int **grid, SDL_Event event, int t, int width, int height){
 	}
 
 	//Add current to closed set
-	int closed_index = open[current].x * height + open[current].y;
+	const int closed_index = open[current].x * height + open[current].y;
 	closed[closed_index] = open[current];
-	int closed_x = closed[closed_index].x;
-	int closed_y = closed[closed_index].y;
-	int closed_cost = closed[closed_index].g_cost;
+	const int closed_x = closed[closed_index].x;
+	const int closed_y = closed[closed_index].y;
+	const int closed_cost = closed[closed_index].g_cost;
 	struct node *closedNew = &(closed[closed_index]);
 	closed_length++;
 
