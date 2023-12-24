@@ -140,11 +140,13 @@ int sudoku(int **grid, SDL_Event event, int t, int cellsize, int width, int heig
 	if(event.type == SDL_MOUSEBUTTONUP){
 		int button_x = event.button.x / cellsize;
 		int button_y = event.button.y / cellsize;
-		if(event.button.button == SDL_BUTTON_LEFT && button_x < 9 && button_y < 9 && button_x > -1 && button_y > -1){
+		if(event.button.button == SDL_BUTTON_LEFT && button_x < 9 && button_y < 9 && 
+			button_x > -1 && button_y > -1){
 			//Add to current grid number
 			if(grid[button_x][button_y] == CLEAR){
 				grid[button_x][button_y] = ONE;
-			} else if(grid[button_x][button_y] > CLEAR && grid[button_x][button_y] < NINE && sudoku_grid[button_x][button_y] == EMPTY){
+			} else if(grid[button_x][button_y] > CLEAR && grid[button_x][button_y] < NINE && 
+				sudoku_grid[button_x][button_y] == EMPTY){
 				grid[button_x][button_y]++;
 			} else if(grid[button_x][button_y] == NINE && sudoku_grid[button_x][button_y] == EMPTY){
 				grid[button_x][button_y] = CLEAR;

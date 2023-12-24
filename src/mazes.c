@@ -76,28 +76,32 @@ int mazes(int **grid, SDL_Event event, int t, int width, int height){
 				grid[wall_list[random].x+wall_list[random].h][wall_list[random].y+wall_list[random].v] = EMPTY;
 
 				//Add new potential walls to wall list
-				if(wall_list[random].x > 2 && grid[wall_list[random].x+wall_list[random].h-2][wall_list[random].y+wall_list[random].v] == WALL){
+				if(wall_list[random].x > 2 && grid[wall_list[random].x+wall_list[random].h-2]
+					[wall_list[random].y+wall_list[random].v] == WALL){
 					wall_list[wall_count].x = wall_list[random].x+wall_list[random].h-1;
 					wall_list[wall_count].y = wall_list[random].y+wall_list[random].v;
 					wall_list[wall_count].h = -1;
 					wall_list[wall_count].v = 0;
 					wall_count++;
 				}
-				if(wall_list[random].x < temp_width-3 && grid[wall_list[random].x+wall_list[random].h+2][wall_list[random].y+wall_list[random].v] == WALL){
+				if(wall_list[random].x < temp_width-3 && grid[wall_list[random].x+wall_list[random].h+2]
+					[wall_list[random].y+wall_list[random].v] == WALL){
 					wall_list[wall_count].x = wall_list[random].x+wall_list[random].h+1;
 					wall_list[wall_count].y = wall_list[random].y+wall_list[random].v;
 					wall_list[wall_count].h = 1;
 					wall_list[wall_count].v = 0;
 					wall_count++;
 				}
-				if(wall_list[random].y > 2 && grid[wall_list[random].x+wall_list[random].h][wall_list[random].y+wall_list[random].v-2] == WALL){
+				if(wall_list[random].y > 2 && grid[wall_list[random].x+wall_list[random].h]
+					[wall_list[random].y+wall_list[random].v-2] == WALL){
 					wall_list[wall_count].x = wall_list[random].x+wall_list[random].h;
 					wall_list[wall_count].y = wall_list[random].y+wall_list[random].v-1;
 					wall_list[wall_count].h = 0;
 					wall_list[wall_count].v = -1;
 					wall_count++;
 				}
-				if(wall_list[random].y < temp_height-3 && grid[wall_list[random].x+wall_list[random].h][wall_list[random].y+wall_list[random].v+2] == WALL){
+				if(wall_list[random].y < temp_height-3 && grid[wall_list[random].x+wall_list[random].h]
+					[wall_list[random].y+wall_list[random].v+2] == WALL){
 					wall_list[wall_count].x = wall_list[random].x+wall_list[random].h;
 					wall_list[wall_count].y = wall_list[random].y+wall_list[random].v+1;
 					wall_list[wall_count].h = 0;

@@ -24,7 +24,8 @@
 #define P2KING 28
 #define PMOVE 2
 */
-int chosen_x, chosen_y, p1_castle1, p1_castle2, p2_castle1, p2_castle2, turn, p1_king_x, p1_king_y, p2_king_x, p2_king_y, p1_enpassant, p2_enpassant;
+int chosen_x, chosen_y, p1_castle1, p1_castle2, p2_castle1, p2_castle2, 
+turn, p1_king_x, p1_king_y, p2_king_x, p2_king_y, p1_enpassant, p2_enpassant;
 int move_grid[8][8];
 
 //Deternube if after the given move your king is left exposed
@@ -35,7 +36,7 @@ int king_at_risk(int **grid, int before_x, int before_y, int after_x, int after_
 	int king_x = 0;
 	int king_y = 0;
 	//Get coords of king we are checking
-	if(p_turn){
+	if(p_turn == 1){
 		king_x = p2_king_x;
 		king_y = p2_king_y;
 		if(grid[p2_king_x][p2_king_y] != P2KING){

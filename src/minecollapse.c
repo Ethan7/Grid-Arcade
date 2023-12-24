@@ -198,7 +198,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 	case SDL_KEYDOWN:
 		switch( event.key.keysym.sym ){
 		case SDLK_UP:
-			if(miner_y-1 >= 0 && main_grid[miner_x][miner_y-1] <= EXPLOSION && main_grid[miner_x][miner_y-1] >= EMPTY && main_grid[miner_x][miner_y-1] != MWALL){ //Requires that constants be in current specific order
+			if(miner_y-1 >= 0 && main_grid[miner_x][miner_y-1] <= EXPLOSION && 
+				main_grid[miner_x][miner_y-1] >= EMPTY && main_grid[miner_x][miner_y-1] != MWALL){ //Requires that constants be in current specific order
 				main_grid[miner_x][miner_y] = EMPTY;
 				miner_y--;
 				main_grid[miner_x][miner_y] = MINER;
@@ -206,7 +207,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 			}
 			break;
 		case SDLK_DOWN:
-			if(miner_y+1 < cave_length && main_grid[miner_x][miner_y+1] <= EXPLOSION && main_grid[miner_x][miner_y+1] >= EMPTY && main_grid[miner_x][miner_y+1] != MWALL){
+			if(miner_y+1 < cave_length && main_grid[miner_x][miner_y+1] <= EXPLOSION && 
+				main_grid[miner_x][miner_y+1] >= EMPTY && main_grid[miner_x][miner_y+1] != MWALL){
 				main_grid[miner_x][miner_y] = EMPTY;
 				miner_y++;
 				main_grid[miner_x][miner_y] = MINER;
@@ -214,7 +216,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 			}
 			break;
 		case SDLK_LEFT:
-			if(miner_x-1 >= 0 && main_grid[miner_x-1][miner_y] <= EXPLOSION && main_grid[miner_x-1][miner_y] >= EMPTY && main_grid[miner_x-1][miner_y] != MWALL){
+			if(miner_x-1 >= 0 && main_grid[miner_x-1][miner_y] <= EXPLOSION && 
+				main_grid[miner_x-1][miner_y] >= EMPTY && main_grid[miner_x-1][miner_y] != MWALL){
 				main_grid[miner_x][miner_y] = EMPTY;
 				miner_x--;
 				main_grid[miner_x][miner_y] = MINER;
@@ -222,7 +225,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 			}
 			break;
 		case SDLK_RIGHT:
-			if(miner_x+1 < width && main_grid[miner_x+1][miner_y] <= EXPLOSION && main_grid[miner_x+1][miner_y] >= EMPTY && main_grid[miner_x+1][miner_y] != MWALL){
+			if(miner_x+1 < width && main_grid[miner_x+1][miner_y] <= EXPLOSION && 
+				main_grid[miner_x+1][miner_y] >= EMPTY && main_grid[miner_x+1][miner_y] != MWALL){
 				main_grid[miner_x][miner_y] = EMPTY;
 				miner_x++;
 				main_grid[miner_x][miner_y] = MINER;
@@ -338,7 +342,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 					if(main_grid[i][n-1] == MINER){
 						lost = 1;
 					} else if(main_grid[i][n-1] >= BWALL && main_grid[i][n-1] <= CARTRIGHT){
-						lost+=explode(i, n-1, main_grid, under_grid, width, cave_length, cart_explode_size, explode_size, cart_explode_size);
+						lost+=explode(i, n-1, main_grid, under_grid, width, cave_length, 
+							cart_explode_size, explode_size, cart_explode_size);
 					} else {
 						main_grid[i][n-1] = CARTUP;
 					}
@@ -351,7 +356,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 					if(main_grid[i][n+1] == MINER){
 						lost = 1;
 					} else if(main_grid[i][n+1] >= BWALL && main_grid[i][n+1] <= CARTRIGHT){
-						lost+=explode(i, n+1, main_grid, under_grid, width, cave_length, cart_explode_size, explode_size, cart_explode_size);
+						lost+=explode(i, n+1, main_grid, under_grid, width, cave_length, 
+							cart_explode_size, explode_size, cart_explode_size);
 					} else {
 						main_grid[i][n+1] = CARTDOWN;
 						post_grid[i][n+1] = 1;
@@ -365,7 +371,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 					if(main_grid[i-1][n] == MINER){
 						lost = 1;
 					} else if(main_grid[i-1][n] >= BWALL && main_grid[i-1][n] <= CARTRIGHT){
-						lost+=explode(i-1, n, main_grid, under_grid, width, cave_length, cart_explode_size, explode_size, cart_explode_size);
+						lost+=explode(i-1, n, main_grid, under_grid, width, cave_length, 
+							cart_explode_size, explode_size, cart_explode_size);
 					} else {
 						main_grid[i-1][n] = CARTLEFT;
 					}
@@ -378,7 +385,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 					if(main_grid[i+1][n] == MINER){
 						lost = 1;
 					} else if(main_grid[i+1][n] >= BWALL && main_grid[i+1][n] <= CARTRIGHT){
-						lost+=explode(i+1, n, main_grid, under_grid, width, cave_length, cart_explode_size, explode_size, cart_explode_size);
+						lost+=explode(i+1, n, main_grid, under_grid, width, cave_length, 
+							cart_explode_size, explode_size, cart_explode_size);
 					} else {
 						main_grid[i+1][n] = CARTRIGHT;
 						post_grid[i+1][n] = 1;
@@ -390,7 +398,8 @@ int collapse(int **grid, SDL_Event event, int t, int width, int height){
 			if(under_grid[i][n] > 0){
 				under_grid[i][n]--; //Subtract from bomb_timer
 				if(under_grid[i][n] == 0){
-					lost+=explode(i, n, main_grid, under_grid, width, cave_length, explode_size, explode_size, cart_explode_size);
+					lost+=explode(i, n, main_grid, under_grid, width, cave_length, 
+						explode_size, explode_size, cart_explode_size);
 				} else if(main_grid[i][n] == EMPTY){
 					//display current bombs
 					main_grid[i][n] = BOMB;

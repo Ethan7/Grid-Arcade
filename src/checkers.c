@@ -17,7 +17,8 @@
 #define P1MOVE 4
 #define P2MOVE 5
 */
-int selected_x, selected_y, player, player_king, player_move, opponent, opponent_king, opponent_move, p1_pieces, p2_pieces, follow_up;
+int selected_x, selected_y, player, player_king, player_move, 
+opponent, opponent_king, opponent_move, p1_pieces, p2_pieces, follow_up;
 
 //Determine all potential moves with given piece and display them
 int moveset(int **grid, int width, int height, int i, int j, int recurs){
@@ -151,7 +152,8 @@ int checkers(int **grid, SDL_Event event, int t, int cellsize, int width, int he
 	if(event.type == SDL_MOUSEBUTTONUP){
 		int buttonx = event.button.x / cellsize;
 		int buttony = event.button.y / cellsize;
-		if(event.button.button == SDL_BUTTON_LEFT && buttonx < width && buttony < height && buttonx > -1 && buttony > -1){
+		if(event.button.button == SDL_BUTTON_LEFT && buttonx < width && 
+			buttony < height && buttonx > -1 && buttony > -1){
 			//Make potential move
 			if(grid[buttonx][buttony] == player_move){
 				//Move piece

@@ -74,7 +74,8 @@ int battle1(int **grid, SDL_Event event, int t, int cellsize, int width, int hei
 	if(event.type == SDL_MOUSEBUTTONUP){
 		int button_x = event.button.x / cellsize;
 		int button_y = event.button.y / cellsize;
-		if(event.button.button == SDL_BUTTON_LEFT && button_x < width && button_y < height && button_x > -1 && button_y > -1 && grid[button_x][button_y] == EMPTY){
+		if(event.button.button == SDL_BUTTON_LEFT && button_x < width && button_y < height && 
+			button_x > -1 && button_y > -1 && grid[button_x][button_y] == EMPTY){
 			grid[button_x][button_y] = ship_grid[button_x][button_y];
 			cannonballs--;
 			if(grid[button_x][button_y] == SHIP){
